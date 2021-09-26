@@ -1,5 +1,3 @@
-%%
-%DEBUG - make this better from the charts I made
 function power = powerSelections(cells)
 %powerSelection: Given number of battery cells return ideal power system
 %from a lookup table.

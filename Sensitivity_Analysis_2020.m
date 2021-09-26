@@ -190,18 +190,18 @@ for x=1:1 %length(AR)
                       M3norm=0;
                       M=0;
                       
-                      for k=1:64
+                    for k=1:64
                           
-                     WeightM3=bestm(k,30)+bestm(k,31);
-                     [V,Drag,Weight] = GenVelocityTest(Thrust,RPM,pitch,dp,CLw,WeightM3,rho,AR(x),WingS,HStabS,VStabS,CDWing,Cw,CDHStab,Chstab,CDVStab,Cvstab,FSA,SAfT,Lf,Wf,1,ARs(i),Ws(j));
-                     
-                     bestm(k,39)=Weight;
-                     bestm(k,40)=V;
-                     bestm(k,41)=Dlap/V;%time perlap M3
-                     bestm(k,42)=floor(V*10*60/Dlap);%num laps
-                     bestm(k,43)=bestm(k,42)*Ds*Ws(j);
-                     bestm(k,45)=54+10.*bestm(k,32);
-                      end
+                        WeightM3=bestm(k,30)+bestm(k,31);
+                        [V,Drag,Weight] = GenVelocityTest(Thrust,RPM,pitch,dp,CLw,WeightM3,rho,AR(x),WingS,HStabS,VStabS,CDWing,Cw,CDHStab,Chstab,CDVStab,Cvstab,FSA,SAfT,Lf,Wf,1,ARs(i),Ws(j));
+                        
+                        bestm(k,39)=Weight;
+                        bestm(k,40)=V;
+                        bestm(k,41)=Dlap/V;%time perlap M3
+                        bestm(k,42)=floor(V*10*60/Dlap);%num laps
+                        bestm(k,43)=bestm(k,42)*Ds*Ws(j);
+                        bestm(k,45)=54+10.*bestm(k,32);
+                    end
                       
                       m2max=max(bestm(:,37));
                       m3max=max(bestm(:,43));

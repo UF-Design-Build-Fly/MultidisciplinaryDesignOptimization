@@ -146,7 +146,7 @@ Drag= @(v)   Induced(v)+Parasitic(v) +Skin(v) + Prop(v) + sensor(v); %DEBUG
 
 PS=pitch/12 * 5614 /60; %propeller speed
 
-PD=pitch/dp; %this is dynamic thrust function. Article this is based off of is in resources google drive somewhere
+PD=pitch/dp; %this is dynamic thrust function. Article this is based off of is in resources google drive somewhere. %DEBUG - does this match the physics of the motor?
 FS=@(v) v;
 Ts=Thrust;
 s=0;
@@ -184,7 +184,7 @@ V=v;
 %Emergency, if stuff breaks, its because of induced drag. Solver reverts to a
 %different form of induced drag with the assumption that L=W. Without this
 %it returns complex numbers :(. Happens when velocity becomes so small it's
-%computationally zero. 
+%computationally zero. %DEBUG
 if V<0
     V=1; %DEBUG - make an error flag - functions look for exactly this value for now
 elseif V>900 %no way we ever get this fast.
@@ -221,9 +221,9 @@ elseif V>900
     V=1; %DEBUG -- v == 1 is still the it's broke flag
 end
 %DEBUG - add broken down drag values here - return an array for sanity
-%check purposes.
+%check purposes. return drag for each part rather than overall.
 %DEBUG - look into describing drag in terms of parts instead of classes
 %(wing instead of skin alone)
-D=Drag(V);
+D=Drag(V); %function handle that sums all drag
 % iter
 end
