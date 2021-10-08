@@ -1,9 +1,11 @@
 Things to improve for this year's analysis:
 
+Use GitHub to manage and track changes. For now everyone needs to create an account. We'll just clone, commit, and push (no forks or pr's yet)
 
-Add way more code comments. Pass your file around and see if everyone else can understand it quickly.
+Add way more code comments.
     each function should also have comments under the definition describing expected input, output, and a general use case
     format this comment in such a way that typing "help: {function name}" will bring up this text. Also comes up when hovering over function
+    comments on all lines of code that run an equation or make a decision. Code that just sets variables should be self documenting now
 
 Use object oriented programming to create code that is compact and readable.
 
@@ -37,7 +39,15 @@ Make a convention for variable names by type? (underscore, camel_case, etc..)
 
 data encapsulation means properties are only available via methods
 
-%TODO: add comments to each class property with units of measure. Also add flag saying weather it's calculated or assigned at compile time
-%for future encapsulation work
+TODO: add comments to each class property with units of measure. Also add flag saying weather it's calculated or assigned at compile time
+for future encapsulation work
 
 vector variable list: https://docs.google.com/spreadsheets/d/1FmU5eVV3CRve9tXYGc6SgpZ6opuZdF7lGGSVIrlqlDo/edit#gid=0
+
+
+Friday:
+
+discuss github
+discuss overall structure
+discuss move to object oriented - I'm not completely there yet
+assign functions to people - have them write it normal for now I can convert to object oriented later.

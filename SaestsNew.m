@@ -1,4 +1,5 @@
 function [FSA,fh,fw,fl,Weightfuse,SAfT] = SaestsNew(AR,nc) %surface area estimate for fuselage
+%Inputs: sensor aspect ratio (2020), number of containers
 %DEBUG - need new version of this - just a look up table. how will fuselage
 %grow
 cw = 1.5; %width sensor
