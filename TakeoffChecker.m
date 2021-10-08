@@ -20,7 +20,8 @@ function D= TakeoffChecker(Thrust,W,rho,WingS,AR,Cwing,CLm,CD0,dp,fh,RPM,pitch)
     e=0.8; %efficiency of wing
 
 K=1/(pi*AR*e);    %Wing K constant
-h=(dp/2+0.5+fh)/12; %Height of wing above ground (ft)
+%height will be an input
+%h=(dp/2+0.5+fh)/12; %Height of wing above ground (ft)
 phi= 1 -(2*e/pi)*log(1+ ( (pi*Cwing)/(8*h))^2); %scaling constant
 Kg=phi*K;%K constant, ground effect
 Clg=mu/(2*Kg); %coeff lift, ground effect
@@ -30,7 +31,7 @@ CD0lg=CD0-dCd0lg;%CD0 ground effect
 CDg=CD0lg+Kg*Clg^2;
 
 Ap=(pi*0.25*dp^2)/144; %Prop area(ft^2)
-Vr=1.2*sqrt(2*W/(rho*CLm*WingS)); %Rotation speed
+Vr=1.2*sqrt(2*W/(rho*CLm*WingS)); %Rotation speed; Christian- 1.2 is factor of safety(?)
 %dynamic thrust equation
 PS=pitch/12 * 5614 /60;
 PD=pitch/dp;
