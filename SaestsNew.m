@@ -1,43 +1,62 @@
-function [FSA,fh,fw,fl,Weightfuse,SAfT] = SaestsNew(AR,nc) %surface area estimate for fuselage
+function [FSA,fh,fw,fl,Weightfuse,SAfT] = SaestsNew(ns) %surface area estimate for fuselage
 %Inputs: sensor aspect ratio (2020), number of containers
-%DEBUG - need new version of this - just a look up table. how will fuselage
-%grow
-cw = 1.5; %width sensor
-ch = 1.5; %height sensor
-cl=cw*AR; %length sensor
+%Akaash  - For 2021, input will just change to number of syringes, which will be ns
+%DEBUG - need new version of this - just a look up table. how will fuselage grow
+sw = ; %width syringe
+sh = ; %height syringe
+sl= ; %length syringe
+nc= ; %number of crates
+cbl= ; %conveyor belt length
 fh = 0; %fuse height
 fw = 0; %fuse width
 fl = 0; %fuse length
 rhoCarbon=120.486; %lb/ft^3
-if nc<=4
-    fh=cw;
-    fw=cw;
-    fl=nc*cw*AR;
-elseif nc<=8
-    fh=2*cw;
-    fw=cw;
-    fl=4*cl;
-elseif nc<=16
-    fh=2*cw;
-    fw=2*cw;
-    fl=4*cl;
-elseif nc<=24
-    fh=3*cw;
-    fw=2*cw;
-    fl=4*cl;
-elseif nc<= 36
-    fh=3*cw;
-    fw=3*cw;
-    fl=4*cl;
-elseif nc<=48
-   fh=4*cw;
-   fw=3*cw;
-   fl=4*cl;
-elseif nc<=64
-    fh=4*cw;
-    fw=4*cw;
-    fl=4*cl;
+if ns<=9
+    nc=0;
+    cbl=0;
+    fh=0;
+    fw=0;
+    fl=0; %make all of these 0 because then 
+elseif nc<=19
+    nc= 
+    cbl=
+    fh=
+    fw=
+    fl=
+elseif nc<=29
+    nc= 
+    cbl=
+    fh=
+    fw=
+    fl=
+elseif nc<=39
+    nc=
+    cbl=
+    fh=
+    fw=
+    fl=
+elseif nc<=49
+    nc=
+    cbl=
+    fh=
+    fw=
+    fl=
+elseif nc<=59
+    nc=
+    cbl=
+    fh=
+    fw=
+    fl=
 end
+
+%need to make sure that the length of the fueslage is less than 8 feet, so the if condition below will check to see if it is below 8
+
+if fl>=96 
+   fl=0;
+   fh=0;
+   fw=0; %make all of these 0 bc we can't use it 
+end
+ 
 
 SAbrick=2*fl*fh+2*fl*fw;
 Hf=sqrt( (0.5*fh)^2 +6^2);
