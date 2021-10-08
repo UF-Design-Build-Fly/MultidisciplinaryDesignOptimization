@@ -34,3 +34,10 @@ Make a plan for analysis day where I introduce people to github, define their ta
 
 Make a convention for variable names by type? (underscore, camel_case, etc..)
     -->no acronyms! short words are ok (i.e fuse for fuselage as long as there's nothing else in the code that could be amiguous with)
+
+data encapsulation means properties are only available via methods
+
+%TODO: add comments to each class property with units of measure. Also add flag saying weather it's calculated or assigned at compile time
+%for future encapsulation work
+
+vector variable list: https://docs.google.com/spreadsheets/d/1FmU5eVV3CRve9tXYGc6SgpZ6opuZdF7lGGSVIrlqlDo/edit#gid=0
