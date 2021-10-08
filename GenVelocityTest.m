@@ -42,7 +42,7 @@ function [V,Drag,WeightT] = GenVelocityTest(Thrust,RPM,pitch,dp,CLw,WeightT,rho,
     Cd_wheel = 0.20;     % Let Cd = 0.245 for the wheels
     top = Wf;         %length of top flat part (change to fuse width)
     t = 1/8;            %thickness of flatbar
-    theta = 38*pi/180;  %Angle of inside of bend (minus 90)
+    gearBendAngle = 38*pi/180;  %Angle of inside of bend (minus 90)
     gearwidth = 1;      %width of flatbar
     width_wheel = 0.5;    %width of wheels
     radius_wheel = 1.5; %wheel radius
@@ -51,12 +51,12 @@ function [V,Drag,WeightT] = GenVelocityTest(Thrust,RPM,pitch,dp,CLw,WeightT,rho,
         
     %ldg gear information
     %Courtesy of Matt Lutton
-    
+    %DEBUG: change height calculation
     height = dp/2+0.5; %dp is prop diamter - height of prop centerline plus tolerance
     
     % Profile area of aluminum pieces
     
-    area_Al= (top + 2*(height/cos(theta)+height))*t;
+    area_Al= (top + 2*(height/cos(gearBendAngle)+height))*t;
     volume_Al = area_Al*gearwidth;
     weight_Al = rho_Al*volume_Al;
     area_wheel = width_wheel*radius_wheel*3*2;    %profile area for 3 wheels
@@ -85,7 +85,7 @@ function [V,Drag,WeightT] = GenVelocityTest(Thrust,RPM,pitch,dp,CLw,WeightT,rho,
 
 %coeff skin friction. everything has a unique one
 
-    Temp=273+19; %kelvin - average april weather at competition site.
+    Temp=273+19; %kelvin - average april weather at competition site. DEBUG: Change to temp in Wichita
     R=287; %gas consant - no need to change year to year
     gamma=1.4; %air constant - no change year-to-year
     a=3.28*sqrt(gamma*R*Temp);%with metric to imperial conversion. a is speed of sound. 3.28 is conversion factor to feet
@@ -103,17 +103,17 @@ function [V,Drag,WeightT] = GenVelocityTest(Thrust,RPM,pitch,dp,CLw,WeightT,rho,
 
     %ldg gear skin friction
     
-    refAl=2*(height/cos(theta)+height)*gearwidth/144;
-    WheelWet=(2*pi*(radius_wheel)^2+ pi*2*radius_wheel*width_wheel)/144;
+    gearSA=2*(height/cos(gearBendAngle)+height)*gearwidth/144;
+    WheelSA=(2*pi*(radius_wheel)^2+ pi*2*radius_wheel*width_wheel)/144;
 
 %Skin friction Drag( sum: wing, HStab, VStab+...
 %drag equation except using skin friction instead of parasitic
-Skin= @(v) 2*(0.5*rho*(v^2)*Cf(v,Cw,1)*WingS) +2*(0.5*rho*(v^2)*Cf(v,Chstab,1)*HStabS) + 2*(0.5*rho*(v^2)*Cf(v,Cvstab,1)*VStabS) + (0.5*rho*(v^2)*Cf(v,Lf,0.9)*SAfT) + 2*(0.5*rho*(v^2)*Cf(v,(2/12) ,0)*2*(height/cos(theta)+height)*t/144) + 3*(0.5*rho*(v^2)*Cf(v,2*radius_wheel/12,0)*WheelWet/144);
+Skin= @(v) 2*(0.5*rho*(v^2)*Cf(v,Cw,1)*WingS) +2*(0.5*rho*(v^2)*Cf(v,Chstab,1)*HStabS) + 2*(0.5*rho*(v^2)*Cf(v,Cvstab,1)*VStabS) + (0.5*rho*(v^2)*Cf(v,Lf,0.9)*SAfT) + 2*(0.5*rho*(v^2)*Cf(v,(2/12) ,0)*2*(height/cos(gearBendAngle)+height)*t/144) + 3*(0.5*rho*(v^2)*Cf(v,2*radius_wheel/12,0)*WheelSA/144);
 
 %prop drag - accounts for accelerated flow across the rest of the aircraft
 %all this for like 0.001 change :/  
 %-Bryce
-
+%DEBUG: Commment out
     Ap=pi*(dp/2)^2;
     Sl=SAfT + (dp-Wf)*12*Cw;%total wet fuselage Surface Area in prop wash
     q=@(v) 0.5*rho*v^2;% is q
@@ -147,7 +147,7 @@ Drag= @(v)   Induced(v)+Parasitic(v) +Skin(v) + Prop(v) + sensor(v); %DEBUG
 PS=pitch/12 * 5614 /60; %propeller speed
 
 PD=pitch/dp; %this is dynamic thrust function. Article this is based off of is in resources google drive somewhere. %DEBUG - does this match the physics of the motor?
-FS=@(v) v;
+FS=@(v) v; %DEBUG: research this...
 Ts=Thrust;
 s=0;
 if PD<0.6
