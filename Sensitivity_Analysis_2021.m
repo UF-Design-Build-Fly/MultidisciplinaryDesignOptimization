@@ -2,6 +2,12 @@ Num_Airfoils = 1; %constants use Underscore_And_Caps. Variables use camelCase
 Aspect_Ratios = 1:2;%4:0.2:15;
 Num_Power_Systems = 1;
 
+plane = airplaneClass;
+plane.wingClass.cl = 5;
+plane.empennageClass.HSarea = 5;
+plane.powerSystemClass.cells = 6;
+plane.fuselageClass.weight = 10;
+plane.performanceClass.weight2 = 5;
 
 for AR = 1:length(Aspect_Ratios)
     for airfoilIndex = 1:Num_Airfoils
