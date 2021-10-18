@@ -7,26 +7,26 @@ classdef fuselageClass
 
   properties
   
-    frontalSurfaceArea;
-    height;
-    width;
-    length;
-    totalSA;
+    frontalSurfaceArea = -1;
+    height = -1;
+    width = -1;
+    length = -1;
+    totalSA = -1;
     
-    weight;
+    weight = -1;
     
-    fuseDrag1;
-    fuseDrag2;
-    fuseDrag3;
+    fuseDrag1 = -1;
+    fuseDrag2 = -1;
+    fuseDrag3 = -1;
 
-    gearDrag1;
-    gearDrag2;
-    gearDrag3;
+    gearDrag1 = -1;
+    gearDrag2 = -1;
+    gearDrag3 = -1;
 
-    gearWeight;
+    gearWeight = -1;
 
-    numVials;
-    numSyringes;
+    numVials = -1;
+    numSyringes = -1;
 
   end
 
