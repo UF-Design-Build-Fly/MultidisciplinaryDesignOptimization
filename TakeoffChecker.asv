@@ -12,9 +12,8 @@ function D= TakeoffChecker(Thrust,W,rho,WingS,AR,Cwing,CLm,CD0,dp,fh)%,RPM,pitch
     %CD0=wing cd0 @ chosen alpha
     %dp=prop diameter (in)
     %fh=fuselage height (in)
-    %RPM =Motor RPM, max   %not sure why rpm was necessary
-    %Pitch= propeller pitch   %removed because dynamic thrust equation is
-                              %not used
+    %RPM =Motor RPM, max   %not sure why rpm is necessary
+    %Pitch= propeller pitch   %removed because dynamic thru
 %constants
     g=32.2; %acceleration due to gravity (ft/s/s)
     mu=0.008; %coeff rolling friction
@@ -32,8 +31,7 @@ dCd0lg=(W/WingS)*(Kw)*(W/g); %change in CD0 due to ground effect
 CD0lg=CD0-dCd0lg;%CD0 ground effect
 CDg=CD0lg+Kg*Clg^2;
 
-%Ap was not used in anything so idk why it was calculated - Christian
-%Ap=(pi*0.25*dp^2)/144; %Prop area(ft^2)
+Ap=(pi*0.25*dp^2)/144; %Prop area(ft^2)
 Vr=1.2*sqrt(2*W/(rho*CLm*WingS)); %Rotation speed; with 1.2 factor of safety
 
 % We decided dynamic thrust was not necessary- Christian

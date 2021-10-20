@@ -2,11 +2,12 @@ classdef airplaneClass
 	
 	properties
 		%I only called these "class" because we already had files with the same name
-		wingClass 
-		empennageClass
-		powerSystemClass
-		fuselageClass
-		performanceClass
+		wing = struct(wingClass);
+		empennage = struct(empennageClass);
+		powerSystem = struct(powerClass);
+		fuselageClass = struct(fuselageClass); 
+		performance = struct(performanceClass);
+		sanityFlag = true;
 	end
 	
 	methods
