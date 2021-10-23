@@ -3,8 +3,8 @@ classdef airplaneClass
 	properties
 		wing = struct(wingClass);
 		empennage = struct(empennageClass);
-		powerSystem = struct(powerClass);
-		fuselageClass = struct(fuselageClass); 
+		power = struct(powerClass);
+		fuselage = struct(fuselageClass); 
 		performance = struct(performanceClass);
 		sanityFlag = true;
 	end
