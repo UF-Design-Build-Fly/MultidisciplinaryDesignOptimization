@@ -1,4 +1,4 @@
-function [plane] = SaestsNew(plane) 
+function [plane] = fuselage(plane) 
 %Inputs: sensor aspect ratio (2020), number of containers
 %Akaash  - For 2021, input will just change to number of syringes, which will be ns
 

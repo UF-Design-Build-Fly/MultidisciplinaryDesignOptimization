@@ -18,10 +18,6 @@ classdef fuselageClass
     wheelRadius = 1.5; %wheel radius
     wheelSA = 2*pi*(radius_wheel)^2+ pi*2*radius_wheel*width_wheel)/144;
 
-    fuseDrag1 = -1;
-    fuseDrag2 = -1;
-    fuseDrag3 = -1;
-
     numVials = -1;
     numSyringes = -1;
 

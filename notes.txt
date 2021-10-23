@@ -53,3 +53,13 @@ Make scoring function for mission 2 and mission 3
 Work out how to split it up into groups
 Make function to determine loop time to estimate running time
 make a printout at some point to verify everything is still running.
+
+
+TODO:
+
+add loop time tracker
+total weight function
+scoring function
+finish sanity checker
+get rid of hs and vs span
+add drag to performance class
