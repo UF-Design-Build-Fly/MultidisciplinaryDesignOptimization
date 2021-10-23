@@ -21,6 +21,7 @@ classdef powerClass
     propSpeed = -1;
     efficiency = -1;
     batteryCapacity = -1; %watt hours
+    weight = -1;
 
     propDrag1 = -1;
     progDrag2 = -1;

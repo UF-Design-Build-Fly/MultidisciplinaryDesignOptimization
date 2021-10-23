@@ -5,6 +5,9 @@ Num_Power_Systems = 1;
 plane = struct(airplaneClass);
 index = 0;
 
+%call the wings function here, then iterate through by index in the loops below
+
+
 for AR = 1:length(Aspect_Ratios)
     for airfoilIndex = 1:Num_Airfoils
         for powerIndex = 1:Num_Power_Systems
@@ -12,13 +15,13 @@ for AR = 1:length(Aspect_Ratios)
                 for num_syringes = 10:50
                     for num_vials = 1:floor(num_syringes/10)
                         index = index + 1;
-                        %plane(index).wing.aspectRatio = Aspect_Ratios(AR);
-                        %plane(index).wing = wing(airfoilIndex)
-                        %plane(index).powerSystem = powerSelections(powerIndex); %TODO: have powerSelections return empty battery info
-                        %plane(index).powerSystem.batteryStuff = calcBattery(); %TODO: Make this function
-                        %plane(index).fuselage.numSyringes = num_syringes;
-                        %plane(index).fuselage.numVials = num_vials;
-                        %plane(index).fuselage = SaestsNew(plane(index).fuselage);
+                        
+                        %set wing properties
+        
+                        plane(index) = powerSelections(powerIndex); %TODO: Update power selections to work with plane struct
+                        plane(index).fuselage.numSyringes = num_syringes;
+                        plane(index).fuselage.numVials = num_vials;
+                        plane(index).fuselage = SaestsNew(plane(index).fuselage);
 
                         %plane(index) = genVelocitySolver(plane(index), 2); %2 signifies mission 2 configuration
                         %plane(index) = takeoffCheck(plane(index));
