@@ -196,14 +196,12 @@ D=Drag(V); %function handle that sums all drag
 % iter
 end
 Vstall = sqrt(2*weight/(rho*WingS*CLflaps));
-landingV = 1.3*stallV;
+landingV = 1.25*stallV;
 if missionNumber = 1
     plane.performance.velocity1 = V;
-    plane.performance.landingSpeed1 = landingV;
+    plane.performance.landingSpeed1 = Vstall
 elseif missionNumber = 2
     plane.performance.velocity2 = V;
-    plane.performance.landingSpeed2 = landingV;
 else 
     plane.performance.velocity3 = V;
-    plane.performance.landingSpeed3 = landingV;
 end

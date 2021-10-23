@@ -3,7 +3,7 @@ classdef wingClass
 	properties
 		clw = -1; %coefficient of lift for the wing
 		clm = -1; %cl max
-		cd0 = -1; %zero velocity coefficient of drag
+		cdi = -1; %coefficient of induced drag for the wing
 		weight = -1;
 		name = -1;
 		surfaceArea = -1;

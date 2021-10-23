@@ -1,4 +1,4 @@
-function [plane] = landingGear(plane)
+function [plane] = landingGear(plane, missionNumber)
 
 %This function computes different parameters for the landing gear
 %Inputs: PropDiam = diameter of propellor (inches)
@@ -41,6 +41,8 @@ volume_Al = gearFrontArea*gearwidth;
 plane.fuselage.gearWeight = rho_Gear*volume_Al;
 %-------------------------------------------------------------------------%
 %-------------------Calculation of Gear Surface Area----------------------%
+width_wheel = 0.5;    %width of wheels (in)
+radius_wheel = 1.5; %wheel radius
 plane.fuselage.gearSA=L*gearwidth;
 %-------------------------------------------------------------------------%
 %------------------------Parasitic Drag Function--------------------------%

@@ -1,10 +1,10 @@
-function [FSA,fh,fw,fl,Weightfuse,SAfT] = SaestsNew(ns) %surface area estimate for fuselage
+function [plane] = SaestsNew(plane) 
 %Inputs: sensor aspect ratio (2020), number of containers
 %Akaash  - For 2021, input will just change to number of syringes, which will be ns
-%DEBUG - need new version of this - just a look up table. how will fuselage grow
 
 %Akaash: How I'm thinking about putting the syringes is in groups of five
 %on the fuselage and then just stacking these groups of five on top of each other
+ns = plane.fuselage.numSyringes; %calling number of syringes from the plane function
 sw=1.5; %width syringe (in)
 sh=2; %height syringe (in)
 sl=6.25; %length syringe (in)
@@ -48,9 +48,20 @@ Df=sqrt((0.5*fh)^2+(fla)^2); %we will assume a trapezoidal shape for the front o
 SAf=(Df*fw)+(6*fw)+((fh/2)*fw)+2*((0.75*fh*6)); %this formula is used to the find the surface area of the front section. So it is bottom area + top area + front area(closed section which is the nose) + side area, which are trapezoids
 Db=sqrt((fh)^2+(bla)^2); %we will assume a triangular shape for the back of the fuselage if you view it from the side since we need a ramp to release the boxes from. 
 SAb=(fw*bla)+(fw*Db)+2*((fh*bla)/2); %this formula is used to find the surface area of the back portion of the fueslage. Same method as front except now we have triangular surface area instead of trapezoidal.
-SAfT=SAm+SAf+SAb; %this will be the surface area of the fuselage total in inches
-SAfT=SAfT/144;%Surface Area fuse Total,ft^2
+tSAfT=SAm+SAf+SAb; %this will be the temporary surface area of the fuselage total in inches
+SAfT=tSAfT/144;%Surface Area fuse Total,ft^2
 FSA=(fw*fh)/144;%Frontal Surface Area,ft^2
 Vol=SAfT*((1/16)/12);%The volume in ft^3, 1/16 is the thickness of the foam in inches so this will help us find the weight of the fuselage
-Weightfuse=Vol *rhoCarbon; %Weight in lb
+FW=Vol *rhoCarbon; %Weight of fuselage in lb
+fh=fh/12; %convert to feet
+fw=fw/12; %convert to feet
+fl=fl/12; %convert to feet
+
+%convert these to object orientation
+plane.fuselage.frontalSurfaceArea=FSA;
+plane.fuselage.height=fh;
+plane.fuselage.width=fw;
+plane.fuselage.length=fl;
+plane.fuselage.totalSA=SAfT;
+plane.fuselage.weight=FW;
 end

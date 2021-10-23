@@ -19,6 +19,10 @@ classdef performanceClass
     takeoffDist2 = -1;
     takeoffDist3 = -1;
 
+    landingSpeed1 = -1;
+    landingSpeed2 = -1;
+    landingSpeed3 = -1;
+    
     time1 = -1;
     time2 = -1;
     time3_perLap = -1;
