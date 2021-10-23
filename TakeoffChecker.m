@@ -1,8 +1,8 @@
-function D= TakeoffChecker(Thrust,W,rho,WingS,AR,Cwing,CLm,CD0,dp,fh)%,RPM,pitch)
+function D= TakeoffChecker(Ts,W,rho,WingS,AR,Cwing,CLm,CD0,dp)%,fh,RPM,pitch)
 %DEBG - this function might not actually work. gets an idea but not sure of
 %accuracy. use at your own risk.
 %Inputs
-    %T=thrust
+    %Ts=thrust
     %W=Mission 2 weight
     %rho=density air (slug/ft^3)
     %WingS=reference area wing (ft^2)
@@ -11,8 +11,9 @@ function D= TakeoffChecker(Thrust,W,rho,WingS,AR,Cwing,CLm,CD0,dp,fh)%,RPM,pitch
     %CLm=coeff lift, max
     %CD0=wing cd0 @ chosen alpha
     %dp=prop diameter (in)
-    %fh=fuselage height (in)
-    %RPM =Motor RPM, max   %not sure why rpm was necessary
+    %fh=fuselage height (in)  %removed, originally used for wing height,
+                              %wing height is now just prop radius
+    %RPM =Motor RPM, max      %not sure why rpm was necessary
     %Pitch= propeller pitch   %removed because dynamic thrust equation is
                               %not used
 %constants
@@ -21,9 +22,8 @@ function D= TakeoffChecker(Thrust,W,rho,WingS,AR,Cwing,CLm,CD0,dp,fh)%,RPM,pitch
     e=0.8; %efficiency of wing
 
 K=1/(pi*AR*e);    %Wing K constant
-%DEBG - this height equation is wrong, it should be fueselage height +
-%landing gear height but idk what the landing gear height is
-h=(dp/2+0.5+fh)/12; %Height of wing above ground (ft)
+
+h=((dp/2)+2)/12; %Height of wing above ground (ft)
 phi= 1 -(2*e/pi)*log(1+ ( (pi*Cwing)/(8*h))^2); %scaling constant
 Kg=phi*K;%K constant, ground effect
 Clg=mu/(2*Kg); %coeff lift, ground effect
@@ -41,7 +41,6 @@ Vr=1.2*sqrt(2*W/(rho*CLm*WingS)); %Rotation speed; with 1.2 factor of safety
 % PS=pitch/12 * 5614 /60;
 % PD=pitch/dp;
 % FS=@(v) v;
-Ts=Thrust;
 % if PD<0.6
 %     T= @(v) Ts*(1 - FS(v)/(PS*(PD+0.2)/PD));
 % elseif (FS(v)/PS)*PD<(PD-0.6)
