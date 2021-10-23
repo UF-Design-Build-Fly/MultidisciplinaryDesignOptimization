@@ -1,4 +1,4 @@
-function G = landingGear(propDiam, fuselageHeight, fuselageWidth,rho,span)
+function G = landingGear(propDiam, fuselageHeight, fuselageWidth, rho, span)
 
 %This function computes different parameters for the landing gear
 %Inputs: PropDiam = diameter of propellor (inches)
@@ -19,11 +19,11 @@ function G = landingGear(propDiam, fuselageHeight, fuselageWidth,rho,span)
 %         |       |                               |
 %
 %
-%         -        <---------------b--------------->
+%                  <--------------b-------------->
 %
 %-------------------------------------------------------------------------%
 %----------------------Calculation of Gear Weight-------------------------%
-height = .5*propDiam - fuselageHeight + 1; %1" clearence 
+height = .5*propDiam - fuselageHeight + 2; %2" clearence 
 top = fuselageWidth;
 theta = 38*pi/180;   %Angle of inside of bend (minus 90)
 rho_Gear = 0.001122368;   %Density for landing gear material (Al) (slug/in^3)
@@ -34,7 +34,7 @@ c = a/sin(theta);
 d = c*cos(theta);
 L = top+2*c+2*(height-d);
 gearFrontArea= L*t;
-gearwidth = 1;      %width of flatbar (in)
+gearwidth = 2;      %width of flatbar (in)
 volume_Al = gearFrontArea*gearwidth;
 gearWeight = rho_Gear*volume_Al;
 %-------------------------------------------------------------------------%
@@ -50,7 +50,7 @@ Cd_wheel = 0.20;     % Let Cd = 0.245 for the wheels
 rho_air = rho/(12^3);  %density of air at sea level in slug/in^3   CONVERSION
 area_wheel = width_wheel*radius_wheel*3*2;    %profile area for 3 wheels
 drag_Al =@(v) Cd_Al*rho_air*(v*12)^2*gearFrontArea*.5; %aluminum bar
-drag_wheel = @(v) Cd_wheel*rho_air*(v*12)^2*2*area_wheel*.5;
+drag_wheel = @(v) Cd_wheel*rho_air*(v*12)^2*area_wheel*.5;
 gearParaDrag=@(v) drag_Al(v)+drag_wheel(v); %p for parasitic
 %-------------------------------------------------------------------------%
 %--------------------------------Output-----------------------------------%
