@@ -1,8 +1,3 @@
-## -*- texinfo -*-
-## @deftp {Class} powerClass
-##
-## @end deftp
-
 classdef powerClass
 
   properties

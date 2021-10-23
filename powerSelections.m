@@ -31,5 +31,4 @@ plane.powerSystem.efficiency = table(row,:).efficiency;
 plane.powerSystem.batteryCapacity = table(row,:).batteryCapacity;
 plane.powerSystem.weight = table(row,:).estimatedWeight;
 
-newPlane = plane;
 end
