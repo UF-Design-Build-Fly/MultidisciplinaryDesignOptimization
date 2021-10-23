@@ -10,9 +10,9 @@ classdef airplaneClass
 	end
 	
 	methods
-		function obj = airplaneClass(AR, powerSystem, aifoil, sensorAR, sensorWeight, num_cargo) %TODO: define constructor in a way that makes sense
+		%function obj = airplaneClass(AR, powerSystem, aifoil, sensorAR, sensorWeight, num_cargo) %TODO: define constructor in a way that makes sense
 			%constructor should set all properties and call other constructors to make blank slate - no holdovers from the last object
-		end
+		%end
 	end	
 
 end

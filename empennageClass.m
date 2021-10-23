@@ -1,8 +1,3 @@
-## -*- texinfo -*-
-## @deftp {Class} empennageClass
-##
-## @end deftp
-
 classdef empennageClass
 
   properties
