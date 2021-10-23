@@ -1,7 +1,6 @@
 classdef airplaneClass
 	
 	properties
-		%I only called these "class" because we already had files with the same name
 		wing = struct(wingClass);
 		empennage = struct(empennageClass);
 		powerSystem = struct(powerClass);
@@ -12,7 +11,7 @@ classdef airplaneClass
 	
 	methods
 		function obj = airplaneClass(AR, powerSystem, aifoil, sensorAR, sensorWeight, num_cargo) %TODO: define constructor in a way that makes sense
-			%constructor should set all properties and call other constructors to make blank slate - no holdovers from the last object!
+			%constructor should set all properties and call other constructors to make blank slate - no holdovers from the last object
 		end
 	end	
 
