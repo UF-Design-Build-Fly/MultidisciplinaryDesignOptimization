@@ -24,7 +24,6 @@ classdef fuselageClass
     gearDrag3 = -1;
 
     gearWeight = -1;
-
     numVials = -1;
     numSyringes = -1;
 

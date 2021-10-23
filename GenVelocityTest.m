@@ -1,6 +1,8 @@
 %%
 %%%velocity solver via false position root finding
-function [V,Drag] = GenVelocityTest(G, Thrust,RPM,pitch,dp,CLw,WeightT,rho,AR,WingS,HStabS,VStabS,CDWing,Cw,CDHStab,Chstab,CDVStab,Cvstab,FSA,SAfT,Lf,Wf,SensorCalc,ARs,Ws)
+function [plane] = GenVelocityTest(plane)
+%G, Thrust,CLw,WeightT,rho,AR,WingS,HStabS,VStabS,CDWing,Cw,CDHStab,Chstab,CDVStab,Cvstab,FSA,SAfT,Lf
+%RPM,pitch,dp,CLmax)
 %A function brought to you by Bryce Moran and Matthew Maddalon.
 %don't panic (!!!)
 
@@ -28,6 +30,10 @@ function [V,Drag] = GenVelocityTest(G, Thrust,RPM,pitch,dp,CLw,WeightT,rho,AR,Wi
     %SensorCalc = logical value, 1 or 0. 0 will not run sensor calculations
     %ARs=sensor aspect ratio
     %Ws = weight sensor
+    %CLflaps = max coefficient of lift for wing with flaps down
+%Outputs:
+    %V = cruise velocity
+    %landingV = landing speed
 %-------------------------------Constants---------------------------------%
     % NOT USED? mu=0.3776e-6; %for 19 Centigrade %viscous friction coefficient. calculated for a certain temperature
     muk=1.612e-4; %kinmatic viscosity (ish) related to mu                                  
@@ -86,7 +92,6 @@ Skin= @(v) skinFrictionWing(v) + skinFrictionHStab(v) + skinFrictionVStab(v) + s
 %     CFp=@(v) kwing*Cf(Vs(v),Cw,0.1) + kfuse*(Cf(Vs(v),Lf,0));  
 %     DC0=@(v) Cf(v,Lf,0)*(Sl/WingS)*( ((Vs(v))/v)^2 -1);%change in Cd0
 %     Prop=@(v) (DC0(v)+dci(v)) *0.5*rho*(Vs(v))^2;%chnage in drag (additional drag)
-
 
 %-------------------------------------------------------------------------%
 %-----------------------------Total Drag----------------------------------%
@@ -173,3 +178,6 @@ end
 D=Drag(V); %function handle that sums all drag
 % iter
 end
+
+stallV = sqrt(2*weight/(rho*WingS*CLflaps));
+landingV = 1.25*stallV;
