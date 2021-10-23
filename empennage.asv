@@ -8,8 +8,7 @@ function [plane] = empennage(plane, HSAR, VSAR)
     alpha = 3.*pi/180;  %assume 3 degrees
     Cd0 = 1.328*2.25/(sqrt(150000));  %zero-lift drag estimation (2.25 is estimate for Swet/Sref ratio)
     %Horizontal stab dimension calculations
-    wingarea = plane.wing.planformArea;
-    HS_area = wingarea*.25;              
+    HS_area = plane.wing.planformArea*.25;              
     HS_span = sqrt(HS_area*HSAR);  
     HS_chord = HS_area/HS_span; 
     %Select NACA 0010 airfoil (t/c is 90% of predicted wing t/c)
@@ -65,7 +64,7 @@ function [plane] = empennage(plane, HSAR, VSAR)
     HS_Cd = Cd0+C_di(1);
     VS_Cd = Cd0;       % no alpha, no Cdi
     
-    %convert output variables to object notation
+    %convert to object notation
     plane.empennage.HSarea = HS_area;
     plane.empennage.HSchord = HS_chord;
     plane.empennage.HSweight = HS_weight;
