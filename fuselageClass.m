@@ -1,8 +1,3 @@
-## -*- texinfo -*-
-## @deftp {Class} fuselageClass
-##
-## @end deftp
-
 classdef fuselageClass
 
   properties
@@ -13,17 +8,17 @@ classdef fuselageClass
     length = -1;
     totalSA = -1;
     
-    weight = -1;
-    
+    weight = -1; %weight of carbon fiber to make fuselage + mechanisms
+
+    gearWeight = -1;
+    gearParaDrag = -1;
+    gearSA = -1;
+    wheelSA = -1;
+
     fuseDrag1 = -1;
     fuseDrag2 = -1;
     fuseDrag3 = -1;
 
-    gearDrag1 = -1;
-    gearDrag2 = -1;
-    gearDrag3 = -1;
-
-    gearWeight = -1;
     numVials = -1;
     numSyringes = -1;
 
