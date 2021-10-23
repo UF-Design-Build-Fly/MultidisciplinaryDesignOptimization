@@ -45,9 +45,11 @@ for future encapsulation work
 vector variable list: https://docs.google.com/spreadsheets/d/1FmU5eVV3CRve9tXYGc6SgpZ6opuZdF7lGGSVIrlqlDo/edit#gid=0
 
 
-Friday:
+Saturday:
 
-discuss github
-discuss overall structure
-discuss move to object oriented - I'm not completely there yet
-assign functions to people - have them write it normal for now I can convert to object oriented later.
+Update every function to use structures instead of input variables - can just set them all at beginning instead of re-writing
+Check what every function sets - call them in the right order so that everybody has what they need.
+Make scoring function for mission 2 and mission 3
+Work out how to split it up into groups
+Make function to determine loop time to estimate running time
+make a printout at some point to verify everything is still running.
