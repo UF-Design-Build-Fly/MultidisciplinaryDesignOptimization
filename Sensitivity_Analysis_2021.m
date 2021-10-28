@@ -2,8 +2,10 @@ clear; clc;
 warning('off','all')
 %rho=0.00235308; %Desnity air at Tuscon, Az (slug/ft^3)
 rho = 0.002391; %Density air at Whichita, Ks with average climate data from April 2021
-Aspect_Ratios = 8:.5:15;%the wing aspect ratios being considered 
-syringes = 10:100;
+%Aspect_Ratios = 8:.5:15;%the wing aspect ratios being considered 
+Aspect_Ratios = 8:1:9;
+%syringes = 10:100;
+syringes = 10:5:80;
 load("MotorSpreadsheet.mat");
 Num_Power_Systems = height(MotorSpreadsheet);
 
@@ -16,12 +18,13 @@ HSAR = 4.5;
 [wingrow, wingcol, wingpg] = size(wings);
 
 index = 1;
-max_index = wingpg*wingrow*Num_Power_Systems*length(syringes)*length(syringes);
+max_index = wingpg*wingrow*(Num_Power_Systems/15)*length(syringes)*length(syringes);
 for AR = 1:wingpg
     for airfoil = 1:wingrow
-        for powerIndex = 1:Num_Power_Systems
+        for powerIndex = 1:15:Num_Power_Systems
             for syringe_index = 1:length(syringes)
                 for num_vials = 1:floor(syringes(syringe_index)/10)
+                    
                     plane(index) = struct(airplaneClass);
                     plane(index).fuselage.wheelSA = (2*pi*(radius_wheel)^2+ pi*2*radius_wheel*width_wheel)/144;
                     %read values from wings matrix into aircraft properties
@@ -62,10 +65,14 @@ for AR = 1:wingpg
                     plane(index) = sanityCheck(plane(index)); %make sure all the calculated values make sense and meet 
                     %competition requirements. In post-processing the only
                     %planes to be considered will be ones with a true flag
-                       
-                    index = index + 1; %keep track of loop iteration number
+                    if plane(index).sanityFlag
+                        index = index + 1; %only increment iteration when the airplane is reasonable
+                    end
+                    
                 end
+                
             end
         end
     end
+    save("plane.mat", "plane");
 end

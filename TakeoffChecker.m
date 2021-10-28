@@ -14,7 +14,7 @@ function [plane] = TakeoffChecker(plane,M,rho)%,fh,RPM,pitch)
     AR= plane.wing.aspectRatio;%aspect ratio, wing
     Cwing=plane.wing.chord; %chord wing (ft)
     CLm=plane.wing.clm; %coeff lift, max
-    CD=plane.wing.cdi; %wing cd @ chosen alpha
+    CD=plane.wing.cd; %wing cd @ chosen alpha
     dp=plane.power.propDiameter; %prop diameter (in)
     %fh=fuselage height (in)  %removed, originally used for wing height,
                               %wing height is now just prop radius

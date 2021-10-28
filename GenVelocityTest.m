@@ -157,15 +157,15 @@ while Error>ea/100
     Error=abs((v-xrold)/v);
 end
 V=v;
-plane.performance.drag1 = Drag(v);
-plane.performance.inducedDrag = Induced(v)
-plane.performance.parasiticDrag = Parasitic(v)
-plane.performance.skinDrag = Skin(v);
-plane.performance.wingPara = wingParasitic(v);
-plane.performance.hStabPara = hStabParasitic(v);
-plane.performance.vStabPara = vStabParasitic(v);
-plane.performance.fusePara = fuselageParasitic(v);
-plane.performance.gearPara = plane.fuselage.gearParaDrag(v);
+% plane.performance.drag1 = Drag(v);
+% plane.performance.inducedDrag = Induced(v)
+% plane.performance.parasiticDrag = Parasitic(v)
+% plane.performance.skinDrag = Skin(v);
+% plane.performance.wingPara = wingParasitic(v);
+% plane.performance.hStabPara = hStabParasitic(v);
+% plane.performance.vStabPara = vStabParasitic(v);
+% plane.performance.fusePara = fuselageParasitic(v);
+% plane.performance.gearPara = plane.fuselage.gearParaDrag(v);
 
 %Parasitic = @(v)  + hStabParasitic(v) + vStabParasitic(v) + fuselageParasitic(v) + plane.fuselage.gearParaDrag(v);
 
