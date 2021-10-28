@@ -15,20 +15,20 @@ function [newPlane] = powerSelections(plane, table, row)
 %            (ft/s), Efficiency (thrust/watt)*100, battery available watt
 %            hours, estimated system weight (pounds).
 
-plane.powerSystem.motorName = table(row,:).motorName;
-plane.powerSystem.cells = table(row,:).cells;
-plane.powerSystem.kv = table(row,:).kv;
-plane.powerSystem.propDiameter = table(row,:).propDiameter;
-plane.powerSystem.propPitch = table(row,:).propPitch;
-plane.powerSystem.voltage = table(row,:).voltage;
-plane.powerSystem.rpm = table(row,:).rpm;
-plane.powerSystem.amps = table(row,:).current;
-plane.powerSystem.watts = table(row,:).watts;
-plane.powerSystem.time = table(row,:).time;
-plane.powerSystem.thrust = table(row,:).thrust;
-plane.powerSystem.propSpeed = table(row,:).propSpeed;
-plane.powerSystem.efficiency = table(row,:).efficiency;
-plane.powerSystem.batteryCapacity = table(row,:).batteryCapacity;
-plane.powerSystem.weight = table(row,:).estimatedWeight;
-
+plane.power.motorName = table(row,:).motorName;
+plane.power.cells = table(row,:).cells;
+plane.power.kv = table(row,:).kv;
+plane.power.propDiameter = table(row,:).propDiameter;
+plane.power.propPitch = table(row,:).propPitch;
+plane.power.voltage = table(row,:).voltage;
+plane.power.rpm = table(row,:).rpm;
+plane.power.amps = table(row,:).current;
+plane.power.watts = table(row,:).watts;
+plane.power.time = table(row,:).time;
+plane.power.thrust = table(row,:).thrust;
+plane.power.propSpeed = table(row,:).propSpeed;
+plane.power.efficiency = table(row,:).efficiency;
+plane.power.batteryCapacity = table(row,:).batteryCapacity;
+plane.power.weight = table(row,:).estimatedWeight/16;
+newPlane = plane;
 end

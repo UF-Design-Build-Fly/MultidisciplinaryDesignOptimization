@@ -11,7 +11,7 @@
 %distribution for the wing.
 % clc;clear;
 
-function [wings]=wing %DEBUG - all the orange comes from this function
+function [wings]=wing(AR) %DEBUG - all the orange comes from this function
 
 b=5;                        %span of the wing %DEBUG if wingspan is changing this needs to input
 rho_spar=68.3;              %the density of the carbon fiber spar in the wing (lb/ft^3)
@@ -54,9 +54,6 @@ alphac=3*pi/180;        %the cruise angle of attack of the airfoil (3 degrees)
 alphat=15*pi/180;       %the takeoff angle of attack (10 degrees)
 alphae=alphac-alpha0;   %the effective angle of attack for the airfoil (cruise angle minus zero angle)
 alphamax=alphat-alpha0; %the effective angle of attack at takeoff (takeoff angle minus 0 angle)
-
-AR=8:.5:15;             %the wing aspect ratios being considered 
-
 
 %DEBUG - make this an input instead of internal so AR's aren't hard-coded
 
@@ -109,7 +106,7 @@ for x=1:length(AR)
         %that the other data is visible), for reference.
         wings(y,1,x)=C_l;                                       
         wings(y,2,x)=C_lmax;
-        wings(y,3,x)=C_di;
+        wings(y,3,x)=C_di+cd(y);
         wings(y,4,x)=W;
         wings(:,5,x)=NACA'./1000; 
     end

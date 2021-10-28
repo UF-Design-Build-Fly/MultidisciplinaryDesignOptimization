@@ -1,4 +1,4 @@
-function [plane] = TakeoffChecker(plane,rho,M)%,fh,RPM,pitch)
+function [plane] = TakeoffChecker(plane,M,rho)%,fh,RPM,pitch)
 %DEBG - this function might not actually work. gets an idea but not sure of
 %accuracy. use at your own risk.
 %Inputs
@@ -55,7 +55,7 @@ Vr=1.2*sqrt(2*W/(rho*CLm*WingS)); %Rotation speed; with 1.2 factor of safety
 % end
 
 %Groundroll takeoff distance equation
-A=g*(Ts(Vr)/W - mu); %A constant
+A=g*(Ts/W - mu); %A constant
 %B constant. absolutely ignore that little a or nothing works
 B=(g/W)*(0.5*rho*WingS*(CDg-mu*Clg) );% +a);
 

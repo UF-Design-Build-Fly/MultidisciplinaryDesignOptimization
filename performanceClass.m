@@ -25,19 +25,33 @@ classdef performanceClass
     
     time1 = -1;
     time2 = -1;
+    time3 = -1;
     time3_perLap = -1;
 
     Nlaps1 = -1;
-    Nlaps2 = -1;
+    Nlaps2 = 3;
     Nlaps3 = -1;
 
     score1 = -1;
     score2 = -1;
     score3 = -1;
 
-    drag1 = -1; %drag at cruise velocity as calculated by gen velocity solver
+    totalDrag = -1; %DEBUG VALUE
+    inducedDrag = -1;
+    parasiticDrag = -1;
+    skinDrag = -1;
+    wingPara = -1;
+    hStabPara = -1;
+    vStabPara = -1;
+    fusePara = -1;
+    gearPara = -1;
+    
+    drag1 = -1; %drag at cruise velocity as calculated by gen velocity solver  
     drag2 = -1;
     drag3 = -1;
+    
+    lapDist = 500+200*pi+1000+500; %distances for each velocity profile.
+                                   %see profile.png in analysis folder
 
   end
 

@@ -18,13 +18,13 @@ classdef powerClass
     batteryCapacity = -1; %watt hours
     weight = -1;
 
-    propDrag1 = -1;
-    progDrag2 = -1;
-    propDrag3 = -1;
+    %propDrag1 = -1;
+    %progDrag2 = -1;
+    %propDrag3 = -1;
     
-    dThrust1 = -1;
-    dThrust2 = -1;
-    dThrust3 = -1;
+    %dThrust1 = -1;
+    %dThrust2 = -1;
+    %dThrust3 = -1;
     
   end
 
