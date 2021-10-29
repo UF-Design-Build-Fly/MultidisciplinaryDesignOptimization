@@ -33,7 +33,9 @@ function [plane] = mission3score(plane)
     if(plane.fuselage.numVials < floor(plane.performance.Nlaps3)) %if we're not carrying enough vials to use all flight time
         plane.performance.Nlaps3 = plane.fuselage.numVials;
     end
+
+    %if vials greater than laps 
     
     plane.performance.time3 = plane.performance.time3_perLap*plane.performance.Nlaps3;
-    plane.performance.score3 = plane.performance.Nlaps3;%DEBUG - leaving out +2 for now just to get a good idea of the ratios being produced 
+    plane.performance.score3 = floor(plane.performance.Nlaps3);%DEBUG - leaving out +2 for now just to get a good idea of the ratios being produced 
 end

@@ -18,10 +18,10 @@ HSAR = 4.5;
 [wingrow, wingcol, wingpg] = size(wings);
 
 index = 1;
-max_index = wingpg*wingrow*(Num_Power_Systems/15)*length(syringes)*length(syringes);
+max_index = wingpg*wingrow*(Num_Power_Systems/5)*length(syringes)*length(syringes);
 for AR = 1:wingpg
     for airfoil = 1:wingrow
-        for powerIndex = 1:15:Num_Power_Systems
+        for powerIndex = 1:5:Num_Power_Systems
             for syringe_index = 1:length(syringes)
                 for num_vials = 1:floor(syringes(syringe_index)/10)
                     
