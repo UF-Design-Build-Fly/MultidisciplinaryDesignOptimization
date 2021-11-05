@@ -1,65 +1,11 @@
-Things to improve for this year's analysis:
+Future work:
 
-Use GitHub to manage and track changes. For now everyone needs to create an account. We'll just clone, commit, and push (no forks or pr's yet)
-
-Add way more code comments.
-    each function should also have comments under the definition describing expected input, output, and a general use case
-    format this comment in such a way that typing "help: {function name}" will bring up this text. Also comes up when hovering over function
-    comments on all lines of code that run an equation or make a decision. Code that just sets variables should be self documenting now
-
-Use object oriented programming to create code that is compact and readable.
-
-Keep functions in seperate files to enable version control (GitHub) and readability. 
-
-Expand powerSection function. Perhaps convert it to general lookup table with an index as input? Or is there some way to automate which power systems are analyzed?
-
-Have standard system for reporting errors or impossible values (i.e the takeoff checker says we can't make it - we should just abandon the aircraft then and there)
-
-Takeoff checker needs improvement - Bryce was not super confident about the existing results
-
-Look for %DEBUG flags - these are notes I made of things that need changing when going over it with Bryce
-
-If you don't know what a function does use a breakpoint and debug mode to "step into" it
+Checkout out and organize folders so that old versions of analysis can still run.
+Check all debug statements to make sure everything is polished.
+Add code comments for every unit of measure.
+Define a better way to call functions in main so that we know what variables a function expects to modify
+    --> Probably accomplish this and data encapsulation by using class methods instead of casting everything as a struct
 
 
-Notes for Jack:
 
-this year's analysis will be largely about improving style and efficiency - the basic physics are already really good from last year
-
-Explain class system when we first start - use dot notation instead of an index in a matrix
-
-Right now I'm not going to bother with private properties or methods - just trust that each function accesses only what it should. Subclasses might also solve this problem.
-
-Define interface for each function before group gets started so they know exactly what variables they are allowed to use and modify.
-
-Make a plan for analysis day where I introduce people to github, define their task
-
-Make a convention for variable names by type? (underscore, camel_case, etc..)
-    -->no acronyms! short words are ok (i.e fuse for fuselage as long as there's nothing else in the code that could be amiguous with)
-
-data encapsulation means properties are only available via methods
-
-TODO: add comments to each class property with units of measure. Also add flag saying weather it's calculated or assigned at compile time
-for future encapsulation work
-
-vector variable list: https://docs.google.com/spreadsheets/d/1FmU5eVV3CRve9tXYGc6SgpZ6opuZdF7lGGSVIrlqlDo/edit#gid=0
-
-
-Saturday:
-
-Update every function to use structures instead of input variables - can just set them all at beginning instead of re-writing
-Check what every function sets - call them in the right order so that everybody has what they need.
-Make scoring function for mission 2 and mission 3
-Work out how to split it up into groups
-Make function to determine loop time to estimate running time
-make a printout at some point to verify everything is still running.
-
-
-TODO:
-
-add loop time tracker
-total weight function
-scoring function
-finish sanity checker
-get rid of hs and vs span
-add drag to performance class
+vector variable list (2020 analysis): https://docs.google.com/spreadsheets/d/1FmU5eVV3CRve9tXYGc6SgpZ6opuZdF7lGGSVIrlqlDo/edit#gid=0

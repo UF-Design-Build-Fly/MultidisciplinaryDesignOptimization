@@ -18,6 +18,8 @@ rmar=2; %release mechanism aspect ratio <---- Just made it 2 for now, can change
 fh=0; %fuse height (in)
 fw=0; %fuse width (in)
 fl=0; %fuse length (in)
+sfl=0; %syringe fuselage length
+cfl=0; %crate fuselage length
 rhoCarbon=120.486; %lb/ft^3
 %DEBUG can change spr to what we want it to be
 spr=5; %syringes per row depending on how many we want 
@@ -27,14 +29,22 @@ fw=sw*spr; %I'm thinking of laying out the syringes in rows of five, so this is 
 nc=floor(ns/10); %this will calculate number of crates we can carry
 tsh=sh*(ceil(ns/spr)); %this will calculate the total syringe height if we lay them out in rows of 5
 frml=nc*cl+((nc-1)*sp)+rml; %this will just be the final length of the release mechanism so that we take it into account since we are dropping crates out the back of the fuselage
+cfl=frml+sl; %crate fueslage length, adding extra syringe length to account for release mechanism taking up too much space
 
 %this is used to find the length of the fuselage
 if tsh<fh %this if will be used to extend the length of the fuselage accordingly depending on how many syringes we will carry
-    ttfl=frml+sl; %temporary temporary fueslage length
+    sfl=sl+rml+sl; %syringe fueslage length, adding extra syringe length to account for release mechanism taking up too much space
 elseif tsh>=fh %if the syringe height after stacking them exceeds the fuselage height, we have to extend the fueslage so we have more space to put them
-    a = tsh/fh;
-    a = ceil(a); %this a variable will just 
-    ttfl=a*sl+frml; %temporary temporary fuselage length
+    a=tsh/fh;
+    a=ceil(a); %this a variable will just 
+    sfl=(a*sl)+rml+sl; %syringe fuselage length, adding extra syringe length to account for release mechanism taking up too much space
+end
+
+%to find temporary temporary length of fuselage since we do not need to carry crates and syringes at the same time
+if sfl>cfl
+    ttfl=sfl; %when syringe length is more than crate length, temporary temporary fuselage length is the same as syringe length
+else
+    ttfl=cfl; %other way around now
 end
 
 sys=8; %space systems needs for their stuff
