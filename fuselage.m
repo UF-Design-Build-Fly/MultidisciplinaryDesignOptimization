@@ -29,17 +29,15 @@ fw=sw*spr; %I'm thinking of laying out the syringes in rows of five, so this is 
 nc=floor(ns/10); %this will calculate number of crates we can carry
 tsh=sh*(ceil(ns/spr)); %this will calculate the total syringe height if we lay them out in rows of 5
 frml=nc*cl+((nc-1)*sp)+rml; %this will just be the final length of the release mechanism so that we take it into account since we are dropping crates out the back of the fuselage
+cfl=frml+sl; %crate fueslage length, adding extra syringe length to account for release mechanism taking up too much space
 
 %this is used to find the length of the fuselage
 if tsh<fh %this if will be used to extend the length of the fuselage accordingly depending on how many syringes we will carry
-    sfl=sl; %syringe fueslage length
-    cfl=rml; %crate fuselage length
+    sfl=sl+rml+sl; %syringe fueslage length, adding extra syringe length to account for release mechanism taking up too much space
 elseif tsh>=fh %if the syringe height after stacking them exceeds the fuselage height, we have to extend the fueslage so we have more space to put them
     a=tsh/fh;
     a=ceil(a); %this a variable will just 
-    aa=a-1;
-    sfl=a*sl; %syringe fuselage length
-    cfl=(a*cl)+(aa*sp)+rml; %crate length
+    sfl=(a*sl)+rml+sl; %syringe fuselage length, adding extra syringe length to account for release mechanism taking up too much space
 end
 
 %to find temporary temporary length of fuselage since we do not need to carry crates and syringes at the same time
@@ -49,7 +47,7 @@ else
     ttfl=cfl; %other way around now
 end
 
-sys=7; %space systems needs for their stuff
+sys=8; %space systems needs for their stuff
 tfl=ttfl+sys; %add systems length for avionics package, and this will be the temporary length used only for the main part of the fuselage
 fla=6; %assumption for the front length of the fuselage
 bla=6; %assumption for the back length of the fueslage
