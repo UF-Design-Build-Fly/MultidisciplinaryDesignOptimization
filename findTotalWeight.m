@@ -1,5 +1,10 @@
 function [plane] = findTotalWeight(plane)
 %weight in pounds (verify this with other functions)
+
+%DEBUG - Previous runs of analysis seemed to 
+%underestimate fuselage weight so just add a constant multiple here. 
+%Look into fixing root cause.
+    plane.fuselage.weight = plane.fuselage.weight * 3; 
     plane.performance.totalEmptyWeight = plane.empennage.HSweight + ...
         plane.empennage.VSweight + plane.fuselage.weight + plane.fuselage.gearWeight + ...
         plane.power.weight + plane.wing.weight;
