@@ -1,6 +1,6 @@
 %%
 %%%velocity solver via false position root finding
-function [plane] = GenVelocityTest(plane,missionNumber,rho)
+function [plane] = GenVelocityTest(plane,missionNumber,rho) %DEBUG: this sometimes outputs complex numbers for drag and fails to find velocity. Is this a bug or just when it gets an impractical (underpowered) aircraft?
 %G, Thrust,CLw,WeightT,rho,AR,WingS,HStabS,VStabS,CDWing,Cw,CDHStab,Chstab,CDVStab,Cvstab,FSA,SAfT,Lf
 %RPM,pitch,dp,CLmax)
 %A function brought to you by Bryce Moran and Matthew Maddalon.
@@ -143,7 +143,7 @@ func=@(v) (Drag(v)-Thrust);
 xl=-30; xu=1000; ea=1e-4;
 Error=1;
 v=xl;
-xrold=0;
+xrold=v; %DEBUG
 while Error>ea/100
     xrold=v;
     v=(xl+xu)/2;
@@ -153,19 +153,19 @@ while Error>ea/100
     elseif check >0
         xl=v;
     end
-    s=FS(v);
+    s=FS(v); %DEBUG
     Error=abs((v-xrold)/v);
 end
 V=v;
-% plane.performance.drag1 = Drag(v);
-% plane.performance.inducedDrag = Induced(v)
-% plane.performance.parasiticDrag = Parasitic(v)
-% plane.performance.skinDrag = Skin(v);
-% plane.performance.wingPara = wingParasitic(v);
-% plane.performance.hStabPara = hStabParasitic(v);
-% plane.performance.vStabPara = vStabParasitic(v);
-% plane.performance.fusePara = fuselageParasitic(v);
-% plane.performance.gearPara = plane.fuselage.gearParaDrag(v);
+plane.performance.drag1 = Drag(v);
+plane.performance.inducedDrag = Induced(v);
+plane.performance.parasiticDrag = Parasitic(v);
+plane.performance.skinDrag = Skin(v);
+plane.performance.wingPara = wingParasitic(v);
+plane.performance.hStabPara = hStabParasitic(v);
+plane.performance.vStabPara = vStabParasitic(v);
+plane.performance.fusePara = fuselageParasitic(v);
+plane.performance.gearPara = plane.fuselage.gearParaDrag(v);
 
 %Parasitic = @(v)  + hStabParasitic(v) + vStabParasitic(v) + fuselageParasitic(v) + plane.fuselage.gearParaDrag(v);
 
@@ -187,7 +187,7 @@ func=@(v) (Drag(v)-Thrust);
 xl=-30; xu=1000; ea=1e-4; %this is root finder again but with different induced method to avoid problem from above if we get here
 Error=1;
 xr=xl;
-xrold=0;
+xrold=xr;
 while Error>ea/100
     xrold=xr;
     xr=(xl+xu)/2;

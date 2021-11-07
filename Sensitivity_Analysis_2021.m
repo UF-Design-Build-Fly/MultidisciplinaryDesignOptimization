@@ -1,11 +1,12 @@
 clear; clc;
 warning('off','all')
+tic
 %rho=0.00235308; %Desnity air at Tuscon, Az (slug/ft^3)
 rho = 0.002391; %Density air at Whichita, Ks with average climate data from April 2021
 %Aspect_Ratios = 8:.5:15;%the wing aspect ratios being considered 
 Aspect_Ratios = [10]; %other runs will have 11, 12, and 13 for four total analyses.
 %syringes = 10:100;
-syringes = 50:5:90;
+syringes = 50:10:90;
 load("MotorSpreadsheet.mat");
 Num_Power_Systems = height(MotorSpreadsheet);
 
@@ -17,15 +18,18 @@ HSAR = 4.5;
 [wings] = wingData(Aspect_Ratios, 8); %call wing function to make airfoil data lookup table
 [wingrow, wingcol, wingpg] = size(wings);
 
-index = 1;
+
 max_index = wingpg*wingrow*(Num_Power_Systems)*length(syringes)*length(syringes);
+plane(1:max_index) = struct(airplaneClass);
+index = 1;
+iterNum = 1;
 for AR = 1:wingpg
     for airfoil = 1:wingrow
         for powerIndex = 1:Num_Power_Systems
             for syringe_index = 1:length(syringes)
                 for num_vials = 1:floor(syringes(syringe_index)/10)
                     
-                    plane(index) = struct(airplaneClass);
+                    %plane(index) = struct(airplaneClass);
                     plane(index).fuselage.wheelSA = (2*pi*(radius_wheel)^2+ pi*2*radius_wheel*width_wheel)/144;
                     %read values from wings matrix into aircraft properties
                     plane(index).wing.clw = wings(airfoil, 1, AR);
@@ -68,11 +72,13 @@ for AR = 1:wingpg
                     if plane(index).sanityFlag
                         index = index + 1; %only increment iteration when the airplane is reasonable
                     end
-                    
+                    iterNum = iterNum+1;
                 end
                 
             end
         end
+        disp("Analyzed to airfoil " + airfoil + " with preallocation")
+        toc
     end
 end
 
@@ -101,7 +107,9 @@ scoreg = scoreg/Mg;
 score = score2 + score3 + scoreg + 1;
 [M, I] = maxk(score, 100); %find the top 100 airplanes
 winners = plane(I);
+scores = score(I);
 save("winnersAR" + Aspect_Ratios(1) + ".mat", "winners"); %save top 100 airplanes. It is impractical to save all airplanes checked.
-clear; %once finished don't keep hogging ram. Previous experience with running multiple instances on analysis on one computer shows that ram usage is the first limiting factor in enabling
+save("winnersAR" + Aspect_Ratios(1) + "_scores.mat", "scores");
+%clear; %once finished don't keep hogging ram. Previous experience with running multiple instances on analysis on one computer shows that ram usage is the first limiting factor in enabling
        %the analysis to run, so clearing it as often as possible is important to avoid hogging ram from other programs. This ram hogging is the leading cause of crashing for this code.
 %scatter(vials,score);
