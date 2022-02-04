@@ -4,9 +4,9 @@ tic
 %rho=0.00235308; %Desnity air at Tuscon, Az (slug/ft^3)
 rho = 0.002391; %Density air at Whichita, Ks with average climate data from April 2021
 %Aspect_Ratios = 8:.5:15;%the wing aspect ratios being considered 
-Aspect_Ratios = [10]; %other runs will have 11, 12, and 13 for four total analyses.
+Aspect_Ratios = [7, 8, 9, 10, 11, 12, 13]; %other runs will have 11, 12, and 13 for four total analyses.
 %syringes = 10:100;
-syringes = 50:10:90;
+syringes = 50:10:300;
 load("MotorSpreadsheet.mat");
 Num_Power_Systems = height(MotorSpreadsheet);
 
@@ -15,16 +15,18 @@ radius_wheel = 1.5; %wheel radius
 VSAR = 2;
 HSAR = 4.5;
 
-[wings] = wingData(Aspect_Ratios, 8); %call wing function to make airfoil data lookup table
+span = 8;
+
+[wings] = wingData(Aspect_Ratios, span); %call wing function to make airfoil data lookup table
 [wingrow, wingcol, wingpg] = size(wings);
 
-
+%only analyze naca4415 for new run of analysis.
 max_index = wingpg*wingrow*(Num_Power_Systems)*length(syringes)*length(syringes);
 plane(1:max_index) = struct(airplaneClass);
 index = 1;
 iterNum = 1;
 for AR = 1:wingpg
-    for airfoil = 1:wingrow
+    for airfoil = [11,15] %DEBUG --just naca and goe airfoils
         for powerIndex = 1:Num_Power_Systems
             for syringe_index = 1:length(syringes)
                 for num_vials = 1:floor(syringes(syringe_index)/10)

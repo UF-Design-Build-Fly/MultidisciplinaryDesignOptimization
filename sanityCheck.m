@@ -4,10 +4,10 @@ function [plane] = sanityCheck(plane)
     %can only set it false. No function should set it back to true - if one
     %function thinks the plane shouldn't work then the flag should stay
     %false.
-    if ((plane.performance.takeoffDist1 > 25) || (plane.performance.takeoffDist2 > 25) || (plane.performance.takeoffDist3 > 25))
+    if ((plane.performance.takeoffDist1 > 30) || (plane.performance.takeoffDist2 > 30) || (plane.performance.takeoffDist3 > 30))
         plane.sanityFlag = false;
     end
-    if (plane.fuselage.length > 7.9)
+    if (plane.fuselage.length > 7.8)
          plane.sanityFlag = false;
     end
     if plane.performance.velocity2 == -1 || plane.performance.velocity3  == -1
