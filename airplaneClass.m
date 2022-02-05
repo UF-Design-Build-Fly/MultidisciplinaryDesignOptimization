@@ -6,7 +6,12 @@ classdef airplaneClass
 		power = struct(powerClass);
 		fuselage = struct(fuselageClass); 
 		performance = struct(performanceClass);
-		sanityFlag = true;
+        failureReason = "Not checked";
+        sanityFlag = 1;
+        takeoffFail = 0;
+        fuselageFail = 0;
+        convergeFail = 0;
+        powerFail = 0;
 	end
 	
 	methods
