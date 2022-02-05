@@ -3,37 +3,39 @@ warning('off','all')
 tic
 %rho=0.00235308; %Desnity air at Tuscon, Az (slug/ft^3)
 rho = 0.002391; %Density air at Whichita, Ks with average climate data from April 2021
-%Aspect_Ratios = 8:.5:15;%the wing aspect ratios being considered 
-Aspect_Ratios = [7, 8, 9, 10, 11, 12, 13]; %other runs will have 11, 12, and 13 for four total analyses.
-%syringes = 10:100;
-syringes = 50:10:300;
+Aspect_Ratios = [7, 8, 9, 10, 11, 12, 13]; %wing aspect ratios to consider
+syringes = 50:20:300;
 load("MotorSpreadsheet.mat");
 Num_Power_Systems = height(MotorSpreadsheet);
 
-width_wheel = 0.5;    %width of wheels (in)
-radius_wheel = 1.5; %wheel radius
 VSAR = 2;
 HSAR = 4.5;
 
-span = 8;
+span = 8; %wingspan in feet
+
+width_wheel = 0.5;    %width of wheels (in)
+radius_wheel = 1.5; %wheel radius
+sa_wheel = (2*pi*(radius_wheel)^2+ pi*2*radius_wheel*width_wheel)/144;
 
 [wings] = wingData(Aspect_Ratios, span); %call wing function to make airfoil data lookup table
-[wingrow, wingcol, wingpg] = size(wings);
+[wingrow, wingcol, wingpg] = size(wings); %get indices to iterate over
 
-%only analyze naca4415 for new run of analysis.
-max_index = wingpg*wingrow*(Num_Power_Systems)*length(syringes)*length(syringes);
-plane(1:max_index) = struct(airplaneClass);
+max_index = 10000; %variable computed from test.m to determine exact array size needed. %max_index = wingpg*wingrow*(Num_Power_Systems)*length(syringes)*length(syringes);
+plane(1:max_index) = struct(airplaneClass);%plane(1:max_index) = struct(airplaneClass);
 index = 1;
 iterNum = 1;
 for AR = 1:wingpg
-    for airfoil = [11,15] %DEBUG --just naca and goe airfoils
-        for powerIndex = 1:Num_Power_Systems
+    disp("At Aspect ratio " + AR);
+    toc;
+    for airfoil = [11,15] %DEBUG --just naca and goe airfoils for this run. Normally use "wingrow" variable here
+        for powerIndex = 1:Num_Power_Systems         
             for syringe_index = 1:length(syringes)
-                for num_vials = 1:floor(syringes(syringe_index)/10)
+                for num_vials = 1:10 %Changed this for the rerun - use smarter logic otherwise %for every amount of syringes try up to the maximum number of vials
+                   
+                    plane(index).fuselage.wheelSA = sa_wheel;
                     
-                    %plane(index) = struct(airplaneClass);
-                    plane(index).fuselage.wheelSA = (2*pi*(radius_wheel)^2+ pi*2*radius_wheel*width_wheel)/144;
-                    %read values from wings matrix into aircraft properties
+                    %read values from wings matrix into aircraft
+                    %properties. See wingClass.m for property descriptions
                     plane(index).wing.clw = wings(airfoil, 1, AR);
                     plane(index).wing.clm = wings(airfoil, 2, AR);     %cl max
                     plane(index).wing.cd = wings(airfoil, 3, AR);     %cd i zero velocity coefficient of drag
@@ -44,9 +46,8 @@ for AR = 1:wingpg
                     plane(index).wing.surfaceArea = wings(airfoil, 8, AR);    %airfoil name
                     plane(index).wing.name = wings(airfoil, 9, AR);    %airfoil name
                     plane(index).wing.aspectRatio = Aspect_Ratios(AR); %ratio between length and width of wing.
+                    
                     %load values from power system table into aircraft
-                    %properties
-                            
                     plane(index) = powerSelections(plane(index), MotorSpreadsheet, powerIndex);
                     
                     %set payload and fuselage configuration
@@ -71,24 +72,25 @@ for AR = 1:wingpg
                     plane(index) = sanityCheck(plane(index)); %make sure all the calculated values make sense and meet 
                     %competition requirements. In post-processing the only
                     %planes to be considered will be ones with a true flag
-                    if plane(index).sanityFlag
-                        index = index + 1; %only increment iteration when the airplane is reasonable
+                    %if plane(index).sanityFlag
+                     %   index = index + 1; %only increment iteration when the airplane is reasonable
+                    %end
+                    if plane(index).sanityFlag  
+                        index = index + 1;
                     end
                     iterNum = iterNum+1;
                 end
                 
             end
         end
-        disp("Analyzed to airfoil " + airfoil + " with preallocation")
-        toc
     end
 end
 
 %Code below is from post.m file to run post-processing on the data. We should probably move this into a function call later.
 
-score2 = zeros(1, length(plane)); %mission 2 score
-score3 = score2; %mission 3 score
-scoreg = score2; %ground score
+score2 = zeros(1, length(plane)); %mission 2 scores of all aircraft
+score3 = score2; %mission 3 scores
+scoreg = score2; %ground scores
 vials = score2; %number of vials in given airplane
 syringes = score2; %number of syringes in given airplane
 for i = 1:length(plane) %load data from structure into arrays that are easier to work with
@@ -100,6 +102,7 @@ for i = 1:length(plane) %load data from structure into arrays that are easier to
         scoreg(i) = 10 + 2*(3*syringes(i)/5) + 5*vials(i);%run, load and unload syringes, load vial
     end
 end
+clear plane
 [M2, I2] = max(score2); %find the airplanes with the best individual mission scores
 [M3, I3] = max(score3);
 [Mg, Ig] = max(scoreg);
@@ -112,6 +115,6 @@ winners = plane(I);
 scores = score(I);
 save("winnersAR" + Aspect_Ratios(1) + ".mat", "winners"); %save top 100 airplanes. It is impractical to save all airplanes checked.
 save("winnersAR" + Aspect_Ratios(1) + "_scores.mat", "scores");
-%clear; %once finished don't keep hogging ram. Previous experience with running multiple instances on analysis on one computer shows that ram usage is the first limiting factor in enabling
+clear; %once finished don't keep hogging ram. Previous experience with running multiple instances on analysis on one computer shows that ram usage is the first limiting factor in enabling
        %the analysis to run, so clearing it as often as possible is important to avoid hogging ram from other programs. This ram hogging is the leading cause of crashing for this code.
 %scatter(vials,score);
