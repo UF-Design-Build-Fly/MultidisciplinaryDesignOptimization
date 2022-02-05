@@ -37,5 +37,5 @@ function [plane] = mission3score(plane)
     %if vials greater than laps 
     
     plane.performance.time3 = plane.performance.time3_perLap*plane.performance.Nlaps3;
-    plane.performance.score3 = floor(plane.performance.Nlaps3);%DEBUG - leaving out +2 for now just to get a good idea of the ratios being produced 
+    plane.performance.score3 = floor(plane.performance.Nlaps3);
 end
