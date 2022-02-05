@@ -1,3 +1,6 @@
+%File for testing snippets of code without having to run the whole analysis
+
+
 clear; clc;
 warning('off','all')
 %rho=0.00235308; %Desnity air at Tuscon, Az (slug/ft^3)
@@ -5,7 +8,7 @@ rho = 0.002391; %Density air at Whichita, Ks with average climate data from Apri
 %Aspect_Ratios = 8:.5:15;%the wing aspect ratios being considered 
 Aspect_Ratios = [7, 8, 9, 10, 11, 12, 13]; %other runs will have 11, 12, and 13 for four total analyses.
 %syringes = 10:100;
-syringes = 50:10:300;
+syringes = 50:20:300;
 load("MotorSpreadsheet.mat");
 Num_Power_Systems = height(MotorSpreadsheet);
 
@@ -28,9 +31,9 @@ for AR = 1:wingpg
     for airfoil = [11,15] %DEBUG --just naca and goe airfoils
         for powerIndex = 1:Num_Power_Systems
             for syringe_index = 1:length(syringes)
-                for num_vials = 1:floor(syringes(syringe_index)/10)
+                for num_vials = 1:10 
                     index = index+1;
-                
+                end
             end
         end
     end
