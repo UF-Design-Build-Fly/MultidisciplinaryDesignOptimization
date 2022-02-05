@@ -97,7 +97,8 @@ for x=1:length(AR)
         W_wing=(ax*span)*rho_foam;                                 %weight of the foam used for the wing
         planArea = chord*span;
         surfArea = 2*planArea;
-        W_cf = (2*planArea*chord*w_cf)+(2*w_cf*t);                        %total weight of the carbon fiber sheets, (planform area*2*weight/ft*2 layers) + (2*wing thickness*weight/ft^2 for I beam);
+        %W_cf = (2*surfArea*w_cf)+(2*t*span*w_cf);                        %total weight of the carbon fiber sheets, assumes 2 total layers of carbon and I-beam method
+        W_cf = (2*surfArea*w_cf)+(2*t*span*w_cf);
         W=W_cf+W_wing;                                          %weight of the wing and spar
         
         
