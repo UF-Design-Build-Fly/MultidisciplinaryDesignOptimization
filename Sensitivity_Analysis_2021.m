@@ -20,7 +20,7 @@ sa_wheel = (2*pi*(radius_wheel)^2+ pi*2*radius_wheel*width_wheel)/144;
 [wings] = wingData(Aspect_Ratios, span); %call wing function to make airfoil data lookup table
 [wingrow, wingcol, wingpg] = size(wings); %get indices to iterate over
 
-max_index = 10000; %variable computed from test.m to determine exact array size needed. %max_index = wingpg*wingrow*(Num_Power_Systems)*length(syringes)*length(syringes);
+max_index = 100; %variable computed from test.m to determine exact array size needed. %max_index = wingpg*wingrow*(Num_Power_Systems)*length(syringes)*length(syringes);
 plane(1:max_index) = struct(airplaneClass);%plane(1:max_index) = struct(airplaneClass);
 index = 1;
 iterNum = 1;
@@ -32,6 +32,8 @@ for AR = 1:wingpg
             for syringe_index = 1:length(syringes)
                 for num_vials = 1:10 %Changed this for the rerun - use smarter logic otherwise %for every amount of syringes try up to the maximum number of vials
                    
+                    plane(index) = struct(airplaneClass); %make sure to start with a clean slate as this code writes over the index of failed airplanes. Without cleanup things like failure flags stay set even when they shouldn't
+                    
                     plane(index).fuselage.wheelSA = sa_wheel;
                     
                     %read values from wings matrix into aircraft
@@ -70,13 +72,13 @@ for AR = 1:wingpg
                     plane(index) = mission3score(plane(index));
 
                     plane(index) = sanityCheck(plane(index)); %make sure all the calculated values make sense and meet 
-                    %competition requirements. In post-processing the only
-                    %planes to be considered will be ones with a true flag
-                    %if plane(index).sanityFlag
-                     %   index = index + 1; %only increment iteration when the airplane is reasonable
-                    %end
+                    %competition requirements. 
+
                     if plane(index).sanityFlag  
                         index = index + 1;
+                        %isp("Sane!");
+                    else
+                        %disp("insane!");
                     end
                     iterNum = iterNum+1;
                 end
@@ -102,7 +104,7 @@ for i = 1:length(plane) %load data from structure into arrays that are easier to
         scoreg(i) = 10 + 2*(3*syringes(i)/5) + 5*vials(i);%run, load and unload syringes, load vial
     end
 end
-clear plane
+%clear plane
 [M2, I2] = max(score2); %find the airplanes with the best individual mission scores
 [M3, I3] = max(score3);
 [Mg, Ig] = max(scoreg);
@@ -110,11 +112,12 @@ score2 = 1 + score2/M2; %normalize scores against best performers
 score3 = 2 + score3/M3;
 scoreg = scoreg/Mg;
 score = score2 + score3 + scoreg + 1;
-[M, I] = maxk(score, 100); %find the top 100 airplanes
+[M, I] = maxk(score, 200); %find the top 200 airplanes
 winners = plane(I);
 scores = score(I);
 save("winnersAR" + Aspect_Ratios(1) + ".mat", "winners"); %save top 100 airplanes. It is impractical to save all airplanes checked.
 save("winnersAR" + Aspect_Ratios(1) + "_scores.mat", "scores");
-clear; %once finished don't keep hogging ram. Previous experience with running multiple instances on analysis on one computer shows that ram usage is the first limiting factor in enabling
+%save("successes.mat", "plane");
+%clear; %once finished don't keep hogging ram. Previous experience with running multiple instances on analysis on one computer shows that ram usage is the first limiting factor in enabling
        %the analysis to run, so clearing it as often as possible is important to avoid hogging ram from other programs. This ram hogging is the leading cause of crashing for this code.
 %scatter(vials,score);
