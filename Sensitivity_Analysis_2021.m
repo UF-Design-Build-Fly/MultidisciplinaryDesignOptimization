@@ -20,8 +20,8 @@ sa_wheel = (2*pi*(radius_wheel)^2+ pi*2*radius_wheel*width_wheel)/144;
 [wings] = wingData(Aspect_Ratios, span); %call wing function to make airfoil data lookup table
 [wingrow, wingcol, wingpg] = size(wings); %get indices to iterate over
 
-max_index = 100; %variable computed from test.m to determine exact array size needed. %max_index = wingpg*wingrow*(Num_Power_Systems)*length(syringes)*length(syringes);
-plane(1:max_index) = struct(airplaneClass);%plane(1:max_index) = struct(airplaneClass);
+max_index = 100000; %variable computed from test.m to determine exact array size needed. %max_index = wingpg*wingrow*(Num_Power_Systems)*length(syringes)*length(syringes);
+plane(1:max_index) = struct(airplaneClass);%make sure to preallocated memory for estimated amount of succesful planes
 index = 1;
 iterNum = 1;
 for AR = 1:wingpg
