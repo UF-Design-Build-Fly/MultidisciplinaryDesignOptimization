@@ -1,0 +1,96 @@
+
+
+wing:
+             clw: 0.7508
+             clm: 1.8770
+              cd: 0.0236
+          weight: 3.5084
+            name: 0.4330
+     surfaceArea: 16
+           chord: 1
+            span: 8
+     aspectRatio: 8
+    planformArea: 8
+          clFlap: 2.0544
+empennage:
+
+      HSarea: 2
+     HSchord: 0.6667
+    HSweight: 0.7801
+        HScd: 0.0078
+      VSarea: 1
+     VSchord: 0.7071
+    VSweight: 0.2945
+        VScd: 0.0077
+
+power:
+
+          motorName: "Tempest 4130-310"
+              cells: 6.0000
+                 kv: 310
+       propDiameter: 17
+          propPitch: 7
+            voltage: 22.2000
+                rpm: 6359
+               amps: 55.5600
+              watts: 1.2334e+03
+               time: 4.8597
+             thrust: 16.3225
+          propSpeed: 61.8933
+         efficiency: 1.3234
+    batteryCapacity: 99.9000
+             weight: 3.6134
+
+fuselage:
+
+    frontalSurfaceArea: 0.3099
+                height: 0.4958
+                 width: 0.6250
+                length: 7.3125
+               totalSA: 16.9580
+                weight: 2.6604
+            gearWeight: 0.7622
+          gearParaDrag: @(v)drag_Al(v)+drag_wheel(v)
+                gearSA: 42.2136
+            wheelWidth: 0.5000
+           wheelRadius: 1.5000
+              numVials: 10
+           numSyringes: 150
+               wheelSA: 0.1309
+
+performance:
+    totalEmptyWeight: 11.6189
+        totalWeight2: 17.9189
+        totalWeight3: 16.6189
+           velocity1: -1
+           velocity2: 104.4449
+           velocity3: 104.5218
+        takeoffDist1: -1
+        takeoffDist2: 24.9659
+        takeoffDist3: 21.4455
+       landingSpeed1: -1
+       landingSpeed2: 39.2588
+       landingSpeed3: 37.8079
+               time1: -1
+               time2: 75.4940
+               time3: 291.5842
+        time3_perLap: 70.1818
+              Nlaps1: -1
+              Nlaps2: 3
+              Nlaps3: 4.1547
+              score1: -1
+              score2: 1.9869
+              score3: 4
+           totalDrag: -1
+         inducedDrag: 0.1315
+       parasiticDrag: 5.8121
+            skinDrag: 10.3790
+            wingPara: 2.4654
+           hStabPara: 0.2026
+           vStabPara: 0.1008
+            fusePara: 3.0356
+            gearPara: 0.0078
+               drag1: 16.3225
+               drag2: 16.3225
+               drag3: 16.3225
+             lapDist: 2.6283e+03
