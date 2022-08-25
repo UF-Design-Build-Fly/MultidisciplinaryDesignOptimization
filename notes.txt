@@ -1,11 +1,10 @@
 Future work:
 
-Checkout out and organize folders so that old versions of analysis can still run.
-Check all debug statements to make sure everything is polished.
-Add code comments for every unit of measure.
-Define a better way to call functions in main so that we know what variables a function expects to modify
-    --> Probably accomplish this and data encapsulation by using class methods instead of casting everything as a struct
-
-
+Check all debug statements to make sure everything is polished - be sure to write %DEBUG as a comment next to any code in progress or that needs to be checked
+Add code comments for every unit of measure. This was a large source of error in 2021/22
+Define a better way to call functions in main so that we know what variables a function needs to set/modify
+    --> This is a problem right now because everything is used as struct instead of class. Mainly a style thing rather than functionality.
+Make sure all variable names are descriptive and human readable. No acronyms! It's easier to write a long name up front than to try to figure out what it means later
+The velocity solver breaks sometimes and returns a nonsense value. The whole genVelocity test should be reviewed.
 
 vector variable list (2020 analysis): https://docs.google.com/spreadsheets/d/1FmU5eVV3CRve9tXYGc6SgpZ6opuZdF7lGGSVIrlqlDo/edit#gid=0

@@ -8,10 +8,10 @@ syringes = 50:20:300;
 load("MotorSpreadsheet.mat");
 Num_Power_Systems = height(MotorSpreadsheet);
 
-VSAR = 2;
-HSAR = 4.5;
+VSAR = 2; %Vertical stabalizer aspect ratio - derived from aero calculations done beforehand
+HSAR = 4.5; %Horizontal stab aspect ratio
 
-span = 8; %wingspan in feet
+span = 8; %wingspan in feet. Chosen this year to build to largest allowable. Competition experience shows this should probably be smaller for manufacturability
 
 width_wheel = 0.5;    %width of wheels (in)
 radius_wheel = 1.5; %wheel radius
@@ -20,8 +20,8 @@ sa_wheel = (2*pi*(radius_wheel)^2+ pi*2*radius_wheel*width_wheel)/144;
 [wings] = wingData(Aspect_Ratios, span); %call wing function to make airfoil data lookup table
 [wingrow, wingcol, wingpg] = size(wings); %get indices to iterate over
 
-max_index = 1000000; %roughly 15% of airplanes are succesful so preallocate enough memory for them. Dramatically speeds up computation.
-plane(1:max_index) = struct(airplaneClass);%make sure to preallocated memory for estimated amount of succesful planes
+max_index = 10;%1000000; %roughly 15% of airplanes checked are succesful so preallocate enough memory for them. Dramatically speeds up computation.
+plane(1:max_index) = struct(airplaneClass);%create a matrix to hold all the computed aircraft. Most aircraft will fail and be overwritten so max_index does not have to equal max iterations.
 index = 1;
 iterNum = 1;
 for AR = 1:wingpg
@@ -32,7 +32,7 @@ for AR = 1:wingpg
             for syringe_index = 1:length(syringes)
                 for num_vials = 1:10 %Changed this for the rerun - use smarter logic otherwise %for every amount of syringes try up to the maximum number of vials
                    
-                    plane(index) = struct(airplaneClass); %make sure to start with a clean slate as this code writes over the index of failed airplanes. Without cleanup things like failure flags stay set even when they shouldn't
+                    plane(index) = struct(airplaneClass); %make sure to start with a clean slate at this index as this code writes over the index of failed airplanes. Without cleanup things like failure flags stay set even when they shouldn't
                     
                     plane(index).fuselage.wheelSA = sa_wheel;
                     
@@ -76,7 +76,7 @@ for AR = 1:wingpg
 
                     if plane(index).sanityFlag  
                         index = index + 1;
-                        %isp("Sane!");
+                        %disp("Sane!");
                     else
                         %disp("insane!");
                     end
@@ -101,7 +101,7 @@ for i = 1:length(plane) %load data from structure into arrays that are easier to
         score3(i) = floor((plane(i).performance.score3));
         vials(i) = plane(i).fuselage.numVials;
         syringes(i) = plane(i).fuselage.numSyringes;
-        scoreg(i) = 10 + 2*(3*syringes(i)/5) + 5*vials(i);%run, load and unload syringes, load vial
+        scoreg(i) = 10 + 2*(3*syringes(i)/5) + 5*vials(i);%Baded on time to run, load and unload syringes, load vial
     end
 end
 %clear plane

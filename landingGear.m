@@ -53,5 +53,6 @@ area_wheel = plane.fuselage.wheelWidth*plane.fuselage.wheelRadius*3*2;    %profi
 %Bryce edit, taking out the 12's in the below equation %DEBUG
 drag_Al =@(v) Cd_Al*rho_air*((v)^2)*gearFrontArea*.5; %aluminum bar
 drag_wheel = @(v) Cd_wheel*rho_air*((v)^2)*area_wheel*.5;
-plane.fuselage.gearParaDrag=@(v) drag_Al(v)+drag_wheel(v); %p for parasitic
+plane.fuselage.gearParaDrag=@(v) drag_Al(v)+drag_wheel(v); %p for parasitic. %DEBUG -- GenVelocityTest will call this function - but through a really convoluted series of function calls
+                                                                             %Maybe try to just set constants here and have GenVelocityTest compute drag directly?
 %-------------------------------------------------------------------------%
