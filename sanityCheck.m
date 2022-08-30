@@ -16,13 +16,13 @@ function [plane] = sanityCheck(plane)
          plane.fuselageFail = 1;
     end
     if ((plane.performance.velocity2 == -1) || (plane.performance.velocity3  == -1))
-        %disp("Error Mission 2 or 3 velocity solver did not converge"); %DEBUG - change to disp instead of err.
+        %disp("Error Mission 2 or 3 velocity solver did not converge");
         plane.failureReason = "noConverge";
         plane.sanityFlag = false;
         plane.convergeFail = 1;
     end
     
-%  FIX THIS CODE LATER   
+%  FIX THIS CODE LATER   (Update 8/2022 - I don't remember what the error was here -- make sure to double check as it may or may not work)
     if( (plane.performance.time2/60) > plane.power.time) %Must have enough power to complete mission 2. 
         plane.sanityFlag = false; %for mission 3 not having enough power time will not cause a mission failure, but it is a hard requirement here
         plane.failureReason = "Power";

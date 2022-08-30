@@ -1,8 +1,9 @@
 clear; clc;
-warning('off','all')
+warning('off','all') %using structs the way we do here generates a flood of warnings that slows matlab down. Comment this out (and restard matlab) when debugging. 
 tic
 %rho=0.00235308; %Desnity air at Tuscon, Az (slug/ft^3)
 rho = 0.002391; %Density air at Whichita, Ks with average climate data from April 2021
+Temp = 294; %temperature in kelvin at competition site
 Aspect_Ratios = [7, 8, 9, 10, 11, 12, 13]; %wing aspect ratios to consider
 syringes = 50:20:300;
 load("MotorSpreadsheet.mat");
@@ -30,8 +31,8 @@ for AR = 1:wingpg
     for airfoil = [11,15] %DEBUG --just naca and goe airfoils for this run. Normally use "wingrow" variable here
         for powerIndex = 1:Num_Power_Systems         
             for syringe_index = 1:length(syringes)
-                for num_vials = 1:10 %Changed this for the rerun - use smarter logic otherwise %for every amount of syringes try up to the maximum number of vials
-                   
+                for num_vials = 1:10 %Changed this for the rerun - use smarter logic otherwise %for every amount of syringes try up to the maximum number of vials  
+                    
                     plane(index) = struct(airplaneClass); %make sure to start with a clean slate at this index as this code writes over the index of failed airplanes. Without cleanup things like failure flags stay set even when they shouldn't
                     
                     plane(index).fuselage.wheelSA = sa_wheel;
@@ -62,12 +63,12 @@ for AR = 1:wingpg
                     plane(index) = findTotalWeight(plane(index));
                     
                     %simulate mission 2
-                    plane(index) = GenVelocityTest(plane(index), 2, rho); %2 signifies mission 2 configuration
+                    plane(index) = GenVelocityTest(plane(index), 2, rho, Temp); %2 signifies mission 2 configuration
                     plane(index) = TakeoffChecker(plane(index), 2, rho);
                     plane(index) = mission2score(plane(index));
                     
                     %simulate mission 3
-                    plane(index) = GenVelocityTest(plane(index), 3, rho); %2 signifies mission 2 configuration
+                    plane(index) = GenVelocityTest(plane(index), 3, rho, Temp); %2 signifies mission 2 configuration
                     plane(index) = TakeoffChecker(plane(index), 3, rho);
                     plane(index) = mission3score(plane(index));
 

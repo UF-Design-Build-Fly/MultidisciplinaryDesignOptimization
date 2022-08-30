@@ -1,5 +1,5 @@
 function [plane] = TakeoffChecker(plane,M,rho)%,fh,RPM,pitch)
-%DEBG - this function might not actually work. gets an idea but not sure of
+%DEBUG - this function might not actually work. gets an idea but not sure of
 %accuracy. use at your own risk.
 %Inputs
     Ts=plane.power.thrust; %thrust

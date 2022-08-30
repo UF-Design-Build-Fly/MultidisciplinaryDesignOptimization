@@ -1,3 +1,10 @@
+%---------------post.m--------------------%
+%File encapsulating function that reviews top 200 aircraft (measured relative to each other)
+%and calculates the potential score these aircraft might achieve using the score equations given
+%in the rules. This predicted score value is needed for the final report.
+%Right now this function is simply run as part of the main code
+%DEBUG - this code might be out of date now that post processing has been done in the main file for awhile now.
+
 score2 = zeros(1, length(plane)); %mission 2 score
 score3 = score2; %mission 3 score
 scoreg = score2; %ground score

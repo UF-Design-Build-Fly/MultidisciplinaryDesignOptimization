@@ -12,9 +12,7 @@ classdef wingClass
 		aspectRatio = -1; %ratio between length and width of wing.
 		planformArea = -1;
 		clFlap = -1;
-		%wings %matrix returned by wing.m. %DEBUG - update this to break out to list of properties that is easier to read
-			  %maybe break wing.m into two functions. one does all the calcs then have a translator function to return properties
-			  %of the wing given just an index as input
+		%wings %matrix returned by wing.m. %See wingData.m for function to fill all wing parameters. See winger.m and wing_syntax.m to access wing data from main code.
 		
 	end
 

@@ -1,5 +1,6 @@
 %File for testing snippets of code without having to run the whole analysis
-
+%Right now this just contains the code necessary to find the total number of airplanes checked by the analysis with
+%the given number of parameters to iterate over.
 
 clear; clc;
 warning('off','all')
