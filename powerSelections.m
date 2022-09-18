@@ -1,5 +1,4 @@
 function plane = powerSelections(plane, table, row)
-%Ethan Reussow 11/1/2021
 %Given the motor spreadsheet and index, function will return power
 %configuration for corresponding index/row. Thus function essentially
 %converts spreadsheet entries into parameters for the "plane" object.
