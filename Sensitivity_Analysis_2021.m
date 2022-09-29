@@ -1,6 +1,5 @@
 clear; clc;
-%Dummy change
-%Ian-9/17/2022-Updated constants, commented some needed changes, replaced
+%Ian-9/29/2022-Updated constants, commented some needed changes, replaced
 %syringes and vials with EP weight and antenna length, for loop now also
 %iterates over span lengths
 warning('off','all') %using structs the way we do here generates a flood of warnings that slows matlab down. Comment this out (and restard matlab) when debugging. 
@@ -12,12 +11,11 @@ rho=0.00235308; %Density air at Tuscon, Az (slug/ft^3)
 Temp = 293; %temperature in kelvin at competition site
 
 %This section introduces values which are later iterated on in the for loop
-Aspect_Ratios = [7, 8, 9, 10, 11, 12, 13]; %wing aspect ratios to consider
-%syringes = 50:20:300;
-Electronic_Package_Weight = 2:.5:10; %Electronic Package Weight for mission 2 in pounds
-Antenna_Length = 10:2:30; %Antenna Length in inches
+Aspect_Ratios = [10,11]; %[7, 8, 9, 10, 11, 12, 13]; %wing aspect ratios to consider
+Electronic_Package_Weight = 5:1:8; %2:.5:10; %Electronic Package Weight for mission 2 in pounds
+Antenna_Length = 15:5:20; %10:2:30; %Antenna Length in inches
 %span = 8; %wingspan in feet. Needs to be added to for loop to iterate over this year
-span = 3:1:7; %Span is now a range of values, in feet
+span = 5:1:6; %3:1:7; %Span is now a range of values, in feet
 load("MotorSpreadsheet.mat");
 Num_Power_Systems = height(MotorSpreadsheet);
 

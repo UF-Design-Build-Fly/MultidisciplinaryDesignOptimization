@@ -14,8 +14,15 @@ function [wings]=wingData(Aspect_Ratios, span)
 %Define our dimensional constants
 AR=Aspect_Ratios;                 %the wing aspect ratios being considered 
 %Define our material constants
-rho_foam=2.13;              %density of the foam used to make the wing (lb/ft^3)
-w_cf = 0.0450596;           %weight of carbon fiber sheets (lb/ft^2)
+
+%For CF wing
+%rho_foam=2.13;              %density of the foam used to make the wing (lb/ft^3)
+%w_cf = 0.0450596;           %weight of carbon fiber sheets (lb/ft^2)
+
+%For balsa wing
+rho_balsa=0.00579;               %density of aircraft balsa (lb/in^3)
+w_spar=0.00958;                 %Weight/in (lb/in) of the CF spars, based on mcmaster part https://www.mcmaster.com/2153T85/
+
 %no spar. approximation for Ibeam using carbon fiber sheet weight/area
 %If we decide to do a spar
 %rho_spar=68.3;              %the density of the carbon fiber spar in the wing (lb/ft^3)
@@ -26,7 +33,7 @@ w_cf = 0.0450596;           %weight of carbon fiber sheets (lb/ft^2)
 
 %the next set of code creates a reference matrix for each airfoil, all data
 %taken at alpha=3 degrees:
-%name - airfoil name
+%af - airfoil name
 %cl - coefficient of lift for that airfoil
 %cd - coefficient of drag for that airfoil
 %alpha0 - zero lift angle of attack for that airfoil
@@ -34,7 +41,7 @@ w_cf = 0.0450596;           %weight of carbon fiber sheets (lb/ft^2)
 %max_tx - the position of maximum thickness for that airfoil
 %data - the complete matrix of airfoil information
 
-%Airfoils used
+%Airfoils used, best ones selected from full wing analysis
 %S4022 S3010 S2090 S4233 S7055, referred as: 4022 3010 2090 4233 7055
 %FX 6-100 FX 6-100 10%, referred as: 6100 6110 
 %Eppler 66 Eppler 393 Eppler 392, referred as: 66 393 392 
@@ -42,7 +49,7 @@ w_cf = 0.0450596;           %weight of carbon fiber sheets (lb/ft^2)
 %NACA 4415 NACA 1412 NACA 2414 NACA 2410 NACA M18, referred as: 4415 1412 2414 2410 M18 
 %Clark Y Clark Z, referred as: 25 26
 
-%Define our airfoil constants parameters
+%Define our airfoil constants parameters, these are independant of span
 af=[4022 3010 2091 4233 7055 6100 6110 66 392 393 433 332 404 1412 4415 2414 2410 18 25 26]; 
 cl=[.904 .630 .743 .681 .710 .814 .809 .832 .768 .824 0.894 0.966 .810 0.521 0.839 0.646 0.580 0.68 0.735 0.765]; 
 cd=[.015 .012 .013 .017 .013 .012 .012 .014 .015 .016 0.018 0.020 .016 0.012 0.015 0.013 0.011 0.017 0.013 0.014]; 
@@ -66,12 +73,13 @@ psi=zeros(4,4);
 zeta=zeros(length(theta),1);
 zetamax=zeta;
 
-wings=zeros(length(af),3,length(AR));     %matrix to store wing data
+wings=zeros(length(af),3,length(AR),length(span));     %matrix to store wing data
 
 %for loops to run the wing analysis for each aspect ratio and airfoil
 for x=1:length(AR)
     for y=1:length(alphae)
-    mu=pi/(2*AR(x));
+        mu=pi/(2*AR(x));
+        for b=1:length(span) %new for loop to iterate over span values
         for z=1:length(theta)
             psi(z,:)=[sin(theta(z))*(mu+sin(theta(z))) , sin(3*theta(z))*(3*mu+sin(theta(z))) , sin(5*theta(z))*(5*mu+sin(theta(z))) , sin(7*theta(z))*(7*mu+sin(theta(z)))];
             zeta(z)=mu*alphae(y)*sin(theta(z));
@@ -82,7 +90,7 @@ for x=1:length(AR)
         C_l=A(1)*pi*AR(x);              %C_l for the wing
         C_lmax=Amax(1)*pi*AR(x);        %C_lmax (C_l at takeoff) for the wing
         C_di=pi*AR(x)*dot(n,A.^2);      %C_di for the wing
-        chord=span/AR(x);               %chord length of the wing (based on aspect ratio)
+        chord=span(b)/AR(x);               %chord length of the wing (based on aspect ratio)
         t=chord*max_t(y);               %thickness of the wing
         
         %Flaps portion: pg. 8-13 https://www.fzt.haw-hamburg.de/pers/Scholz/HOOU/AircraftDesign_8_HighLift.pdf
@@ -93,15 +101,22 @@ for x=1:length(AR)
         %approximating the cross-sectional area as 2 right triangles, with
         %the position of maximum thickness for the airfoil used to define
         %the bases of the triangles.
-        ax=(chord*max_tx(y)*t/2)+(chord*(1-max_tx(y))*t/2);             %wing cross-sectional area 
-        W_wing=(ax*span)*rho_foam;                                 %weight of the foam used for the wing
-        planArea = chord*span;
-        surfArea = 2*planArea;
-        %W_cf = (2*surfArea*w_cf)+(2*t*span*w_cf);                        %total weight of the carbon fiber sheets, assumes 2 total layers of carbon and I-beam method
-        W_cf = (2*surfArea*w_cf)+(2*t*span*w_cf);
-        W=W_cf+W_wing;                                          %weight of the wing and spar
         
+        %for CF wing
+        %ax=(chord*max_tx(y)*t/2)+(chord*(1-max_tx(y))*t/2);             %wing cross-sectional area 
+        %W_wing=(ax*span(b))*rho_foam;                                 %weight of the foam used for the wing
+        %planArea = chord*span(b);
+        %surfArea = 2*planArea;
+        %%W_cf = (2*surfArea*w_cf)+(2*t*span(b)*w_cf);                        %total weight of the carbon fiber sheets, assumes 2 total layers of carbon and I-beam method
+        %W_cf = (2*surfArea*w_cf)+(2*t*span(b)*w_cf);
+        %W=W_cf+W_wing;                                          %weight of the wing and spar
+        %W=W*1.4;                                                %weighting factor based on innacuracy in last year's CF weight estimates
         
+        %for balsa wing
+        ax=((chord*max_tx(y)*t/2)+(chord*(1-max_tx(y))*t/2))*(12^2);            %wing cross-sectional area (in^2)
+        v_balsa=(((span(b)*12)/3)*ax*0.125)+(12*(span(b)*12)*(.125^2));         %volume of balsa in wing including ribs and stringers (in^3)
+        W=(rho_balsa*v_balsa)+(w_spar*(span(b)*12));                        %weight of balsa+spar (lb)
+        W=W*1.3;                                                       %Weighting factor to account for epoxy and monocoat 
         
         %the next 4 lines assign the wing data to positions in the wing
         %matrix. The first column is the wing C_l, the second is the wing
@@ -118,16 +133,17 @@ for x=1:length(AR)
         %that the other data is visible), for reference.
         
         %define # of airfoils. new wing = these values, wing 
-        %syntax wing(row - airfoil, column - parameters , page - aspect ratio)
-        wings(y,1,x)=C_l;                                       
-        wings(y,2,x)=C_lmax;
-        wings(y,3,x)=C_di;
-        wings(y,4,x)=C_lflaps;
-        wings(y,5,x)=W;
-        wings(y,6,x)=chord;
-        wings(y,7,x)=planArea;
-        wings(y,8,x)=surfArea;
-        wings(:,9,x)=af'./1000; 
+        %syntax wing(row - airfoil, column - parameters , page - aspect ratio, dimension - span)
+        wings(y,1,x,b)=C_l;    %s denotes the dimension associated with span (new)                                  
+        wings(y,2,x,b)=C_lmax;
+        wings(y,3,x,b)=C_di;
+        wings(y,4,x,b)=C_lflaps;
+        wings(y,5,x,b)=W;
+        wings(y,6,x,b)=chord;
+        wings(y,7,x,b)=planArea;
+        wings(y,8,x,b)=surfArea;
+        wings(:,9,x,b)=af'./1000;
+        end
     end
 end
 
