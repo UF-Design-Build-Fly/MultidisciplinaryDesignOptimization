@@ -50,16 +50,17 @@ for AR = 1:wingpg
                     
                         %read values from wings matrix into aircraft
                         %properties. See wingClass.m for property descriptions
-                        plane(index).wing.clw = wings(airfoil, 1, AR);
-                        plane(index).wing.clm = wings(airfoil, 2, AR);     %cl max
-                        plane(index).wing.cd = wings(airfoil, 3, AR);     %cd i zero velocity coefficient of drag
-                        plane(index).wing.clFlap = wings(airfoil, 4, AR);  %weight
-                        plane(index).wing.weight = wings(airfoil, 5, AR);    %airfoil name
-                        plane(index).wing.chord = wings(airfoil, 6, AR);    %airfoil name
-                        plane(index).wing.planformArea = wings(airfoil, 7, AR);    %airfoil name
-                        plane(index).wing.surfaceArea = wings(airfoil, 8, AR);    %airfoil name
-                        plane(index).wing.name = wings(airfoil, 9, AR);    %airfoil name
+                        plane(index).wing.clw = wings(airfoil, 1, AR, spanIndex);
+                        plane(index).wing.clm = wings(airfoil, 2, AR, spanIndex);     %cl max
+                        plane(index).wing.cd = wings(airfoil, 3, AR, spanIndex);     %cd i zero velocity coefficient of drag
+                        plane(index).wing.clFlap = wings(airfoil, 4, AR, spanIndex);  %weight
+                        plane(index).wing.weight = wings(airfoil, 5, AR, spanIndex);    %airfoil name
+                        plane(index).wing.chord = wings(airfoil, 6, AR, spanIndex);    %airfoil name
+                        plane(index).wing.planformArea = wings(airfoil, 7, AR, spanIndex);    %airfoil name
+                        plane(index).wing.surfaceArea = wings(airfoil, 8, AR, spanIndex);    %airfoil name
+                        plane(index).wing.name = wings(airfoil, 9, AR, spanIndex);    %airfoil name
                         plane(index).wing.aspectRatio = Aspect_Ratios(AR); %ratio between length and width of wing.
+                        plane(index).wing.thickness=wings(airfoil, 10, AR, spanIndex); %thickness of the wing (ft)
                     
                         %load values from power system table into aircraft
                         plane(index) = powerSelections(plane(index), MotorSpreadsheet, powerIndex);
@@ -75,6 +76,12 @@ for AR = 1:wingpg
                         
                         %Want to include sanity check here that throws
                         %planes out which don't meet space/weight requirements
+                        plane(index) = volSanityCheck(plane(index));
+                        if plane(index).volSanityFlag
+                            index = index + 1;
+                            %disp("Too Big!");
+                            break;
+                        end
 
                         %simulate mission 2
                         plane(index) = GenVelocityTest(plane(index), 2, rho, Temp); %2 signifies mission 2 configuration

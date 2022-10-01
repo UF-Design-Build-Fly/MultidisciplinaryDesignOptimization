@@ -73,7 +73,7 @@ psi=zeros(4,4);
 zeta=zeros(length(theta),1);
 zetamax=zeta;
 
-wings=zeros(length(af),3,length(AR),length(span));     %matrix to store wing data
+wings=zeros(length(af),10,length(AR),length(span));     %matrix to store wing data
 
 %for loops to run the wing analysis for each aspect ratio and airfoil
 for x=1:length(AR)
@@ -92,6 +92,7 @@ for x=1:length(AR)
         C_di=pi*AR(x)*dot(n,A.^2);      %C_di for the wing
         chord=span(b)/AR(x);               %chord length of the wing (based on aspect ratio)
         t=chord*max_t(y);               %thickness of the wing
+        planArea=chord*span(b);
         
         %Flaps portion: pg. 8-13 https://www.fzt.haw-hamburg.de/pers/Scholz/HOOU/AircraftDesign_8_HighLift.pdf
         deltaC_lmax = (0.95)*(0.58)*(0.28)*1.15;   %I kept the ratios like this for future reference     
@@ -143,6 +144,7 @@ for x=1:length(AR)
         wings(y,7,x,b)=planArea;
         wings(y,8,x,b)=surfArea;
         wings(:,9,x,b)=af'./1000;
+        wings(y,10,x,b)=t;
         end
     end
 end
