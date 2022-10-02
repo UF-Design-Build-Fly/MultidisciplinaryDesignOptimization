@@ -76,7 +76,7 @@ for AR = 1:wingpg
                         
                         %Want to include sanity check here that throws
                         %planes out which don't meet space/weight requirements
-                        plane(index) = volSanityCheck(plane(index));
+                        plane(index) = volSanityCheck(plane(index), Electronic_Package_Weight(electronicPackageIndex));
                         if plane(index).volSanityFlag
                             index = index + 1;
                             %disp("Too Big!");
@@ -93,7 +93,7 @@ for AR = 1:wingpg
                         plane(index) = TakeoffChecker(plane(index), 3, rho);
                         plane(index) = mission3score(plane(index), Antenna_Length(antennaIndex));
 
-                        plane(index) = sanityCheck(plane(index)); %make sure all the calculated values make sense and meet 
+                        plane(index) = sanityCheck(plane(index), span(spanIndex), Antenna_Length(antennaIndex)); %make sure all the calculated values make sense and meet 
                         %competition requirements. needs to be updated for
                         %this year's competition
 

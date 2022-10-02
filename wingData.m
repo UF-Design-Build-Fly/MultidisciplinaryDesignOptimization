@@ -21,7 +21,7 @@ AR=Aspect_Ratios;                 %the wing aspect ratios being considered
 
 %For balsa wing
 rho_balsa=0.00579;               %density of aircraft balsa (lb/in^3)
-w_spar=0.00958;                 %Weight/in (lb/in) of the CF spars, based on mcmaster part https://www.mcmaster.com/2153T85/
+w_spar=0.00958;                 %Weight (lb/in) of the CF spars, based on mcmaster part https://www.mcmaster.com/2153T85/
 
 %no spar. approximation for Ibeam using carbon fiber sheet weight/area
 %If we decide to do a spar
@@ -106,8 +106,8 @@ for x=1:length(AR)
         %for CF wing
         %ax=(chord*max_tx(y)*t/2)+(chord*(1-max_tx(y))*t/2);             %wing cross-sectional area 
         %W_wing=(ax*span(b))*rho_foam;                                 %weight of the foam used for the wing
-        %planArea = chord*span(b);
-        %surfArea = 2*planArea;
+        planArea = chord*span(b);
+        surfArea = 2*planArea;
         %%W_cf = (2*surfArea*w_cf)+(2*t*span(b)*w_cf);                        %total weight of the carbon fiber sheets, assumes 2 total layers of carbon and I-beam method
         %W_cf = (2*surfArea*w_cf)+(2*t*span(b)*w_cf);
         %W=W_cf+W_wing;                                          %weight of the wing and spar
@@ -116,7 +116,7 @@ for x=1:length(AR)
         %for balsa wing
         ax=((chord*max_tx(y)*t/2)+(chord*(1-max_tx(y))*t/2))*(12^2);            %wing cross-sectional area (in^2)
         v_balsa=(((span(b)*12)/3)*ax*0.125)+(12*(span(b)*12)*(.125^2));         %volume of balsa in wing including ribs and stringers (in^3)
-        W=(rho_balsa*v_balsa)+(w_spar*(span(b)*12));                        %weight of balsa+spar (lb)
+        W=(rho_balsa*v_balsa)+(2*w_spar*(span(b)*12));                        %weight of balsa+spar (lb)
         W=W*1.3;                                                       %Weighting factor to account for epoxy and monocoat 
         
         %the next 4 lines assign the wing data to positions in the wing

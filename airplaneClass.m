@@ -8,7 +8,7 @@ classdef airplaneClass
 		performance = struct(performanceClass);
         failureReason = "Not checked";
         sanityFlag = 1;
-        volSanityFlag
+        volSanityFlag = 1;
         takeoffFail = 0;
         fuselageFail = 0;
         convergeFail = 0;

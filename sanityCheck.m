@@ -1,11 +1,11 @@
-function [plane] = sanityCheck(plane)
+function [plane] = sanityCheck(plane, span, Antenna_Length)
 %returns true if the aircraft makes sense and meets requirements
     %key point for this function is that it starts out true but functions
     %can only set it false. No function should set it back to true - if one
     %function thinks the plane shouldn't work then the flag should stay
     %false.
     plane.failureReason = "OK"; %plane will stay ok if it passes all the checks below
-    if ((plane.performance.takeoffDist1 > 25) || (plane.performance.takeoffDist2 > 25) || (plane.performance.takeoffDist3 > 25))
+    if ((plane.performance.takeoffDist1 > 60) || (plane.performance.takeoffDist2 > 60) || (plane.performance.takeoffDist3 > 60))
         plane.sanityFlag = false;
         plane.failureReason = "TakeoffDist";
         plane.takeoffFail = 1;
@@ -22,6 +22,21 @@ function [plane] = sanityCheck(plane)
         plane.sanityFlag = false;
         plane.convergeFail = 1;
     end
+    %This code will check if the wing is over-torqued, numbers are based on mastercarr spar, assumed that both spars have similar MIz
+    %Units are in lb, ft, s, Pa
+    rho=0.763; antennaWidth=0.5/12; V=plane.performance.velocity3; Cdantenna=1.2; g=32.2;
+    sparOuterDiam=.393/12; sparInnerDiam=.313/12; Ecf=70000000000;
+    dragAntenna = .5*(Antenna_Length/12)*antennaWidth*rho*(V^2)*Cdantenna*(1/g); %total drag on antenna (lb.)
+    momentAntenna = .5*(Antenna_Length/12)*dragAntenna; %Wingtip moment created by antenna
+    MI = pi()*((sparOuterDiam)^4-(sparInnerDiam)^4)*(1/64); %Mass Moment of Inertia of the spar
+    reactionSpar = momentAntenna/(2*(plane.wing.chord*(.75/2))); %reaction force of spar due to moment
+    dz = (span*reactionSpar)/(6*Ecf*MI); %deflection of the spar
+    twistAngle = atan(dz/(plane.wing.chord*(.72/2))); %twist angle of wing due to spar deflection
+    if twistAngle >= 3*(pi()/180)
+        plane.sanityFlag = false;
+        plane.failureReason = "antennaMoment";
+    end
+
 %I don't think this code is applicable this year, might need to instead remove planes which can't complete mission 3 in time 
 % %  FIX THIS CODE LATER   (Update 8/2022 - I don't remember what the error was here -- make sure to double check as it may or may not work)
 %     if( (plane.performance.time2/60) > plane.power.time) %Must have enough power to complete mission 2. 
