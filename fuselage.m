@@ -19,9 +19,9 @@ fuselageHeight=electronicPackageHeight+spaceAroundPackage*2;    %Space for packa
 fuselageWidth=electronicPackageWidth+spaceAroundPackage*2;      %Space for package plus 2 inches
 
 %calculates wigspan using AR and wing area
-aspectRatio = plane.wing.aspectRatio;
-planformArea = plane.wing.planformArea;
-wingspan = sqrt(aspectRatio*planformArea);
+%aspectRatio = plane.wing.aspectRatio;
+%planformArea = plane.wing.planformArea;
+wingspan = plane.wing.span;%sqrt(aspectRatio*planformArea);
 
 totalFuselageLength = wingspan*0.75;    %Using 75% rule for fuselage length
 
