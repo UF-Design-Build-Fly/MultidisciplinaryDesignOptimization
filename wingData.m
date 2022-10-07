@@ -42,20 +42,19 @@ w_spar=0.00958;                 %Weight (lb/in) of the CF spars, based on mcmast
 %data - the complete matrix of airfoil information
 
 %Airfoils used, best ones selected from full wing analysis
-%S4022 S3010 S2090 S4233 S7055, referred as: 4022 3010 2090 4233 7055
-%FX 6-100 FX 6-100 10%, referred as: 6100 6110 
-%Eppler 66 Eppler 393 Eppler 392, referred as: 66 393 392 
-%goe433 goe332 goe404, referred as: 433 332 404 
-%NACA 4415 NACA 1412 NACA 2414 NACA 2410 NACA M18, referred as: 4415 1412 2414 2410 M18 
-%Clark Y Clark Z, referred as: 25 26
+%SD7062-14% SD8040-10%, referred as: 7062 8040
+%Eppler 66 Eppler 374, referred as: 66 374 
+%goe412 goe433, referred as: 412 433
+%NACA 2414, referred as: 2414
+%HQ 3.0/12, referred as: 3
 
 %Define our airfoil constants parameters, these are independant of span
-af=[4022 3010 2091 4233 7055 6100 6110 66 392 393 433 332 404 1412 4415 2414 2410 18 25 26]; 
-cl=[.904 .630 .743 .681 .710 .814 .809 .832 .768 .824 0.894 0.966 .810 0.521 0.839 0.646 0.580 0.68 0.735 0.765]; 
-cd=[.015 .012 .013 .017 .013 .012 .012 .014 .015 .016 0.018 0.020 .016 0.012 0.015 0.013 0.011 0.017 0.013 0.014]; 
-alpha0=(pi/180)*[-3.5 -3 -4 -3.5 -3.25 -3.25 -3.25 -3 -4.2 -4.5 -5 -6.9 -4.9 -0.8 -3.4 -1.8 -1.6 -2.4 -3.1 -3.8]; 
-max_t=[.1126 .1032 .1011 .1364 .105 .0999 .0998 .1013 .1015 .1153 .1741 .1179 .1319 .120 .1499 .14 .10 .1202 .1171 .1175]; 
-max_tx=[.3403 .2503 .2607 .3385 .3174 .2793 .2783 .3145 .3068 .3233 .2913 .2983 .2963 .2993 .3083 .2953 .2983 .3003 .2803 .3003]; 
+af=[7062 8040 66 374 412 433 2414 3]; 
+cl=[.77485 .64702 .86236 .63729 .86640 .91441 .64901 .71923]; 
+cd=[.01249 .00997 .01106 .01185 .01340 .01548 .01163 .71923]; 
+alpha0=(pi/180)*[-4.235 -2.714 -3.589 -2.012 -5.805 -5.184 -2.123 -3.591]; 
+max_t=[.1398 .1000 .1013 .1091 .1313 .1741 .1400 .1198]; 
+max_tx=[.2715 .2933 .3145 .3434 .2973 .2913 .2953 .3504]; 
 data=[af' cl' cd' alpha0' max_t' max_tx'];
 
 alphac=3*pi/180;        %the cruise angle of attack of the airfoil (3 degrees)
