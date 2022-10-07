@@ -1,4 +1,4 @@
-function [plane] = mission2score(plane) %, Electronic_Package_Weight)
+function [plane] = mission2score(plane, Electronic_Package_Weight)
     %Ian-9/18/2022-Completed for now, need to debug, need to use
     %profile.png to find more accurate times
     %M2 score = 1 + [N_(payload weight * # laps flown) / Max_(payload weight * # laps flown]. Need to normalize
@@ -12,9 +12,9 @@ function [plane] = mission2score(plane) %, Electronic_Package_Weight)
 
     lapdist = (500*4)+(500*pi)+(250*pi); %estimates the overall lap distance in ft
     if plane.power.time <= 10
-        plane.performance.laps2 = (lapdist/plane.performance.velocity2)*(plane.power.time*60); %Max # of laps at Vmax w/battery. May need unit conversion (assumes plane.performance.velocity2 is in ft/s
+        plane.performance.laps2 = (plane.power.time*60)/(lapdist/plane.performance.velocity2); %Max # of laps at Vmax w/battery. May need unit conversion (assumes plane.performance.velocity2 is in ft/s
     else
-        plane.performance.laps2 = (lapdist/plane.performance.velocity2)*600; %Max # of laps at Vmax in 10 minutes
+        plane.performance.laps2 = 600/(lapdist/plane.performance.velocity2); %Max # of laps at Vmax in 10 minutes
     end
-    plane.performance.score2 = 1 + Electronic_Package_Weight*plane.performance.laps2;
+    plane.performance.score2 = Electronic_Package_Weight*plane.performance.laps2;
 end

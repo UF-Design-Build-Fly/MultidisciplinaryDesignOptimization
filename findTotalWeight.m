@@ -1,4 +1,4 @@
-function [plane] = findTotalWeight(plane)
+function [plane] = findTotalWeight(plane, Electronic_Package_Weight, Antenna_Length)
 %weight in pounds (verify this with other functions)
 
 %DEBUG - Previous runs of analysis seemed to 
@@ -14,8 +14,8 @@ function [plane] = findTotalWeight(plane)
         plane.power.weight + plane.wing.weight;
     
     plane.performance.totalWeight2 = plane.performance.totalEmptyWeight + ...
-        0.042*plane.fuselage.numSyringes; %0.042 pounds per syringe
+        Electronic_Package_Weight; %0.042 pounds per syringe
     
     plane.performance.totalWeight3 = plane.performance.totalEmptyWeight + ...
-        0.5*plane.fuselage.numVials; %8 ounces (half a pound) per vial
+        (.16/6)*Antenna_Length; %.16 lbs/ft of pipe (*2 for counterweight)
 end

@@ -11,16 +11,14 @@ rho=0.00235308; %Density air at Tuscon, Az (slug/ft^3)
 Temp = 293; %temperature in kelvin at competition site
 
 %This section introduces values which are later iterated on in the for loop
-Aspect_Ratios = [10,11]; %[7, 8, 9, 10, 11, 12, 13]; %wing aspect ratios to consider
-Electronic_Package_Weight = 5:1:8; %2:.5:10; %Electronic Package Weight for mission 2 in pounds
-Antenna_Length = 15:5:20; %10:2:30; %Antenna Length in inches
+Aspect_Ratios = [7, 9, 11, 13]; %[7, 8, 9, 10, 11, 12, 13]; %wing aspect ratios to consider
+Electronic_Package_Weight = [2, 2.5, 3, 4, 6]; %2:.5:10; %Electronic Package Weight for mission 2 in pounds
+Antenna_Length = 15:5:30; %10:2:30; %Antenna Length in inches
 %span = 8; %wingspan in feet. Needs to be added to for loop to iterate over this year
-span = 5:1:6; %3:1:7; %Span is now a range of values, in feet
+span = 3:1:7; %3:1:7; %Span is now a range of values, in feet
 load("MotorSpreadsheet.mat");
 Num_Power_Systems = height(MotorSpreadsheet);
 
-%This section introduces aero constants, not sure if this leads to
-%innacuracies, should probable ask Jasmine where these come from
 VSAR = 2; %Vertical stabalizer aspect ratio - derived from aero calculations done beforehand
 HSAR = 4.5; %Horizontal stab aspect ratio
 
@@ -29,12 +27,13 @@ radius_wheel = 1.5; %wheel radius
 sa_wheel = (2*pi*(radius_wheel)^2+ pi*2*radius_wheel*width_wheel)/144;
 
 [wings] = wingData(Aspect_Ratios, span); %call wing function to make airfoil data lookup table
-[wingrow, wingcol, wingpg] = size(wings); %get indices to iterate over. Must also include size of wingspans this year
+[wingrow, wingcol, wingpg, wingspan] = size(wings); %get indices to iterate over. Must also include size of wingspans this year
 
 max_index = 10;%1000000; %roughly 15% of airplanes checked are succesful so preallocate enough memory for them. Dramatically speeds up computation.
 plane(1:max_index) = struct(airplaneClass);%create a matrix to hold all the computed aircraft. Most aircraft will fail and be overwritten so max_index does not have to equal max iterations.
 index = 1;
 iterNum = 1;
+spanfailcount = zeros([length(span) 3]);
 for AR = 1:wingpg
     disp("At Aspect ratio " + AR);
     toc;
@@ -61,25 +60,26 @@ for AR = 1:wingpg
                         plane(index).wing.name = wings(airfoil, 9, AR, spanIndex);    %airfoil name
                         plane(index).wing.aspectRatio = Aspect_Ratios(AR); %ratio between length and width of wing.
                         plane(index).wing.thickness=wings(airfoil, 10, AR, spanIndex); %thickness of the wing (ft)
+                        plane(index).wing.span=span(spanIndex);
                     
                         %load values from power system table into aircraft
                         plane(index) = powerSelections(plane(index), MotorSpreadsheet, powerIndex);
                     
                         %set payload and fuselage configuration
-                        plane(index).fuselage.numSyringes = syringes(syringe_index);
-                        plane(index).fuselage.numVials = num_vials;
+                        %plane(index).fuselage.numSyringes = syringes(syringe_index);
+                        %plane(index).fuselage.numVials = num_vials;
                         plane(index) = fuselage(plane(index)); %calculate fuselage size based on number of vials and syringes
                         plane(index) = landingGear(plane(index), rho);
                         plane(index) = empennage(plane(index), HSAR, VSAR);
                     
-                        plane(index) = findTotalWeight(plane(index));
+                        plane(index) = findTotalWeight(plane(index), Electronic_Package_Weight(electronicPackageIndex), Antenna_Length(antennaIndex));
                         
                         %Want to include sanity check here that throws
                         %planes out which don't meet space/weight requirements
                         plane(index) = volSanityCheck(plane(index), Electronic_Package_Weight(electronicPackageIndex));
-                        if plane(index).volSanityFlag
-                            index = index + 1;
+                        if plane(index).volSanityFlag == 0
                             %disp("Too Big!");
+                            spanfailcount(spanIndex,2) = spanfailcount(spanIndex,2) + 1;
                             break;
                         end
 
@@ -97,11 +97,12 @@ for AR = 1:wingpg
                         %competition requirements. needs to be updated for
                         %this year's competition
 
-                        if plane(index).sanityFlag 
+                        if plane(index).sanityFlag
                             index = index + 1;
                             %disp("Sane!");
                         else
                             %disp("insane!");
+                            spanfailcount(spanIndex,3) = spanfailcount(spanIndex,3) + 1;
                         end
                         iterNum = iterNum+1;
                     end
@@ -116,26 +117,26 @@ end
 
 score2 = zeros(1, length(plane)); %mission 2 scores of all aircraft
 score3 = score2; %mission 3 scores
-scoreg = score2; %ground scores
-vials = score2; %number of vials in given airplane
-syringes = score2; %number of syringes in given airplane
+%scoreg = score2; %ground scores
+%vials = score2; %number of vials in given airplane
+%syringes = score2; %number of syringes in given airplane
 for i = 1:length(plane) %load data from structure into arrays that are easier to work with
-    if(plane(i).sanityFlag == 1) %all values remain zero unless the airplane passes sanity check. If the last plane analyzed is not sane the original sanity check can't throw it out.
+    if(plane(i).sanityFlag == 1) %all values remain 1 unless the airplane fails sanity check. If the last plane analyzed is not sane the original sanity check can't throw it out.
         score2(i) = (plane(i).performance.score2);
         score3(i) = floor((plane(i).performance.score3));
-        vials(i) = plane(i).fuselage.numVials;
-        syringes(i) = plane(i).fuselage.numSyringes;
-        scoreg(i) = 10 + 2*(3*syringes(i)/5) + 5*vials(i);%Baded on time to run, load and unload syringes, load vial
+        %vials(i) = plane(i).fuselage.numVials;
+        %syringes(i) = plane(i).fuselage.numSyringes;
+        %scoreg(i) = 10 + 2*(3*syringes(i)/5) + 5*vials(i);%Baded on time to run, load and unload syringes, load vial
     end
 end
 %clear plane
 [M2, I2] = max(score2); %find the airplanes with the best individual mission scores
 [M3, I3] = max(score3);
-[Mg, Ig] = max(scoreg);
+%[Mg, Ig] = max(scoreg);
 score2 = 1 + score2/M2; %normalize scores against best performers
 score3 = 2 + score3/M3;
-scoreg = scoreg/Mg;
-score = score2 + score3 + scoreg + 1;
+%scoreg = scoreg/Mg;
+score = score2 + score3 + 1; %scoreg + 1;
 [M, I] = maxk(score, 200); %find the top 200 airplanes
 winners = plane(I);
 scores = score(I);
@@ -145,3 +146,4 @@ save("winnersAR" + Aspect_Ratios(1) + "_scores.mat", "scores");
 %clear; %once finished don't keep hogging ram. Previous experience with running multiple instances on analysis on one computer shows that ram usage is the first limiting factor in enabling
        %the analysis to run, so clearing it as often as possible is important to avoid hogging ram from other programs. This ram hogging is the leading cause of crashing for this code.
 %scatter(vials,score);
+toc;

@@ -8,7 +8,7 @@ classdef wingClass
 		name = -1;
 		surfaceArea = -1;
 		chord = -1;
-        span = 8; %max out length for competition rules this year.
+        %span = 8; %max out length for competition rules this year.
 		aspectRatio = -1; %ratio between length and width of wing.
 		planformArea = -1;
 		clFlap = -1;
