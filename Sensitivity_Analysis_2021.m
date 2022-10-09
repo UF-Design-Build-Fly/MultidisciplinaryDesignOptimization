@@ -1,5 +1,5 @@
 clear; clc;
-%Ian-9/29/2022-Updated constants, commented some needed changes, replaced
+%Ian-10/8/2022-Mostly done with debugging, still wamt to add more data processing, but can do that post analysis
 %syringes and vials with EP weight and antenna length, for loop now also
 %iterates over span lengths
 warning('off','all') %using structs the way we do here generates a flood of warnings that slows matlab down. Comment this out (and restard matlab) when debugging. 
@@ -11,11 +11,10 @@ rho=0.00235308; %Density air at Tuscon, Az (slug/ft^3)
 Temp = 293; %temperature in kelvin at competition site
 
 %This section introduces values which are later iterated on in the for loop
-Aspect_Ratios = [7, 9, 11, 13]; %[7, 8, 9, 10, 11, 12, 13]; %wing aspect ratios to consider
-Electronic_Package_Weight = [2, 2.5, 3, 4, 6]; %2:.5:10; %Electronic Package Weight for mission 2 in pounds
-Antenna_Length = 15:5:30; %10:2:30; %Antenna Length in inches
-%span = 8; %wingspan in feet. Needs to be added to for loop to iterate over this year
-span = 3:1:7; %3:1:7; %Span is now a range of values, in feet
+Aspect_Ratios = [7, 8, 9, 10, 11, 12, 13]; %wing aspect ratios to consider
+Electronic_Package_Weight = 2:.5:10; %Electronic Package Weight for mission 2 in pounds
+Antenna_Length = 10:2:30; %Antenna Length in inches
+span = 3:1:7; %Span is a range of values, in feet
 load("MotorSpreadsheet.mat");
 Num_Power_Systems = height(MotorSpreadsheet);
 
@@ -33,12 +32,19 @@ max_index = 10;%1000000; %roughly 15% of airplanes checked are succesful so prea
 plane(1:max_index) = struct(airplaneClass);%create a matrix to hold all the computed aircraft. Most aircraft will fail and be overwritten so max_index does not have to equal max iterations.
 index = 1;
 iterNum = 1;
-spanfailcount = zeros([length(span) 3]);
+spanfailcount = zeros([length(span) 6]); %This creates a matrix to check which failure conditions are most prevailent at each span value
+% spanfailcount(1, 1) = "span";
+% spanfailcount(1, 2) = 'space';
+% spanfailcount(1, 3) = 'ep weight';
+% spanfailcount(1, 4) = 'takeoff';
+% spanfailcount(1, 5) = 'moment';
+% spanfailcount(1, 6) = 'converge';
 for AR = 1:wingpg
     disp("At Aspect ratio " + AR);
     toc;
     for spanIndex = 1:length(span) %NOTE: the wings function cant handle this iteration yet, all calls of plane(index) also need updated, waiting on wings update
-        for airfoil = [11,15] %DEBUG --just naca and goe airfoils for this run. Normally use "wingrow" variable here
+        spanfailcount(1 + spanIndex, 1) = span(spanIndex);
+        for airfoil = 1:1:8
             for powerIndex = 1:Num_Power_Systems         
                 for electronicPackageIndex = 1:length(Electronic_Package_Weight)
                     for antennaIndex = length(Antenna_Length) %Changed this for the rerun - use smarter logic otherwise %for every amount of syringes try up to the maximum number of vials  
@@ -46,7 +52,13 @@ for AR = 1:wingpg
                         plane(index) = struct(airplaneClass); %make sure to start with a clean slate at this index as this code writes over the index of failed airplanes. Without cleanup things like failure flags stay set even when they shouldn't
                 
                         plane(index).fuselage.wheelSA = sa_wheel;
-                    
+
+                        %load starting values for each plane
+                        plane(index).wing.span = span(spanIndex);
+                        plane(index).performance.epWeight = Electronic_Package_Weight(electronicPackageIndex);
+                        plane(index).wing.aspectRatio = Aspect_Ratios(AR); %ratio between length and width of wing.
+                        plane(index).performance.antennaLength = Antenna_Length(antennaIndex);
+
                         %read values from wings matrix into aircraft
                         %properties. See wingClass.m for property descriptions
                         plane(index).wing.clw = wings(airfoil, 1, AR, spanIndex);
@@ -58,9 +70,8 @@ for AR = 1:wingpg
                         plane(index).wing.planformArea = wings(airfoil, 7, AR, spanIndex);    %airfoil name
                         plane(index).wing.surfaceArea = wings(airfoil, 8, AR, spanIndex);    %airfoil name
                         plane(index).wing.name = wings(airfoil, 9, AR, spanIndex);    %airfoil name
-                        plane(index).wing.aspectRatio = Aspect_Ratios(AR); %ratio between length and width of wing.
                         plane(index).wing.thickness=wings(airfoil, 10, AR, spanIndex); %thickness of the wing (ft)
-                        plane(index).wing.span=span(spanIndex);
+                        
                     
                         %load values from power system table into aircraft
                         plane(index) = powerSelections(plane(index), MotorSpreadsheet, powerIndex);
@@ -79,7 +90,11 @@ for AR = 1:wingpg
                         plane(index) = volSanityCheck(plane(index), Electronic_Package_Weight(electronicPackageIndex));
                         if plane(index).volSanityFlag == 0
                             %disp("Too Big!");
-                            spanfailcount(spanIndex,2) = spanfailcount(spanIndex,2) + 1;
+                            if plane(index).epFail
+                                spanfailcount(1 + spanIndex, 3) = spanfailcount(1 + spanIndex, 3) + 1;
+                            elseif plane(index).spaceFail
+                                spanfailcount(1 + spanIndex, 2) = spanfailcount(1 + spanIndex, 2) + 1;
+                            end
                             break;
                         end
 
@@ -101,6 +116,13 @@ for AR = 1:wingpg
                             index = index + 1;
                             %disp("Sane!");
                         else
+                            if plane(index).takeoffFail
+                                spanfailcount(1 + spanIndex, 4) = spanfailcount(1 + spanIndex, 4) + 1;
+                            elseif plane(index).momentFail
+                                spanfailcount(1 + spanIndex, 5) = spanfailcount(1 + spanIndex, 5) + 1;
+                            elseif plane(index).convergeFail
+                                spanfailcount(1 + spanIndex, 6) = spanfailcount(1 + spanIndex, 6) + 1;  
+                            end
                             %disp("insane!");
                             spanfailcount(spanIndex,3) = spanfailcount(spanIndex,3) + 1;
                         end
@@ -146,4 +168,5 @@ save("winnersAR" + Aspect_Ratios(1) + "_scores.mat", "scores");
 %clear; %once finished don't keep hogging ram. Previous experience with running multiple instances on analysis on one computer shows that ram usage is the first limiting factor in enabling
        %the analysis to run, so clearing it as often as possible is important to avoid hogging ram from other programs. This ram hogging is the leading cause of crashing for this code.
 %scatter(vials,score);
+
 toc;

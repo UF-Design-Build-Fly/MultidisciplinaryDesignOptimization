@@ -7,6 +7,9 @@ classdef performanceClass
 %Mission 2: Carry syringes. At least 10. Max window of 5 minutes. Score is syringes/flight time
 %Mission 3: Carry vial packages. At most 1/10th of syringes. Max window 10 mins. Deploy a package on each lap. Score is num succesful deployments.
     
+    epWeight = -1;
+    antennaLength = -1;
+
     totalEmptyWeight = -1;
     totalWeight2 = -1;
     totalWeight3 = -1;
@@ -23,14 +26,14 @@ classdef performanceClass
     landingSpeed2 = -1;
     landingSpeed3 = -1;
     
-    time1 = -1;
+%     time1 = -1;
     time2 = -1;
     time3 = -1;
-    time3_perLap = -1;
+%     time3_perLap = -1;
 
-    Nlaps1 = -1;
-    Nlaps2 = 3;
-    Nlaps3 = -1;
+%     Nlaps1 = -1;
+%     Nlaps2 = 3;
+%     Nlaps3 = -1;
 
     score1 = -1;
     score2 = -1;
@@ -46,11 +49,11 @@ classdef performanceClass
     fusePara = -1;
     gearPara = -1;
     
-    drag1 = -1; %drag at cruise velocity as calculated by gen velocity solver  
+%     drag1 = -1; %drag at cruise velocity as calculated by gen velocity solver  
     drag2 = -1;
     drag3 = -1;
     
-    lapDist = 500+200*pi+1000+500; %distances for each velocity profile.
+%     lapDist = 500+200*pi+1000+500; %distances for each velocity profile.
                                    %see profile.png in analysis folder
 
   end

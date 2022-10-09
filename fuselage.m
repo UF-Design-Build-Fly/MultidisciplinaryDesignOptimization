@@ -23,7 +23,7 @@ fuselageWidth=electronicPackageWidth+spaceAroundPackage*2;      %Space for packa
 %planformArea = plane.wing.planformArea;
 wingspan = plane.wing.span;%sqrt(aspectRatio*planformArea);
 
-totalFuselageLength = wingspan*0.75;    %Using 75% rule for fuselage length
+totalFuselageLength = wingspan*0.75*12;    %Using 75% rule for fuselage length
 
 minMiddleFuselageLength=(electronicPackageLength+avionicsLength)*1.1;   %Room for package and avionics plus 10% (Doesn't include tail or nose)
 noseLength=3;	%assumption for the front length of the fuselage.

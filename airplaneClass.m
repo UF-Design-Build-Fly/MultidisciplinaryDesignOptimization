@@ -10,9 +10,10 @@ classdef airplaneClass
         sanityFlag = 1;
         volSanityFlag = 1;
         takeoffFail = 0;
-        fuselageFail = 0;
+        momentFail = 0;
         convergeFail = 0;
-        powerFail = 0;
+        spaceFail = 0;
+        epFail = 0;
 	end
 	
 	methods

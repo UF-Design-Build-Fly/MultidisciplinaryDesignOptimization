@@ -1,6 +1,7 @@
 classdef wingClass
 
 	properties
+        span = -1;
 		clw = -1; %coefficient of lift for the wing
 		clm = -1; %cl max
 		cd = -1; %coefficient of drag for the wing
@@ -8,7 +9,6 @@ classdef wingClass
 		name = -1;
 		surfaceArea = -1;
 		chord = -1;
-        %span = 8; %max out length for competition rules this year.
 		aspectRatio = -1; %ratio between length and width of wing.
 		planformArea = -1;
 		clFlap = -1;
