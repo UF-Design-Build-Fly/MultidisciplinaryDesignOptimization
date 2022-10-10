@@ -48,6 +48,8 @@ classdef performanceClass
     vStabPara = -1;
     fusePara = -1;
     gearPara = -1;
+    antDrag = -1;
+    antTwist = -1;
     
 %     drag1 = -1; %drag at cruise velocity as calculated by gen velocity solver  
     drag2 = -1;

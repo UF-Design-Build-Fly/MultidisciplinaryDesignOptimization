@@ -11,9 +11,9 @@ rho=0.00235308; %Density air at Tuscon, Az (slug/ft^3)
 Temp = 293; %temperature in kelvin at competition site
 
 %This section introduces values which are later iterated on in the for loop
-Aspect_Ratios = [7, 8, 9, 10, 11, 12, 13]; %wing aspect ratios to consider
-Electronic_Package_Weight = 2:.5:10; %Electronic Package Weight for mission 2 in pounds
-Antenna_Length = 10:2:30; %Antenna Length in inches
+Aspect_Ratios = [6, 7, 8]; %, 10, 11, 12, 13]; %wing aspect ratios to consider
+Electronic_Package_Weight = 2:.5:4; %Electronic Package Weight for mission 2 in pounds
+Antenna_Length = 20:2.5:30; %Antenna Length in inches
 span = 3:1:7; %Span is a range of values, in feet
 load("MotorSpreadsheet.mat");
 Num_Power_Systems = height(MotorSpreadsheet);
@@ -133,7 +133,7 @@ for AR = 1:wingpg
         end
     end
 end
-
+toc;
 %Code below is from post.m file to run post-processing on the data. We should probably move this into a function call later.
 %THIS HAS NOT BEEN UPDATED
 
@@ -143,9 +143,9 @@ score3 = score2; %mission 3 scores
 %vials = score2; %number of vials in given airplane
 %syringes = score2; %number of syringes in given airplane
 for i = 1:length(plane) %load data from structure into arrays that are easier to work with
-    if(plane(i).sanityFlag == 1) %all values remain 1 unless the airplane fails sanity check. If the last plane analyzed is not sane the original sanity check can't throw it out.
+    if (plane(i).sanityFlag == 1) || (plane(i).volSanityFlag == 1)  %all values remain 1 unless the airplane fails sanity check. If the last plane analyzed is not sane the original sanity check can't throw it out.
         score2(i) = (plane(i).performance.score2);
-        score3(i) = floor((plane(i).performance.score3));
+        score3(i) = (plane(i).performance.score3);
         %vials(i) = plane(i).fuselage.numVials;
         %syringes(i) = plane(i).fuselage.numSyringes;
         %scoreg(i) = 10 + 2*(3*syringes(i)/5) + 5*vials(i);%Baded on time to run, load and unload syringes, load vial
