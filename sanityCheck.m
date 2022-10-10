@@ -24,15 +24,14 @@ function [plane] = sanityCheck(plane, span, Antenna_Length)
     end
     %This code will check if the wing is over-torqued, numbers are based on mastercarr spar, assumed that both spars have similar MIz
     %Units are in lb, ft, s, Pa
-    rho=0.763; antennaWidth=0.5/12; V=plane.performance.velocity3; Cdantenna=1.2; g=32.2;
+    %rho=0.763; antennaWidth=0.5/12; V=plane.performance.velocity3; Cdantenna=1.2; g=32.2;
     sparOuterDiam=.393/12; sparInnerDiam=.313/12; Ecf=70000000000;
-    dragAntenna = .5*(Antenna_Length/12)*antennaWidth*rho*(V^2)*Cdantenna*(1/g); %total drag on antenna (lb.)
-    momentAntenna = .5*(Antenna_Length/12)*dragAntenna; %Wingtip moment created by antenna
+    %dragAntenna = .5*(Antenna_Length/12)*antennaWidth*rho*(V^2)*Cdantenna*(1/g); %total drag on antenna (lb.)
+    momentAntenna = .5*(Antenna_Length/12)*plane.performance.antDrag; %Wingtip moment created by antenna
     MI = pi()*((sparOuterDiam)^4-(sparInnerDiam)^4)*(1/64); %Mass Moment of Inertia of the spar
     reactionSpar = momentAntenna/(2*(plane.wing.chord*(.75/2))); %reaction force of spar due to moment
     dz = (span*reactionSpar)/(6*Ecf*MI); %deflection of the spar
     twistAngle = atan(dz/(plane.wing.chord*(.72/2))); %twist angle of wing due to spar deflection
-    plane.performance.antDrag = dragAntenna;
     plane.performance.antTwist = twistAngle;
     if twistAngle >= 3*(pi()/180)
         plane.sanityFlag = false;

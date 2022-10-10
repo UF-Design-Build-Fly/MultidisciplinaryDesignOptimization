@@ -4,11 +4,10 @@ function [plane] = GenVelocityTest(plane, missionNumber, rho, Temp) %DEBUG: this
 %-------------------------------Constants---------------------------------%
 muk=1.612e-4; %kinmatic viscosity (ish) related to mu
 
-if missionNumber == 1
-    WeightT = plane.performance.totalEmptyWeight;
-elseif missionNumber == 2
+if missionNumber == 2
     WeightT = plane.performance.totalWeight2;
-else
+elseif missionNumber == 3
+    rho=0.763; antennaWidth=0.5/12; Cdantenna=1.2; g=32.2;
     WeightT = plane.performance.totalWeight3;
 end
 %-------------------------------------------------------------------------%
@@ -25,7 +24,13 @@ wingParasitic = @(v) (0.5*rho*(v^2)*plane.wing.planformArea*plane.wing.cd);
 hStabParasitic = @(v) (0.5*rho*(v^2)*plane.empennage.HSarea*plane.empennage.HScd);
 vStabParasitic = @(v) (0.5*rho*(v^2)*plane.empennage.VSarea*plane.empennage.VScd);
 fuselageParasitic = @(v) (0.5*rho*(v^2)*plane.fuselage.frontalSurfaceArea*CDf);
+if missionNumber == 3
+antennaParasitic = @(v) .5*(plane.performance.antennaLength/12)*antennaWidth*rho*(v^2)*Cdantenna*(1/g);
+Parasitic = @(v) antennaParasitic(v) + wingParasitic(v) + hStabParasitic(v) + vStabParasitic(v) + fuselageParasitic(v) + plane.fuselage.gearParaDrag(v);
+else
 Parasitic = @(v) wingParasitic(v) + hStabParasitic(v) + vStabParasitic(v) + fuselageParasitic(v) + plane.fuselage.gearParaDrag(v);
+end
+
 %-------------------------------------------------------------------------%
 
 
@@ -117,7 +122,9 @@ plane.performance.hStabPara = hStabParasitic(velocity);
 plane.performance.vStabPara = vStabParasitic(velocity);
 plane.performance.fusePara = fuselageParasitic(velocity);
 plane.performance.gearPara = plane.fuselage.gearParaDrag(velocity);
-
+if missionNumber == 3
+plane.performance.antDrag = antennaParasitic(velocity);
+end
 %Parasitic = @(v)  + hStabParasitic(v) + vStabParasitic(v) + fuselageParasitic(v) + plane.fuselage.gearParaDrag(v);
 
 if velocity<0
