@@ -6,29 +6,29 @@ warning('off','all') %using structs the way we do here generates a flood of warn
 tic
 
 %Here we introduce constants for use in aero equations
-rho=0.00235308; %Density air at Tuscon, Az (slug/ft^3)
+rho = 0.00235308; %Density air at Tuscon, Az (slug/ft^3)
 %rho = 0.002391; %Density air at Whichita, Ks with average climate data from April 2021
 Temp = 293; %temperature in kelvin at competition site
 
 %This section introduces values which are later iterated on in the for loop
-Aspect_Ratios = [6, 7, 8]; %, 10, 11, 12, 13]; %wing aspect ratios to consider
-Electronic_Package_Weight = 2:.5:4; %Electronic Package Weight for mission 2 in pounds
-Antenna_Length = 20:2.5:30; %Antenna Length in inches
-span = 3:1:7; %Span is a range of values, in feet
+Aspect_Ratios = 7; %[6, 7, 8]; %, 10, 11, 12, 13]; %wing aspect ratios to consider
+Electronic_Package_Weight = 3; %2:.5:4; %Electronic Package Weight for mission 2 in pounds
+Antenna_Length = 20:2.5:70; %Antenna Length in inches
+span = 5; %3:1:7; %Span is a range of values, in feet
 load("MotorSpreadsheet.mat");
 Num_Power_Systems = height(MotorSpreadsheet);
 
 VSAR = 2; %Vertical stabalizer aspect ratio - derived from aero calculations done beforehand
 HSAR = 4.5; %Horizontal stab aspect ratio
 
-width_wheel = 0.5;    %width of wheels (in)
+width_wheel = 0.5; %width of wheels (in)
 radius_wheel = 1.5; %wheel radius
 sa_wheel = (2*pi*(radius_wheel)^2+ pi*2*radius_wheel*width_wheel)/144;
 
 [wings] = wingData(Aspect_Ratios, span); %call wing function to make airfoil data lookup table
 [wingrow, wingcol, wingpg, wingspan] = size(wings); %get indices to iterate over. Must also include size of wingspans this year
 
-max_index = 10;%1000000; %roughly 15% of airplanes checked are succesful so preallocate enough memory for them. Dramatically speeds up computation.
+max_index = 10000; %roughly 15% of airplanes checked are succesful so preallocate enough memory for them. Dramatically speeds up computation.
 plane(1:max_index) = struct(airplaneClass);%create a matrix to hold all the computed aircraft. Most aircraft will fail and be overwritten so max_index does not have to equal max iterations.
 index = 1;
 iterNum = 1;
@@ -47,7 +47,7 @@ for AR = 1:wingpg
         for airfoil = 1:1:8
             for powerIndex = 1:Num_Power_Systems         
                 for electronicPackageIndex = 1:length(Electronic_Package_Weight)
-                    for antennaIndex = length(Antenna_Length) %Changed this for the rerun - use smarter logic otherwise %for every amount of syringes try up to the maximum number of vials  
+                    for antennaIndex = 1:length(Antenna_Length) %Changed this for the rerun - use smarter logic otherwise %for every amount of syringes try up to the maximum number of vials  
                         
                         plane(index) = struct(airplaneClass); %make sure to start with a clean slate at this index as this code writes over the index of failed airplanes. Without cleanup things like failure flags stay set even when they shouldn't
                 

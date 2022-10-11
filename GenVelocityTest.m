@@ -7,7 +7,7 @@ muk=1.612e-4; %kinmatic viscosity (ish) related to mu
 if missionNumber == 2
     WeightT = plane.performance.totalWeight2;
 elseif missionNumber == 3
-    rho=0.763; antennaWidth=0.5/12; Cdantenna=1.2; g=32.2;
+    antennaWidth = 0.5/12; Cdantenna = 1.2; g = 32.2;
     WeightT = plane.performance.totalWeight3;
 end
 %-------------------------------------------------------------------------%

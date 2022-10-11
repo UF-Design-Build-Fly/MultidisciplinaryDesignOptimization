@@ -10,8 +10,14 @@ function [plane] = volSanityCheck(plane, Electronic_Package_Weight)
         plane.failureReason = "EP not heavy enough";
         plane.epFail = 1;
     end
-    if ((plane.fuselage.length*12) + 3.7) + (plane.fuselage.width + (plane.wing.thickness*7*12)) + (plane.empennage.VSchord*12) >= 62
-        plane.volSanityFlag = false;
-        plane.failureReason = "Too big";
-        plane.spaceFail = 1;
+    if plane.performance.antennaLength > plane.fuselage.length
+        if ((plane.performance.antennaLength*12) + 3.7) + (plane.fuselage.width + (plane.wing.thickness*7*12)) + (plane.empennage.VSchord*12) >= 62
+            plane.volSanityFlag = false;
+            plane.failureReason = "Too big";
+            plane.spaceFail = 1;
+        end    
+    elseif ((plane.fuselage.length*12) + 3.7) + (plane.fuselage.width + (plane.wing.thickness*7*12)) + (plane.empennage.VSchord*12) >= 62
+            plane.volSanityFlag = false;
+            plane.failureReason = "Too big";
+            plane.spaceFail = 1;
     end
