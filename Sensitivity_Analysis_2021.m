@@ -1,7 +1,7 @@
 clear; clc;
 %Ian-10/8/2022-Mostly done with debugging, still wamt to add more data processing, but can do that post analysis
 
-warning('off','all') %using structs the way we do here generates a flood of warnings that slows matlab down. Comment this out (and restard matlab) when debugging. 
+warning('off','all') %using structs the way we do here generates a flood of warnings that slows matlab down. Comment this out (and restard matlab) when debugging.
 tic
 
 %Here we introduce constants for use in aero equations
@@ -44,12 +44,12 @@ for AR = 1:wingpg
     for spanIndex = 1:length(span) %NOTE: the wings function cant handle this iteration yet, all calls of plane(index) also need updated, waiting on wings update
         spanfailcount(1 + spanIndex, 1) = span(spanIndex);
         for airfoil = 1:1:8
-            for powerIndex = 1:Num_Power_Systems         
+            for powerIndex = 1:Num_Power_Systems
                 for electronicPackageIndex = 1:length(Electronic_Package_Weight)
-                    for antennaIndex = 1:length(Antenna_Length) %Changed this for the rerun - use smarter logic otherwise %for every amount of syringes try up to the maximum number of vials  
-                        
+                    for antennaIndex = 1:length(Antenna_Length) %Changed this for the rerun - use smarter logic otherwise %for every amount of syringes try up to the maximum number of vials
+
                         plane(index) = struct(airplaneClass); %make sure to start with a clean slate at this index as this code writes over the index of failed airplanes. Without cleanup things like failure flags stay set even when they shouldn't
-                
+
                         plane(index).fuselage.wheelSA = sa_wheel;
 
                         %load starting values for each plane
@@ -70,20 +70,20 @@ for AR = 1:wingpg
                         plane(index).wing.surfaceArea = wings(airfoil, 8, AR, spanIndex);    %airfoil name
                         plane(index).wing.name = wings(airfoil, 9, AR, spanIndex);    %airfoil name
                         plane(index).wing.thickness=wings(airfoil, 10, AR, spanIndex); %thickness of the wing (ft)
-                        
-                    
+
+
                         %load values from power system table into aircraft
                         plane(index) = powerSelections(plane(index), MotorSpreadsheet, powerIndex);
-                    
+
                         %set payload and fuselage configuration
                         %plane(index).fuselage.numSyringes = syringes(syringe_index);
                         %plane(index).fuselage.numVials = num_vials;
                         plane(index) = fuselage(plane(index)); %calculate fuselage size based on number of vials and syringes
                         plane(index) = landingGear(plane(index), rho);
                         plane(index) = empennage(plane(index), HSAR, VSAR);
-                    
+
                         plane(index) = findTotalWeight(plane(index), Electronic_Package_Weight(electronicPackageIndex), Antenna_Length(antennaIndex));
-                        
+
                         %Want to include sanity check here that throws
                         %planes out which don't meet space/weight requirements
                         plane(index) = volSanityCheck(plane(index), Electronic_Package_Weight(electronicPackageIndex));
@@ -101,13 +101,13 @@ for AR = 1:wingpg
                         plane(index) = GenVelocityTest(plane(index), 2, rho, Temp); %2 signifies mission 2 configuration
                         plane(index) = TakeoffChecker(plane(index), 2, rho);
                         plane(index) = mission2score(plane(index), Electronic_Package_Weight(electronicPackageIndex));
-                    
+
                         %simulate mission 3
                         plane(index) = GenVelocityTest(plane(index), 3, rho, Temp); %2 signifies mission 2 configuration
                         plane(index) = TakeoffChecker(plane(index), 3, rho);
                         plane(index) = mission3score(plane(index), Antenna_Length(antennaIndex));
 
-                        plane(index) = sanityCheck(plane(index), span(spanIndex), Antenna_Length(antennaIndex)); %make sure all the calculated values make sense and meet 
+                        plane(index) = sanityCheck(plane(index), span(spanIndex), Antenna_Length(antennaIndex)); %make sure all the calculated values make sense and meet
                         %competition requirements. needs to be updated for
                         %this year's competition
 
@@ -120,7 +120,7 @@ for AR = 1:wingpg
                             elseif plane(index).momentFail
                                 spanfailcount(1 + spanIndex, 5) = spanfailcount(1 + spanIndex, 5) + 1;
                             elseif plane(index).convergeFail
-                                spanfailcount(1 + spanIndex, 6) = spanfailcount(1 + spanIndex, 6) + 1;  
+                                spanfailcount(1 + spanIndex, 6) = spanfailcount(1 + spanIndex, 6) + 1;
                             end
                             %disp("insane!");
                             spanfailcount(spanIndex,3) = spanfailcount(spanIndex,3) + 1;
@@ -161,10 +161,11 @@ score = score2 + score3 + 1; %scoreg + 1;
 [M, I] = maxk(score, 200); %find the top 200 airplanes
 winners = plane(I);
 scores = score(I);
-save("winnersAR" + Aspect_Ratios(1) + ".mat", "winners"); %save top 100 airplanes. It is impractical to save all airplanes checked.
-save("winnersAR" + Aspect_Ratios(1) + "_scores.mat", "scores");
+%save("winnersAR" + Aspect_Ratios(1) + ".mat", "winners"); %save top 100 airplanes. It is impractical to save all airplanes checked.
+%save("winnersAR" + Aspect_Ratios(1) + "_scores.mat", "scores");
+
 %save("successes.mat", "plane");
 %clear; %once finished don't keep hogging ram. Previous experience with running multiple instances on analysis on one computer shows that ram usage is the first limiting factor in enabling
-       %the analysis to run, so clearing it as often as possible is important to avoid hogging ram from other programs. This ram hogging is the leading cause of crashing for this code.
+%the analysis to run, so clearing it as often as possible is important to avoid hogging ram from other programs. This ram hogging is the leading cause of crashing for this code.
 %scatter(vials,score);
 

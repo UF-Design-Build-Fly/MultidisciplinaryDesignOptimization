@@ -25,10 +25,10 @@ hStabParasitic = @(v) (0.5*rho*(v^2)*plane.empennage.HSarea*plane.empennage.HScd
 vStabParasitic = @(v) (0.5*rho*(v^2)*plane.empennage.VSarea*plane.empennage.VScd);
 fuselageParasitic = @(v) (0.5*rho*(40^2)*plane.fuselage.frontalSurfaceArea*CDf);
 if missionNumber == 3
-antennaParasitic = @(v) .5*(plane.performance.antennaLength/12)*antennaWidth*rho*(v^2)*Cdantenna; %took out 1/g to drop conversion from lb/ft^3
-Parasitic = @(v) antennaParasitic(v) + wingParasitic(v) + hStabParasitic(v) + vStabParasitic(v) + fuselageParasitic(v) + plane.fuselage.gearParaDrag(v);
+    antennaParasitic = @(v) .5*(plane.performance.antennaLength/12)*antennaWidth*rho*(v^2)*Cdantenna; %took out 1/g to drop conversion from lb/ft^3
+    Parasitic = @(v) antennaParasitic(v) + wingParasitic(v) + hStabParasitic(v) + vStabParasitic(v) + fuselageParasitic(v) + plane.fuselage.gearParaDrag(v);
 else
-Parasitic = @(v) wingParasitic(v) + hStabParasitic(v) + vStabParasitic(v) + fuselageParasitic(v) + plane.fuselage.gearParaDrag(v);
+    Parasitic = @(v) wingParasitic(v) + hStabParasitic(v) + vStabParasitic(v) + fuselageParasitic(v) + plane.fuselage.gearParaDrag(v);
 end
 
 %-------------------------------------------------------------------------%
@@ -111,7 +111,21 @@ Drag= @(v) Induced(v) + Parasitic(v) + Skin(v);
 %--------------------------Velocity Solver--------------------------------%
 Thrust = plane.power.thrust; %make this a function handle for dynamic thrust once we're sure the assumptions are correct.
 func=@(v) (Drag(v)-Thrust);
-velocity = fminsearch(func, 30); %find the velocity where drag is equal to thrust. This will be the estimate of cruise velocity.
+
+% i = 1;
+% for v = 10:0.01:100
+%     d(i) = Drag(v) - Thrust;
+%     i = i+1;
+%     %I_d(i) = Induced(v);
+%     %P_d(i) = Parasitic(v);
+%     %S_d(i) = Skin(v);
+% end
+% v = 10:0.01:100;
+% plot(v, d);
+
+
+velocity = fzero(func, 100); %find the velocity where drag is equal to thrust. This will be the estimate of cruise velocity.
+
 %keyboard
 plane.performance.drag1 = Drag(velocity); %These values are saved so we can review them for reasonableness later
 plane.performance.inducedDrag = Induced(velocity);
@@ -122,8 +136,9 @@ plane.performance.hStabPara = hStabParasitic(velocity);
 plane.performance.vStabPara = vStabParasitic(velocity);
 plane.performance.fusePara = fuselageParasitic(velocity);
 plane.performance.gearPara = plane.fuselage.gearParaDrag(velocity);
+
 if missionNumber == 3
-plane.performance.antDrag = antennaParasitic(velocity);
+    plane.performance.antDrag = antennaParasitic(velocity);
 end
 %Parasitic = @(v)  + hStabParasitic(v) + vStabParasitic(v) + fuselageParasitic(v) + plane.fuselage.gearParaDrag(v);
 
@@ -133,8 +148,9 @@ elseif velocity>500 %no way we ever get this fast.
     velocity=-1;
 elseif ((isnan(velocity)) || (velocity == inf)) %if solver doesn't converge
     disp("Found NAN or inf!") %DEBUG - can remove when debugging is finished.
-    velocity = -1; 
+    velocity = -1;
 end
+
 D=Drag(velocity); %function handle that sums all drag
 % iter
 Vstall = sqrt(2*WeightT/(rho*plane.wing.planformArea*plane.wing.clFlap));
