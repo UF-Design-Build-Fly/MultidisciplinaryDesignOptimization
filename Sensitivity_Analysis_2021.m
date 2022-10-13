@@ -1,7 +1,6 @@
 clear; clc;
 %Ian-10/8/2022-Mostly done with debugging, still wamt to add more data processing, but can do that post analysis
-%syringes and vials with EP weight and antenna length, for loop now also
-%iterates over span lengths
+
 warning('off','all') %using structs the way we do here generates a flood of warnings that slows matlab down. Comment this out (and restard matlab) when debugging. 
 tic
 
@@ -11,10 +10,10 @@ rho = 0.00235308; %Density air at Tuscon, Az (slug/ft^3)
 Temp = 293; %temperature in kelvin at competition site
 
 %This section introduces values which are later iterated on in the for loop
-Aspect_Ratios = 7; %[6, 7, 8]; %, 10, 11, 12, 13]; %wing aspect ratios to consider
-Electronic_Package_Weight = 3; %2:.5:4; %Electronic Package Weight for mission 2 in pounds
-Antenna_Length = 20:2.5:70; %Antenna Length in inches
-span = 5; %3:1:7; %Span is a range of values, in feet
+Aspect_Ratios = 7;%[6, 7, 8, 9]; %, 10, 11, 12, 13]; %wing aspect ratios to consider
+Electronic_Package_Weight = 4;%3:.5:5; %Electronic Package Weight for mission 2 in pounds
+Antenna_Length = 30;%25:5:40; %Antenna Length in inches
+span = 5;%3:1:6; %Span is a range of values, in feet
 load("MotorSpreadsheet.mat");
 Num_Power_Systems = height(MotorSpreadsheet);
 
@@ -28,7 +27,7 @@ sa_wheel = (2*pi*(radius_wheel)^2+ pi*2*radius_wheel*width_wheel)/144;
 [wings] = wingData(Aspect_Ratios, span); %call wing function to make airfoil data lookup table
 [wingrow, wingcol, wingpg, wingspan] = size(wings); %get indices to iterate over. Must also include size of wingspans this year
 
-max_index = 10000; %roughly 15% of airplanes checked are succesful so preallocate enough memory for them. Dramatically speeds up computation.
+max_index = 100000; %roughly 15% of airplanes checked are succesful so preallocate enough memory for them. Dramatically speeds up computation.
 plane(1:max_index) = struct(airplaneClass);%create a matrix to hold all the computed aircraft. Most aircraft will fail and be overwritten so max_index does not have to equal max iterations.
 index = 1;
 iterNum = 1;
@@ -169,4 +168,3 @@ save("winnersAR" + Aspect_Ratios(1) + "_scores.mat", "scores");
        %the analysis to run, so clearing it as often as possible is important to avoid hogging ram from other programs. This ram hogging is the leading cause of crashing for this code.
 %scatter(vials,score);
 
-toc;

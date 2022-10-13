@@ -7,7 +7,7 @@ muk=1.612e-4; %kinmatic viscosity (ish) related to mu
 if missionNumber == 2
     WeightT = plane.performance.totalWeight2;
 elseif missionNumber == 3
-    antennaWidth = 0.5/12; Cdantenna = 1.2; g = 32.2;
+    antennaWidth = 0.75/12; Cdantenna = 1.2; g = 32.2;
     WeightT = plane.performance.totalWeight3;
 end
 %-------------------------------------------------------------------------%
@@ -23,9 +23,9 @@ CDf=0.75; %good round estimate
 wingParasitic = @(v) (0.5*rho*(v^2)*plane.wing.planformArea*plane.wing.cd);
 hStabParasitic = @(v) (0.5*rho*(v^2)*plane.empennage.HSarea*plane.empennage.HScd);
 vStabParasitic = @(v) (0.5*rho*(v^2)*plane.empennage.VSarea*plane.empennage.VScd);
-fuselageParasitic = @(v) (0.5*rho*(v^2)*plane.fuselage.frontalSurfaceArea*CDf);
+fuselageParasitic = @(v) (0.5*rho*(40^2)*plane.fuselage.frontalSurfaceArea*CDf);
 if missionNumber == 3
-antennaParasitic = @(v) .5*(plane.performance.antennaLength/12)*antennaWidth*rho*(v^2)*Cdantenna*(1/g);
+antennaParasitic = @(v) .5*(plane.performance.antennaLength/12)*antennaWidth*rho*(v^2)*Cdantenna; %took out 1/g to drop conversion from lb/ft^3
 Parasitic = @(v) antennaParasitic(v) + wingParasitic(v) + hStabParasitic(v) + vStabParasitic(v) + fuselageParasitic(v) + plane.fuselage.gearParaDrag(v);
 else
 Parasitic = @(v) wingParasitic(v) + hStabParasitic(v) + vStabParasitic(v) + fuselageParasitic(v) + plane.fuselage.gearParaDrag(v);
@@ -111,8 +111,8 @@ Drag= @(v) Induced(v) + Parasitic(v) + Skin(v);
 %--------------------------Velocity Solver--------------------------------%
 Thrust = plane.power.thrust; %make this a function handle for dynamic thrust once we're sure the assumptions are correct.
 func=@(v) (Drag(v)-Thrust);
-velocity=fminsearch(func, 30); %find the velocity where drag is equal to thrust. This will be the estimate of cruise velocity.
-
+velocity = fminsearch(func, 30); %find the velocity where drag is equal to thrust. This will be the estimate of cruise velocity.
+%keyboard
 plane.performance.drag1 = Drag(velocity); %These values are saved so we can review them for reasonableness later
 plane.performance.inducedDrag = Induced(velocity);
 plane.performance.parasiticDrag = Parasitic(velocity);
@@ -139,15 +139,12 @@ D=Drag(velocity); %function handle that sums all drag
 % iter
 Vstall = sqrt(2*WeightT/(rho*plane.wing.planformArea*plane.wing.clFlap));
 landingV = 1.3*Vstall; %From raymer textbook
-if missionNumber == 1
-    plane.performance.velocity1 = velocity;
-    plane.performance.landingSpeed1 = landingV;
-    plane.performance.drag1 = D;
-elseif missionNumber == 2
+
+if missionNumber == 2
     plane.performance.velocity2 = velocity;
     plane.performance.landingSpeed2 = landingV;
     plane.performance.drag2 = D;
-else
+elseif missionNumber == 3
     plane.performance.velocity3 = velocity;
     plane.performance.landingSpeed3 = landingV;
     plane.performance.drag3 = D;
