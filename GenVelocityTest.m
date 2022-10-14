@@ -122,11 +122,36 @@ func=@(v) (Drag(v)-Thrust);
 % end
 % v = 10:0.01:100;
 % plot(v, d);
+V_upper = 150;
+V_lower = 50;
+iter = 0;
+velocity = .5*(V_lower+V_upper);
+while func(velocity)>=0.05 || func(velocity) <= -0.05
+    velocity = .5*(V_lower+V_upper);
+    if func(velocity) > 0
+        V_upper = velocity;
+    elseif func(velocity) < 0
+        V_lower = velocity;
+    else
+        break;
+    end
+    if iter >20
+        velocity = -1;
+        break;
+    end
+    iter = iter+1;
+end
 
-
-velocity = fzero(func, 100); %find the velocity where drag is equal to thrust. This will be the estimate of cruise velocity.
-
-%keyboard
+% velocity = fzero(func, 100); %find the velocity where drag is equal to thrust. This will be the estimate of cruise velocity.
+% iter = 1;
+% while func(velocity) >= 0.01 || func(velocity) <= -0.01
+%     velocity = fzero(func, iter*10 + 50);
+%     iter = iter+1;
+%     if iter > 10
+%         velocity = -1;
+%         break;
+%     end
+% end
 plane.performance.drag1 = Drag(velocity); %These values are saved so we can review them for reasonableness later
 plane.performance.inducedDrag = Induced(velocity);
 plane.performance.parasiticDrag = Parasitic(velocity);
@@ -152,7 +177,6 @@ elseif ((isnan(velocity)) || (velocity == inf)) %if solver doesn't converge
 end
 
 D=Drag(velocity); %function handle that sums all drag
-% iter
 Vstall = sqrt(2*WeightT/(rho*plane.wing.planformArea*plane.wing.clFlap));
 landingV = 1.3*Vstall; %From raymer textbook
 

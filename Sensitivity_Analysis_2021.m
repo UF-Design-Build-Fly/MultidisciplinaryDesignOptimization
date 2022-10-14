@@ -10,10 +10,10 @@ rho = 0.00235308; %Density air at Tuscon, Az (slug/ft^3)
 Temp = 293; %temperature in kelvin at competition site
 
 %This section introduces values which are later iterated on in the for loop
-Aspect_Ratios = 7;%[6, 7, 8, 9]; %, 10, 11, 12, 13]; %wing aspect ratios to consider
-Electronic_Package_Weight = 4;%3:.5:5; %Electronic Package Weight for mission 2 in pounds
-Antenna_Length = 30;%25:5:40; %Antenna Length in inches
-span = 5;%3:1:6; %Span is a range of values, in feet
+Aspect_Ratios = [7, 8, 10]; %, 10, 11, 12, 13]; %wing aspect ratios to consider
+Electronic_Package_Weight = 3.5:.5:5;%3:.5:5; %Electronic Package Weight for mission 2 in pounds
+Antenna_Length = 25:5:40;%25:5:40; %Antenna Length in inches
+span = 4:1:7;%3:1:6; %Span is a range of values, in feet
 load("MotorSpreadsheet.mat");
 Num_Power_Systems = height(MotorSpreadsheet);
 
@@ -43,6 +43,8 @@ for AR = 1:wingpg
     toc;
     for spanIndex = 1:length(span) %NOTE: the wings function cant handle this iteration yet, all calls of plane(index) also need updated, waiting on wings update
         spanfailcount(1 + spanIndex, 1) = span(spanIndex);
+        disp("At Span " + spanIndex);
+        toc;
         for airfoil = 1:1:8
             for powerIndex = 1:Num_Power_Systems
                 for electronicPackageIndex = 1:length(Electronic_Package_Weight)
