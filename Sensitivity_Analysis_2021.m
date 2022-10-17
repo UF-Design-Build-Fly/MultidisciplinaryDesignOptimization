@@ -10,10 +10,10 @@ rho = 0.00235308; %Density air at Tuscon, Az (slug/ft^3)
 Temp = 293; %temperature in kelvin at competition site
 
 %This section introduces values which are later iterated on in the for loop
-Aspect_Ratios = [7, 8, 10]; %, 10, 11, 12, 13]; %wing aspect ratios to consider
-Electronic_Package_Weight = 3.5:.5:5;%3:.5:5; %Electronic Package Weight for mission 2 in pounds
-Antenna_Length = 25:5:40;%25:5:40; %Antenna Length in inches
-span = 4:1:7;%3:1:6; %Span is a range of values, in feet
+Aspect_Ratios = [6 7 8 9 10]; %, 10, 11, 12, 13]; %wing aspect ratios to consider
+Electronic_Package_Weight = 3:.5:8;%3:.5:5; %Electronic Package Weight for mission 2 in pounds
+Antenna_Length = 35:5:45;%25:5:40; %Antenna Length in inches
+span = 5:0.25:5.5;%3:1:6; %Span is a range of values, in feet
 load("MotorSpreadsheet.mat");
 Num_Power_Systems = height(MotorSpreadsheet);
 
@@ -48,6 +48,7 @@ for AR = 1:wingpg
         for airfoil = 1:1:8
             for powerIndex = 1:Num_Power_Systems
                 for electronicPackageIndex = 1:length(Electronic_Package_Weight)
+                    %keyboard
                     for antennaIndex = 1:length(Antenna_Length) %Changed this for the rerun - use smarter logic otherwise %for every amount of syringes try up to the maximum number of vials
 
                         plane(index) = struct(airplaneClass); %make sure to start with a clean slate at this index as this code writes over the index of failed airplanes. Without cleanup things like failure flags stay set even when they shouldn't
@@ -125,10 +126,11 @@ for AR = 1:wingpg
                                 spanfailcount(1 + spanIndex, 6) = spanfailcount(1 + spanIndex, 6) + 1;
                             end
                             %disp("insane!");
-                            spanfailcount(spanIndex,3) = spanfailcount(spanIndex,3) + 1;
                         end
                         iterNum = iterNum+1;
+                        
                     end
+                    
                 end
             end
         end
