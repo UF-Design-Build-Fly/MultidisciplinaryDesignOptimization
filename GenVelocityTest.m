@@ -89,13 +89,20 @@ Drag= @(v) Induced(v) + Parasitic(v) + Skin(v);
 
 
 %---------------------------Dynamic Thrust--------------------------------%
-% PS=pitch/12 * 5614 /60; %propeller speed
-% PD=pitch/dp; %this is dynamic thrust function. Article this is based off
-% of is in resources google drive somewhere. %DEBUG - does this match the
-% physics of the motor? Excluding for now until more research can be done.
-%FS=@(v) v; %DEBUG: research this...
-%
-% Ts=Thrust;
+%This function is only an estimate based on limited available testing data.
+%It should largely be considered an underestimator of performance. 
+%This largely determines cruise performance
+
+%Key assumptions are that the propeller spins at a constant rpm and that
+%air exit velocity is constant through the whole propeller radius. The RPM
+%changes suprisingly little with forward airspeed. The "propeller speed" is
+%by far the most important factor in determining max dynamic thrust.
+%See https://www.electricrcaircraftguy.com/2014/04/propeller-static-dynamic-thrust-equation-background.html
+
+% PS= (plane.power.propPitch/12) * (plane.power.rpm/60); %propeller speed
+% PD=plane.power.propPitch/plane.power.propDiamter;
+% 
+% Ts=plane.power.thrust;
 % s=0;
 % if PD<0.6
 %     T= @(v) Ts*(1 - FS(v)/(PS*(PD+0.2)/PD));
@@ -105,23 +112,37 @@ Drag= @(v) Induced(v) + Parasitic(v) + Skin(v);
 %     T=@(v) Ts*(1- ((FS(v)*PD/PS)-(PD-0.6))/0.8);
 % end
 
+k1 = 4.392E-8; %semi-empirical model coefficients
+k2 = 4.233E-4;
+rpm = plane.power.rpm;
+d = plane.power.propDiameter;
+pitch = plane.power.propPitch;
+N_lb = 1.9*0.224; %newtons to pounds conversion factor
+
+T = @(v) min(plane.power.thrust, N_lb*k1*rpm*((d^3.5)/sqrt(pitch))*(k2*rpm*pitch-(v/3.281))); %Calculated static thrust is sometimes higher than measured. 
 %-------------------------------------------------------------------------%
 
 
 %--------------------------Velocity Solver--------------------------------%
-Thrust = plane.power.thrust; %make this a function handle for dynamic thrust once we're sure the assumptions are correct.
-func=@(v) (Drag(v)-Thrust);
+func=@(v) (Drag(v)-T(v));
 
-% i = 1;
-% for v = 10:0.01:100
-%     d(i) = Drag(v) - Thrust;
+% i = 1; %debug code for visualizing thrust/drag curves
+% for v = 5:0.01:100
+%     d(i) = Drag(v);
+%     f(i) = func(v);
+%     w(i) = T(v);
 %     i = i+1;
 %     %I_d(i) = Induced(v);
 %     %P_d(i) = Parasitic(v);
 %     %S_d(i) = Skin(v);
 % end
-% v = 10:0.01:100;
-% plot(v, d);
+% v = 5:0.01:100;
+% hold on;
+% plot(v,d);
+% plot(v, f);
+% plot(v, w);
+% legend("Drag", "Net Force", "Thrust");
+
 V_upper = 140;
 V_lower = 70;
 iter = 0;

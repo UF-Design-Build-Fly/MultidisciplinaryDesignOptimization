@@ -1,4 +1,4 @@
-clear; clc;
+clear; clc; close all;
 %Ian-10/8/2022-Mostly done with debugging, still wamt to add more data processing, but can do that post analysis
 
 warning('off','all') %using structs the way we do here generates a flood of warnings that slows matlab down. Comment this out (and restard matlab) when debugging.
@@ -27,7 +27,7 @@ sa_wheel = (2*pi*(radius_wheel)^2+ pi*2*radius_wheel*width_wheel)/144;
 [wings] = wingData(Aspect_Ratios, span); %call wing function to make airfoil data lookup table
 [wingrow, wingcol, wingpg, wingspan] = size(wings); %get indices to iterate over. Must also include size of wingspans this year
 
-max_index = 100000; %roughly 15% of airplanes checked are succesful so preallocate enough memory for them. Dramatically speeds up computation.
+max_index = 10000; %About 2% of airplanes are succesful.
 plane(1:max_index) = struct(airplaneClass);%create a matrix to hold all the computed aircraft. Most aircraft will fail and be overwritten so max_index does not have to equal max iterations.
 index = 1;
 iterNum = 1;
