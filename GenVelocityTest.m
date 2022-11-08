@@ -144,7 +144,7 @@ func=@(v) (Drag(v)-T(v));
 % legend("Drag", "Net Force", "Thrust");
 
 V_upper = 140;
-V_lower = 70;
+V_lower = 40;
 iter = 0;
 velocity = .5*(V_lower+V_upper);
 while func(velocity)>=0.05 || func(velocity) <= -0.05
