@@ -25,6 +25,8 @@ classdef performanceClass
     landingSpeed1 = -1;
     landingSpeed2 = -1;
     landingSpeed3 = -1;
+
+    dynamicThrust = -1;
     
 %     time1 = -1;
     time2 = -1;

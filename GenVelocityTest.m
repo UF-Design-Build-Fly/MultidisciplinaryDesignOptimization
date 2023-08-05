@@ -1,5 +1,5 @@
 
-function [plane] = GenVelocityTest(plane, missionNumber, rho, Temp) %DEBUG: this sometimes finds complex numbers for drag and fails to find velocity. Is this a bug or just when it gets an impractical (underpowered) aircraft?
+function [plane] = GenVelocityTest(plane, missionNumber, rho, Temp, net, stats) %DEBUG: this sometimes finds complex numbers for drag and fails to find velocity. Is this a bug or just when it gets an impractical (underpowered) aircraft?
 
 %-------------------------------Constants---------------------------------%
 muk=1.612e-4; %kinmatic viscosity (ish) related to mu
@@ -112,36 +112,51 @@ Drag= @(v) Induced(v) + Parasitic(v) + Skin(v);
 %     T=@(v) Ts*(1- ((FS(v)*PD/PS)-(PD-0.6))/0.8);
 % end
 
-k1 = 4.392E-8; %semi-empirical model coefficients
-k2 = 4.233E-4;
-rpm = plane.power.rpm;
-d = plane.power.propDiameter;
-pitch = plane.power.propPitch;
-N_lb = 1.9*0.224; %newtons to pounds conversion factor
+% k1 = 4.39*10^-8; %semi-empirical model coefficients
+% k2 = 4.23*10^-4;
+% rpm = plane.power.rpm;
+% d = plane.power.propDiameter;
+% pitch = plane.power.propPitch;
+% N_lb = 0.224; %newtons to pounds conversion factor
 
-T = @(v) min(plane.power.thrust, N_lb*k1*rpm*((d^3.5)/sqrt(pitch))*(k2*rpm*pitch-(v/3.281))); %Calculated static thrust is sometimes higher than measured. 
+
+
+
+%T = @(v) min(plane.power.thrust, ((N_lb*k1)*rpm*((d^3.5)/sqrt(pitch)))*((k2)*rpm*pitch-(v)));
+
+
+%Empirical Data update: This function, for the cobra 4130/20 with a 20x13
+%prop, effectively finds the prop speed (61 mph) as the zero thrust
+%airspeed. In fact the motor is still producing the roughly 4 pounds of
+%thrust needed to maintain the measured maximum forward airspeed of ~55 mph
+%Motor zero thrust should be at 120 feet per second.
 %-------------------------------------------------------------------------%
 
 
 %--------------------------Velocity Solver--------------------------------%
-func=@(v) (Drag(v)-T(v));
 
-% i = 1; %debug code for visualizing thrust/drag curves
-% for v = 5:0.01:100
-%     d(i) = Drag(v);
-%     f(i) = func(v);
-%     w(i) = T(v);
-%     i = i+1;
-%     %I_d(i) = Induced(v);
-%     %P_d(i) = Parasitic(v);
-%     %S_d(i) = Skin(v);
-% end
-% v = 5:0.01:100;
-% hold on;
-% plot(v,d);
-% plot(v, f);
-% plot(v, w);
-% legend("Drag", "Net Force", "Thrust");
+d = plane.power.propDiameter;
+p = plane.power.propPitch;
+rpm = plane.power.rpm;
+
+func=@(v) (Drag(v)-dynamicThrust(d,p,rpm,v,net,stats));
+
+i = 1; %debug code for visualizing thrust/drag curves
+for v = 5:0.01:100
+    d(i) = Drag(v);
+    f(i) = func(v);
+    w(i) = dynamicThrust(d,p,rpm,v,net,stats);
+    i = i+1;
+    %I_d(i) = Induced(v);
+    %P_d(i) = Parasitic(v);
+    %S_d(i) = Skin(v);
+end
+v = 5:0.01:100;
+hold on;
+plot(v,d);
+plot(v, f);
+plot(v, w);
+legend("Drag", "Net Force", "Thrust");
 
 V_upper = 140;
 V_lower = 40;
@@ -163,16 +178,12 @@ while func(velocity)>=0.05 || func(velocity) <= -0.05
     iter = iter+1;
 end
 
-% velocity = fzero(func, 100); %find the velocity where drag is equal to thrust. This will be the estimate of cruise velocity.
-% iter = 1;
-% while func(velocity) >= 0.01 || func(velocity) <= -0.01
-%     velocity = fzero(func, iter*10 + 50);
-%     iter = iter+1;
-%     if iter > 10
-%         velocity = -1;
-%         break;
-%     end
-% end
+
+plane.performance.dynamicThrust = dynamicThrust(d,p,rpm,velocity,net,stats); %max thrust available at cruise velocity
+wattFraction = plane.power.thrust/plane.performance.dynamicThrust; %less power is consumed as motor is no longer able to give as much thrust
+plane.power.time = plane.power.time*(wattFraction-0.3*wattFraction); % 30% factor of safety in derating power consumption
+
+
 plane.performance.drag1 = Drag(velocity); %These values are saved so we can review them for reasonableness later
 plane.performance.inducedDrag = Induced(velocity);
 plane.performance.parasiticDrag = Parasitic(velocity);
