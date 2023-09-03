@@ -135,39 +135,29 @@ for AR = 1:size(aspectRatios)
         end
     end
 end
+
 toc;
-%Code below is from post.m file to run post-processing on the data. We should probably move this into a function call later.
-%THIS HAS NOT BEEN UPDATED
 
-score2 = zeros(1, length(planes)); %mission 2 scores of all aircraft
-score3 = score2; %mission 3 scores
-%scoreg = score2; %ground scores
-%vials = score2; %number of vials in given airplane
-%syringes = score2; %number of syringes in given airplane
-for i = 1:length(planes) %load data from structure into arrays that are easier to work with
-    if (planes(i).sanityFlag == 1) || (planes(i).volSanityFlag == 1)  %all values remain 1 unless the airplane fails sanity check. If the last plane analyzed is not sane the original sanity check can't throw it out.
-        score2(i) = (planes(i).performance.score2);
-        score3(i) = (planes(i).performance.score3);
-        %vials(i) = plane(i).fuselage.numVials;
-        %syringes(i) = plane(i).fuselage.numSyringes;
-        %scoreg(i) = 10 + 2*(3*syringes(i)/5) + 5*vials(i);%Baded on time to run, load and unload syringes, load vial
-    end
+scoresM2 = zeros(1, length(planes)); %Initilize arrays with 0s
+scoresM3 = scoresM2; %Initilize arrays with 0s
+scoresGM = scoresM2; %Initilize arrays with 0s
+
+for i = 1:length(planes) %Load data into arrays that are easier to work with
+    scoresM2(i) = planes(i).performance.score2;
+    scoresM3(i) = planes(i).performance.score3;
+    scoresGM(i) = planes(i).performance.scoreGM;
 end
-%clear plane
-[M2, I2] = max(score2); %find the airplanes with the best individual mission scores
-[M3, I3] = max(score3);
-%[Mg, Ig] = max(scoreg);
-score2 = 1 + score2/M2; %normalize scores against best performers
-score3 = 2 + score3/M3;
-%scoreg = scoreg/Mg;
-score = score2 + score3 + 1; %scoreg + 1;
-[M, I] = maxk(score, 200); %find the top 200 airplanes
-winners = planes(I);
-scores = score(I);
-%save("winnersAR" + Aspect_Ratios(1) + ".mat", "winners"); %save top 100 airplanes. It is impractical to save all airplanes checked.
-%save("winnersAR" + Aspect_Ratios(1) + "_scores.mat", "scores");
 
-%save("successes.mat", "plane");
-%clear; %once finished don't keep hogging ram. Previous experience with running multiple instances on analysis on one computer shows that ram usage is the first limiting factor in enabling
-%the analysis to run, so clearing it as often as possible is important to avoid hogging ram from other programs. This ram hogging is the leading cause of crashing for this code.
-%scatter(vials,score);
+scoresM2 = scoresM2/max(scoresM2); %Normalize scores against best performers
+scoresM3 = scoresM3/max(scoresM3);
+scoresGM = scoresGM/max(scoresGM);
+
+score = scoresM2 + scoresM3 + scoresGM;
+
+[winners, indices] = maxk(score, 100); %Find the top planes
+scores = score(indices);
+
+save("winners.mat", "winners"); %Save top results
+save("winners_scores.mat", "scores");
+
+clear; %Clear variables to free RAM. RAM usage is the limiting factor in enabling the analysis to run and avoid crashing.

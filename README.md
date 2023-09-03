@@ -17,3 +17,4 @@ Sensitivity_Analysis_2020.m is included for reference but is no longer functiona
 * Examine wingData function
 * Examine airplaneClass, empennageClass, fuselageClass, performanceClass, powerClass, wingClass
 * see if friendlyFailCount gets data
+* improve sanity check to check final plane
