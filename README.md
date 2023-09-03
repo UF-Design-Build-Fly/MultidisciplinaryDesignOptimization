@@ -1,4 +1,4 @@
-# Sensitivity-Analysis
+# Multi-disciplinary Design Optimization
 Project to determine optimal aircraft configuration for the 2023-2024 AIAA Design, Build, Fly competition.
 
 Performs an exhaustive search over a given list of aircraft parameters (defined in xxxClass.m for each major portion of the aircraft). Once the parameters for each aircraft are chosen a velocity solver is used to estimate cruise velocity for that aircraft. Relative performance can be determined from this velocity and number/size of scoring elements chosen. After all combinations have been simulated the top 200 aircraft are then plugged into the scoring formula defined in the rules to estimate the actual score achievable in competition.
