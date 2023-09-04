@@ -24,6 +24,20 @@ wingParasitic = @(v) (0.5*rho*(v^2)*plane.wing.planformArea*plane.wing.cd);
 hStabParasitic = @(v) (0.5*rho*(v^2)*plane.empennage.HSarea*plane.empennage.HScd);
 vStabParasitic = @(v) (0.5*rho*(v^2)*plane.empennage.VSarea*plane.empennage.VScd);
 fuselageParasitic = @(v) (0.5*rho*(40^2)*plane.fuselage.frontalSurfaceArea*CDf);
+
+            % From FuselageClass.m move to here
+            %------------------------Parasitic Drag Function--------------------------%
+            Cd_gear=0.05;        % Let Cd = 0.05 for the flatbar
+            Cd_wheel = 0.20;     % Let Cd = 0.245 for the wheels
+            rho_air = rho/(12^3);  %density of air at sea level in slug/in^3   CONVERSION
+            
+            area_wheel = plane.fuselage.wheelWidth*plane.fuselage.wheelRadius*3*2;    %profile area for 3 wheels
+            %Bryce edit, taking out the 12's in the below equation %DEBUG
+            drag_Al =@(v) Cd_gear*rho_air*((v)^2)*gearFrontArea*.5; %aluminum bar
+            drag_wheel = @(v) Cd_wheel*rho_air*((v)^2)*area_wheel*.5;
+            plane.fuselage.gearParaDrag=@(v) drag_Al(v)+drag_wheel(v); %p for parasitic. %DEBUG -- GenVelocityTest will call this function - but through a really convoluted series of function calls
+                                                                                         %Maybe try to just set constants here and have GenVelocityTest compute drag directly?
+
 if missionNumber == 3
     antennaParasitic = @(v) .5*(plane.performance.antennaLength/12)*antennaWidth*rho*(v^2)*Cdantenna; %took out 1/g to drop conversion from lb/ft^3
     Parasitic = @(v) antennaParasitic(v) + wingParasitic(v) + hStabParasitic(v) + vStabParasitic(v) + fuselageParasitic(v) + plane.fuselage.gearParaDrag(v);

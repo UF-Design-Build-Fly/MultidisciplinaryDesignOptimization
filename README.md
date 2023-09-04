@@ -16,10 +16,16 @@ Notes:
     * calculate -> calc
 
  TODO:
-* Update Motorspreadsheet (Rerun script, recreate spreadsheet, convert to .mat file) update estimated weight to be in pounds
+* Update Motorspreadsheet (Rerun script, recreate spreadsheet, convert to .mat file)
+  * update estimated weight to be in pounds
 * remove reassignment of numPowerSystems
+* add wheel weight
+* move landinggear into seperate class
+* get weight of wood things
+* debug total weight. last year things needed a weight
 
-* Have Haris look at wingData, Add lift from fuselage?
+* Have Haris look at GenWingData function, Add lift from fuselage?, GenEmpennage function
+* Have Dylan look at fuselage and landing gear math - switch to carbon fiber
 
 * spanFailCount may have to be changed to something else or removed
 * Update PowerClass if necessary

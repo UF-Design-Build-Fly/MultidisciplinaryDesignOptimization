@@ -11,10 +11,12 @@ classdef FuselageClass
     weight = -1; %weight of carbon fiber to make fuselage + mechanisms
     
     gearWeight = -1;
-    gearParaDrag = -1;
     gearSA = -1;
+    gearFrontalSA = -1;
 
+    wheelWeight = -1;
     wheelSA = -1;
+    wheelFrontalSA = -1;
     
     end
     
@@ -95,6 +97,59 @@ classdef FuselageClass
 
         end
 
-    end
+        function plane = GenLandingGear(plane)
 
+            %This function computes different parameters for the landing gear
+            %Inputs: PropDiam = diameter of propellor (inches)
+            %        fuselageHeight = height of the fuselage (inches)
+            %Outputs: A vector G with the following values:
+            %   G = [gearWeight gearParaDrag gearSA wheelSA]
+            %Height of landing gear is the difference between prop radius and fuselage height
+            %
+            %                                top
+            %         ^              -------------------
+            %         |            / |                   \
+            %         |           /  |                    \
+            %         |        c /   b                     \
+            %    height         /    |                      \ 
+            %         |        /__a__|                       \
+            %         |       |                               |    |
+            %         |       |                               |    base
+            %         |       |                               |    |
+            %
+            %
+            %                  <------------width------------->
+            
+            %----------------------------Defined Constants----------------------------%
+            numWheels = 2;
+            wheelWidth = 0.5/12;    %(division by 12 to convert to ft)
+            wheelRadius = 1.5/12;   %^^^
+            gearwidth = 2/12;       %(ft)
+            gearThickness = 1/8;    %(ft)
+            base = 2/12;            %Height of vertical portion (ft)
+            %rhoAluminum = 0.001122368;   %Density for landing gear material (Al) (slug/in^3)
+            rhoCarbon = 120.486;	%lb/ft^3
+
+            %----------------------Calculation of Gear Weight, SA---------------------%
+            width = 0.25*plane.wing.span;
+            height = plane.powerSystem.propDiameter/6 + 1/6; %1.5" from fuselageHeight + 2.5" clearence 
+            fuselageWidth = plane.fuselage.width;
+
+            a = 0.5*(width-fuselageWidth);
+            b = height-base;
+            c = sqrt(a^2 + b^2);
+
+            L = fuselageWidth + 2*(c + base);
+
+            plane.fuselage.gearSA=L*gearwidth;
+            plane.fuselage.gearFrontalSA=L*thickness;
+            plane.fuselage.gearWeight = rhoCarbon*(plane.fuselage.gearSA*gearThickness);
+
+            plane.fuselage.wheelWeight = numWheels * 3/16; %3ounces (lb)
+            plane.fuselage.wheelSA = numWheels * (2*pi*(wheelRadius)^2 + 2*pi*wheelRadius*wheelWidth);
+            plane.fuselage.wheelFrontalSA = numWheels * (2*wheelRadius*wheelWidth);
+            
+        end
+
+    end
 end

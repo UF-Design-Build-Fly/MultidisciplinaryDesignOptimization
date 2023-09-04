@@ -23,10 +23,6 @@ numPowerSystems = 50; %DEBUGGING: Only search first 50 to decrease runtime while
 vertStabAspectRatio = 2; %From aero calculations done beforehand
 horizStabAspectRatio = 4.5; %^^^
 
-wheelWidth = 0.5/12; %(division by 12 to convert to ft)
-wheelRadius = 1.5/12; %^^^
-wheelSurfaceArea = (2*pi*(wheelRadius)^2 + 2*pi*wheelRadius*wheelWidth);
-
 [wings] = GenWingData(aspectRatios, wingSpans); %Call GenWingsData function to make airfoil data lookup table
 
 maxSavedPlanes = 10000; %About 98% of aircraft will fail and be overwritten so maxSavedPlanes does not have to equal max iterations
@@ -60,7 +56,7 @@ for aspectRatioIndex = 1:size(aspectRatios)
                         %Set starting values for each plane
                         planes(index).wing.span = wingSpans(spanIndex);
                         planes(index).wing.aspectRatio = aspectRatios(aspectRatioIndex);
-                        planes(index).performance.epWeight = m2PackageWeight(m2PackageWeightIndex);
+                        planes(index).performance.m2Weight = m2PackageWeight(m2PackageWeightIndex);
                         planes(index).performance.numPassengers = m3NumPassengers(m3PassengersIndex);
 
                         %Set values from wings matrix into plane
@@ -70,11 +66,11 @@ for aspectRatioIndex = 1:size(aspectRatios)
                         planes(index).powerSystem = SetPowerSystemData(planes(index).powerSystem, MotorSpreadsheet, powerSystemIndex);
 
                         %Set payload and fuselage configuration
-                        planes(index).fuselage = CalcFuselageData(planes(index).fuslage);
-                        planes(index) = landingGear(planes(index), rho);
-                        planes(index) = empennage(planes(index), horizStabAspectRatio, vertStabAspectRatio);
+                        planes(index).fuselage = CalcFuselageData(planes(index));
+                        planes(index).fuselage = GenLandingGear(planes(index));
+                        planes(index).empennage = GenEmpennage(planes(index), horizStabAspectRatio, vertStabAspectRatio);
 
-                        planes(index) = findTotalWeight(planes(index), m2PackageWeight(m2PackageWeightIndex), m3NumPassengers(m3PassengersIndex));
+                        planes(index) = FindTotalWeight(planes(index));
 
 
                         %Simulate mission 2
