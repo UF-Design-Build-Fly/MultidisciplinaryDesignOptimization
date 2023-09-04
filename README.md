@@ -5,18 +5,23 @@ Performs an exhaustive search over a given list of aircraft parameters (defined 
 
 Sensitivity_Analysis_2020.m is included for reference but is no longer functional folder structure. Sensitivity_Analysis.m is the main project file that outlines the necessary computations. It is actively maintained and will be updated as empirical data is gathered to improve the estimations.
 
- TODO:
-* Update Motorspreadsheet (Rerun script, recreate spreadsheet, convert to .mat file) update estimated weight to be in pounds
-* remove reassignment of numPowerSystems
+Notes:
 * Naming Convention Stuff
   * functions should be CapitalCapital
   * variables should be lowercaseCapital
   * functions should probably contain a verb
-  * variables try not to abbreviate but abbreviate number -> num generate -> gen calculate -> calc
-* Have Haris look at wingData
-* Examine empennageClass, empennage, performanceClass, landingGear, findTotalWeight, GenVelocityTest, TakeoffChecker, mission2score, mission3score
+  * variables try not to abbreviate but abbreviate
+    * number -> num
+    * generate -> gen
+    * calculate -> calc
+
+ TODO:
+* Update Motorspreadsheet (Rerun script, recreate spreadsheet, convert to .mat file) update estimated weight to be in pounds
+* remove reassignment of numPowerSystems
+
+* Have Haris look at wingData, Add lift from fuselage?
+
 * spanFailCount may have to be changed to something else or removed
-* whats happening with surface area(wheel surface area to be exact)
-* %TODO: calculate fuselage size based on number of passengers
-* TODO: Add lift from fuselage???
 * Update PowerClass if necessary
+* whats happening with surface area(wheel surface area to be exact)
+* Examine empennageClass, empennage, performanceClass, landingGear, findTotalWeight, GenVelocityTest, TakeoffChecker, mission2score, mission3score
