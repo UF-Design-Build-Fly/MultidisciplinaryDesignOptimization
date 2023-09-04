@@ -29,8 +29,10 @@ TODO:
 - change max saved planes
 - update times for assemblying plane and putting in passengers
 
+
+Ask HARIS
+- Is the frontalSurfaceArea suppose to include all the tapering surface area of the nose?
+
 - Have Haris look at GenWingData function, Add lift from fuselage?, GenEmpennage function, TakeoffChecker, GenVelocityTest(specifically landing gear)
 - Have Dylan look at fuselage and landing gear math - switch to carbon fiber
 - Haris/Austin get turn acceleration estimate put into performanceclass change default to -1
-
-- spanFailCount may have to be changed to something else or removed

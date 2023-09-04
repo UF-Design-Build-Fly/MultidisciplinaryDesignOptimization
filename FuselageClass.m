@@ -128,14 +128,14 @@ classdef FuselageClass
             wheelWidth = 0.5/12;    %(division by 12 to convert to ft)
             wheelRadius = 1.5/12;   %^^^
             gearwidth = 2/12;       %(ft)
-            gearThickness = 1/8;    %(ft)
+            gearThickness = 1/8/12;    %(ft)
             base = 2/12;            %Height of vertical portion (ft)
             %rhoAluminum = 0.001122368;   %Density for landing gear material (Al) (slug/in^3)
             rhoCarbon = 120.486;	%lb/ft^3
 
             %----------------------Calculation of Gear Weight, SA---------------------%
             width = 0.25*plane.wing.span;
-            height = plane.powerSystem.propDiameter/6 + 1/6; %1.5" from fuselageHeight + 2.5" clearence 
+            height = plane.powerSystem.propDiameter/24 + 1/6; %1.5" from fuselageHeight + 2.5" clearence 
             fuselageWidth = plane.fuselage.width;
 
             a = 0.5*(width-fuselageWidth);
