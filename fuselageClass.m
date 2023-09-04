@@ -24,62 +24,74 @@ classdef FuselageClass
             %Inputs: Aspect Ratio, Wing Area
             %Must be run after wing data is set
             
-            %Dimensions of electronic package (in)
-            electronicPackageHeight = 3;
-            electronicPackageWidth = 3;
-            electronicPackageLength = 6;
+            %Nose section up to bulkhead
+            noseLength = (6+1+2)/12; %Space systems needs for their stuff (battery + motor + fuse/speedcontroller)
             
-            avionicsLength=8; %space systems needs for their stuff
+            %Dimensions of m2 package (ft)
+            m2PackageHeight = 3.5/12;
+            m2PackageWidth = 3/12;
+            m2PackageLength = 10/12; %3in for med cabinet,  5.5in for patient, 0.5in spacing
             
-            fuselageHeight=0;	%fuse height (in)
-            fuselageWidth=0;	%fuse width (in)
-            fuselageLength=0;	%fuse length (in)
+            spaceAroundPackage = 1/12;   %Desired room around package (ft)
             
-            rhoCarbon=120.486;	%lb/ft^3
-            spaceAroundPackage=1;   %Desired room around package (in)
+            fuselageHeight = m2PackageHeight+spaceAroundPackage*2;    %Space for package plus 2 inches
+            fuselageWidth = m2PackageWidth+spaceAroundPackage*2;      %Space for package plus 2 inches
             
-            fuselageHeight=electronicPackageHeight+spaceAroundPackage*2;    %Space for package plus 2 inches
-            fuselageWidth=electronicPackageWidth+spaceAroundPackage*2;      %Space for package plus 2 inches
+            %Mission 3 min size for passengers
+            %3 passengers per row, 1in passengers 0.5in spaceing around them
+            m3PassengerLength = (plane.performance.numPassengers/3)*1.5/12 + 0.5/12;
+
+            %Rectangularish middle section
+            passengerSection = max(m2PackageLength, m3PassengerLength);
+
+            totalFuselageLength = plane.wing.span*0.75;    %Using 75% rule for fuselage length
             
-            totalFuselageLength = plane.wing.span*0.65*12;    %Using 75% rule for fuselage length
-            
-            minMiddleFuselageLength=(electronicPackageLength+avionicsLength)*1.1;   %Room for package and avionics plus 10% (Doesn't include tail or nose)
-            noseLength=3;	%assumption for the front length of the fuselage.
-            tailconeLength=3;	%assumption for the back length of the fueslage
-            
-            middleFuselageLength = totalFuselageLength-noseLength-tailconeLength;   %Middle length is total-tail-nose
-            
-            %Checks if the 75% rule makes a big enough fuselage
-            if middleFuselageLength < minMiddleFuselageLength
-                middleFuselageLength = minMiddleFuselageLength;
+            %Length behind passenger section
+            tailLength = totalFuselageLength - noseLength - passengerSection;
+            if (tailLength < 1)
+                tailLength = 1;
+                totalFuselageLength = noseLength + passengerSection + tailLength;
             end
             
-            fuselageLength=middleFuselageLength+noseLength+tailconeLength; %final length of fuselage
+            %Calculations
+            %This will be the surface area of the main portion of the fuselage, aka the middle part
+            surfaceAreaMain = 2*passengerSection*(fuselageHeight + fuselageWidth);
             
-            surfaceAreaMain=(2*middleFuselageLength*fuselageHeight)+(2*middleFuselageLength*fuselageWidth); %this will be the surface area of the main portion of the fuselage, aka the middle part
-            trapezoidDiagonalLengthNose=sqrt((0.5*fuselageHeight)^2+(noseLength)^2); %we will assume a trapezoidal shape for the front of the fuselage if you view it from the side  
-            surfaceAreaNose=(trapezoidDiagonalLengthNose*fuselageWidth)+(6*fuselageWidth)+((fuselageHeight/2)*fuselageWidth)+2*((0.75*fuselageHeight*6)); %this formula is used to the find the surface area of the front section. So it is bottom area + top area + front area(closed section which is the nose) + side area, which are trapezoids
-            triangularDiagonalLengthTailcone=sqrt((fuselageHeight)^2+(tailconeLength)^2); %we will assume a triangular shape for the back of the fuselage if you view it from the side. 
-            surfaceAreaTailcone=(fuselageWidth*tailconeLength)+(fuselageWidth*triangularDiagonalLengthTailcone)+2*((fuselageHeight*tailconeLength)/2); %this formula is used to find the surface area of the back portion of the fueslage. Same method as front except now we have triangular surface area instead of trapezoidal.
-            totalSurfaceArea=surfaceAreaMain+surfaceAreaNose+surfaceAreaTailcone; %this will be the temporary surface area of the fuselage total in inches
+            %Assume: trapezoidal shape for narrowing A = 1/2 (a+b)*h
+            %Vertical Narrowing is offset
+            motorMountSize = 3/12; %Narrow to 3x3 for motor mount
+            topLength = sqrt((fuselageHeight - motorMountSize)^2 + (noseLength)^2);
+            sideLength = sqrt(((fuselageWidth - motorMountSize)/2)^2 + (noseLength)^2);
+            surfaceAreaNose = 0.5*(fuselageWidth + motorMountSize)*(topLength + noseLength) + ...
+                              motorMountHeight^2 + ...
+                              (fuselageHeight + motorMountSize)*sideLength; %2 sides cancel the 1/2
             
-            %Switch to square feet
-            totalSurfaceArea=totalSurfaceArea/144;%Surface Area fuse Total,ft^2
-            surfaceAreaNose=(fuselageWidth*fuselageHeight)/144;%Frontal Surface Area,ft^2
-            carbonFiberVolume=totalSurfaceArea*((1/16)/144);%The volume in ft^3, 1/16 is the thickness of the carbon fiber in inches so this will help us find the weight of the fuselage
+            %Assume: trapezoidal shape for narrowing A = 1/2 (a+b)*h
+            %Vertical Narrowing is offset
+            endHeight = 3.5/12; %Narrow to 3.5x1.5in
+            endWidth = 1.5/12;
+            topLength = sqrt((fuselageHeight - endHeight)^2 + (tailLength)^2);
+            sideLength = sqrt(((fuselageWidth - endWidth)/2)^2 + (tailLength)^2);
+            surfaceAreaTailcone = 0.5*(fuselageWidth + endWidth)*(topLength + tailLength) + ...
+                                  endHeight*endWidth + ...
+                                  (fuselageHeight + endHeight)*sideLength; %2 sides cancel the 1/2
+
+            %Combine surface areas
+            totalSurfaceArea = surfaceAreaMain+surfaceAreaNose+surfaceAreaTailcone;
             
-            fuselageWeight=carbonFiberVolume*rhoCarbon; %Weight of fuselage in lb
-            fuselageHeight=fuselageHeight/12; %convert to feet
-            fuselageWidth=fuselageWidth/12; %convert to feet
-            fuselageLength=fuselageLength/12; %convert to feet
+            %The volume in ft^3, 1/16 is the thickness of the carbon fiber in inches so this will help us find the weight of the fuselage
+            carbonFiberVolume = totalSurfaceArea*(1/16/12);
             
-            %convert these to object orientation
-            fuselage.frontalSurfaceArea=surfaceAreaNose;
-            fuselage.height=fuselageHeight;
-            fuselage.width=fuselageWidth;
-            fuselage.length=fuselageLength;
-            fuselage.totalSA=totalSurfaceArea;
-            fuselage.weight=fuselageWeight;
+            rhoCarbon = 120.486;	%lb/ft^3
+            fuselageWeight = carbonFiberVolume*rhoCarbon; %Weight of fuselage in lb
+            
+            %Set the objects values
+            fuselage.frontalSurfaceArea = surfaceAreaNose;
+            fuselage.height = fuselageHeight;
+            fuselage.width = fuselageWidth;
+            fuselage.length = totalFuselageLength;
+            fuselage.totalSA = totalSurfaceArea;
+            fuselage.weight = fuselageWeight;
 
         end
 

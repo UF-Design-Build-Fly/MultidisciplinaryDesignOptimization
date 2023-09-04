@@ -23,9 +23,9 @@ numPowerSystems = 50; %DEBUGGING: Only search first 50 to decrease runtime while
 vertStabAspectRatio = 2; %From aero calculations done beforehand
 horizStabAspectRatio = 4.5; %^^^
 
-wheelWidth = 0.5; %(in)
-wheelRadius = 1.5; %^^^
-wheelSurfaceArea = (2*pi*(wheelRadius)^2 + 2*pi*wheelRadius*wheelWidth)/144;
+wheelWidth = 0.5/12; %(division by 12 to convert to ft)
+wheelRadius = 1.5/12; %^^^
+wheelSurfaceArea = (2*pi*(wheelRadius)^2 + 2*pi*wheelRadius*wheelWidth);
 
 [wings] = GenWingData(aspectRatios, wingSpans); %Call GenWingsData function to make airfoil data lookup table
 
