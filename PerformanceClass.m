@@ -21,7 +21,7 @@ classdef PerformanceClass
     dynamicThrust = -1;
     
     time2 = -1;
-    %time3 = -1;
+    time3 = -1;
 
     %Nlaps2 = 3;
     numLaps3 = -1;
@@ -43,8 +43,7 @@ classdef PerformanceClass
     drag2 = -1;
     drag3 = -1;
     
-    %lapDist = 500+200*pi+1000+500; %distances for each velocity profile.
-                                   %see profile.png in analysis folder
+    turnAcceleration = 10;
 
   end
 

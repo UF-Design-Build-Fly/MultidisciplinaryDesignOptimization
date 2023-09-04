@@ -17,7 +17,7 @@ Notes:
 
  TODO:
 * Update Motorspreadsheet (Rerun script, recreate spreadsheet, convert to .mat file)
-  * update estimated weight to be in pounds
+  * update estimated weight to be in pounds time to be in seconds
 * remove reassignment of numPowerSystems
 * add wheel weight
 * move landinggear into seperate class
@@ -27,9 +27,9 @@ Notes:
 
 * Have Haris look at GenWingData function, Add lift from fuselage?, GenEmpennage function
 * Have Dylan look at fuselage and landing gear math - switch to carbon fiber
-* Haris/Austin get turn acceleration estimate put into mision2score
+* Haris/Austin get turn acceleration estimate put into performanceclass change default to -1
 
 * spanFailCount may have to be changed to something else or removed
 * Update PowerClass if necessary
 * whats happening with surface area(wheel surface area to be exact)
-* Examine GenVelocityTest, TakeoffChecker, mission2score, mission3score
+* Examine GenVelocityTest, TakeoffChecker

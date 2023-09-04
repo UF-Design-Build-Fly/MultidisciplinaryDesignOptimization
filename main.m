@@ -74,12 +74,12 @@ for aspectRatioIndex = 1:size(aspectRatios)
                         %Simulate mission 2
                         planes(index) = GenVelocityTest(planes(index), 2, rho, temp); %2 signifies mission 2 configuration
                         planes(index) = TakeoffChecker(planes(index), 2, rho);
-                        planes(index) = mission2score(planes(index), m2PackageWeight(m2PackageWeightIndex));
+                        planes(index) = Mission2Score(planes(index));
 
                         %Simulate mission 3
                         planes(index) = GenVelocityTest(planes(index), 3, rho, temp); %3 signifies mission 3 configuration
                         planes(index) = TakeoffChecker(planes(index), 3, rho);
-                        planes(index) = mission3score(planes(index), m3NumPassengers(m3PassengersIndex));
+                        planes(index) = Mission3Score(planes(index));
                         
                         %make sure all the calculated values make sense and meet
                         planes(index) = sanityCheck(planes(index), wingSpans(spanIndex), m3NumPassengers(m3PassengersIndex)); 
