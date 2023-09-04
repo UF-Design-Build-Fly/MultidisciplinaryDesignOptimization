@@ -32,10 +32,10 @@ classdef FuselageClass
             m2PackageWidth = 3/12;
             m2PackageLength = 10/12; %3in for med cabinet,  5.5in for patient, 0.5in spacing
             
-            spaceAroundPackage = 1/12;   %Desired room around package (ft)
+            spaceAroundPackage = 0.5/12;   %Desired room around package (ft)
             
-            fuselageHeight = m2PackageHeight+spaceAroundPackage*2;    %Space for package plus 2 inches
-            fuselageWidth = m2PackageWidth+spaceAroundPackage*2;      %Space for package plus 2 inches
+            fuselageHeight = m2PackageHeight+spaceAroundPackage*2;    %Space for package plus spacing
+            fuselageWidth = m2PackageWidth+spaceAroundPackage*2+1/12;      %Space for package plus spacing + 1 in
             
             %Mission 3 min size for passengers
             %3 passengers per row, 1in passengers 0.5in spaceing around them
