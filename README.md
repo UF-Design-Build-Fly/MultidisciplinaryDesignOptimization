@@ -23,6 +23,7 @@ Notes:
 * move landinggear into seperate class
 * get weight of wood things
 * debug total weight. last year things needed a weight
+* change max saved planes
 
 * Have Haris look at GenWingData function, Add lift from fuselage?, GenEmpennage function
 * Have Dylan look at fuselage and landing gear math - switch to carbon fiber

@@ -25,8 +25,8 @@ horizStabAspectRatio = 4.5; %^^^
 
 [wings] = GenWingData(aspectRatios, wingSpans); %Call GenWingsData function to make airfoil data lookup table
 
-maxSavedPlanes = 10000; %About 98% of aircraft will fail and be overwritten so maxSavedPlanes does not have to equal max iterations
-planes(1:maxSavedPlanes) = struct(airplaneClass); %Create a matrix to hold all the computed planes
+maxSavedPlanes = 100; %About 98% of aircraft will fail and be overwritten so maxSavedPlanes does not have to equal max iterations
+planes(1:maxSavedPlanes) = struct(AirplaneClass); %Create a matrix to hold all the computed planes
 index = 1;
 iteration = 1;
 spanFailCount = zeros([length(wingSpans) 6]); %This creates a matrix to check which failure conditions are most prevailent at each span value
@@ -49,9 +49,7 @@ for aspectRatioIndex = 1:size(aspectRatios)
                     for m3PassengersIndex = 1:length(m3NumPassengers)
                 
                         %Start with a clean slate(overwrite failure flags) in case the previous plane failed
-                        planes(index) = struct(AirplaneClass); 
-
-                        planes(index).fuselage.wheelSA = wheelSurfaceArea;
+                        planes(index) = struct(AirplaneClass);
 
                         %Set starting values for each plane
                         planes(index).wing.span = wingSpans(spanIndex);
