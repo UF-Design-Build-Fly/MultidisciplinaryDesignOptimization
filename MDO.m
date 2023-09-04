@@ -27,7 +27,7 @@ wheelWidth = 0.5; %(in)
 wheelRadius = 1.5; %^^^
 wheelSurfaceArea = (2*pi*(wheelRadius)^2 + 2*pi*wheelRadius*wheelWidth)/144;
 
-[wings] = wingData(aspectRatios, wingSpans); %Call GenWingsData function to make airfoil data lookup table
+[wings] = GenWingData(aspectRatios, wingSpans); %Call GenWingsData function to make airfoil data lookup table
 
 maxSavedPlanes = 10000; %About 98% of aircraft will fail and be overwritten so maxSavedPlanes does not have to equal max iterations
 planes(1:maxSavedPlanes) = struct(airplaneClass); %Create a matrix to hold all the computed planes
@@ -53,7 +53,7 @@ for aspectRatioIndex = 1:size(aspectRatios)
                     for m3PassengersIndex = 1:length(m3NumPassengers)
                 
                         %Start with a clean slate(overwrite failure flags) in case the previous plane failed
-                        planes(index) = struct(airplaneClass); 
+                        planes(index) = struct(AirplaneClass); 
 
                         planes(index).fuselage.wheelSA = wheelSurfaceArea;
 
@@ -63,24 +63,14 @@ for aspectRatioIndex = 1:size(aspectRatios)
                         planes(index).performance.epWeight = m2PackageWeight(m2PackageWeightIndex);
                         planes(index).performance.numPassengers = m3NumPassengers(m3PassengersIndex);
 
-                        %Set values from wings matrix into plane. See wingClass.m for property descriptions
-                        planes(index).wing.clw = wings(airfoilIndex, 1, aspectRatioIndex, spanIndex);
-                        planes(index).wing.clm = wings(airfoilIndex, 2, aspectRatioIndex, spanIndex);     %cl max
-                        planes(index).wing.cd = wings(airfoilIndex, 3, aspectRatioIndex, spanIndex);     %cd i zero velocity coefficient of drag
-                        planes(index).wing.clFlap = wings(airfoilIndex, 4, aspectRatioIndex, spanIndex);  %weight?
-                        planes(index).wing.weight = wings(airfoilIndex, 5, aspectRatioIndex, spanIndex);
-                        planes(index).wing.chord = wings(airfoilIndex, 6, aspectRatioIndex, spanIndex);
-                        planes(index).wing.planformArea = wings(airfoilIndex, 7, aspectRatioIndex, spanIndex);
-                        planes(index).wing.surfaceArea = wings(airfoilIndex, 8, aspectRatioIndex, spanIndex);
-                        planes(index).wing.name = wings(airfoilIndex, 9, aspectRatioIndex, spanIndex);
-                        planes(index).wing.thickness=wings(airfoilIndex, 10, aspectRatioIndex, spanIndex); %(ft)
+                        %Set values from wings matrix into plane
+                        planes(index).wing = SetWingData(planes(index).wing, wings, airfoilIndex, aspectRatioIndex, spanIndex);
 
-
-                        %Set values from power system table into aircraft
-                        planes(index) = powerSelections(planes(index), MotorSpreadsheet, powerSystemIndex);
+                        %Set values from power system table into plane
+                        planes(index).powerSystem = SetPowerSystemData(planes(index).powerSystem, MotorSpreadsheet, powerSystemIndex);
 
                         %Set payload and fuselage configuration
-                        planes(index) = fuselage(planes(index)); %TODO: calculate fuselage size based on number of passengers
+                        planes(index).fuselage = CalcFuselageData(planes(index).fuslage);
                         planes(index) = landingGear(planes(index), rho);
                         planes(index) = empennage(planes(index), horizStabAspectRatio, vertStabAspectRatio);
 
@@ -127,7 +117,7 @@ scoresM2 = zeros(1, length(planes)); %Initilize arrays with 0s
 scoresM3 = scoresM2; %Initilize arrays with 0s
 scoresGM = scoresM2; %Initilize arrays with 0s
 
-for i = 1:length(planes) %Load data into arrays that are easier to work with
+for i = 1:index %Load data into arrays that are easier to work with
     scoresM2(i) = planes(i).performance.score2;
     scoresM3(i) = planes(i).performance.score3;
     scoresGM(i) = planes(i).performance.scoreGM;

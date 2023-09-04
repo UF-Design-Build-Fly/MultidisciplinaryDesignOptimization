@@ -1,4 +1,4 @@
-classdef performanceClass
+classdef PerformanceClass
 
   properties
 %some of these properties don't make sense to me, they're just added because they were in last year's list

@@ -1,4 +1,4 @@
-classdef empennageClass
+classdef EmpennageClass
 
   properties
     HSarea = -1;

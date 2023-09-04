@@ -8,7 +8,7 @@
 %The code uses the Prandtl-Lifting-Line theory to estimate the general lift
 %distribution for the wing.
 
-function [wings]=wingData(Aspect_Ratios, span) 
+function [wings]=GenWingData(Aspect_Ratios, span) 
     %Define our dimensional constants
     AR=Aspect_Ratios;                 %the wing aspect ratios being considered 
     %Define our material constants

@@ -8,15 +8,16 @@ Sensitivity_Analysis_2020.m is included for reference but is no longer functiona
  TODO:
 * Update Motorspreadsheet (Rerun script, recreate spreadsheet, convert to .mat file)
 * remove reassignment of numPowerSystems
-* why is wheel surface area /144
-* Rename wingData function
+* Naming Convention Stuff
   * functions should be CapitalCapital
   * variables should be lowercaseCapital
   * functions should probably contain a verb
-  * variables try not to abbreviate but abbreviate number -> num
-* Examine wingData function
-* Examine airplaneClass, empennageClass, fuselageClass, performanceClass, powerClass, wingClass, empennage, fuselage, landingGear, powerSelections, findTotalWeight, GenVelocityTest, TakeoffChecker, mission2score, mission3score
+  * variables try not to abbreviate but abbreviate number -> num generate -> gen
+* Have Haris look at wingData
+* Examine empennageClass, empennage, performanceClass, landingGear, findTotalWeight, GenVelocityTest, TakeoffChecker, mission2score, mission3score
 * spanFailCount may have to be changed to something else or removed
-* improve sanity check to check final plane
+* why is wheel surface area /144
 * whats happening with surface area(wheel surface area to be exact)
 * %TODO: calculate fuselage size based on number of passengers
+* TODO: Add lift from fuselage???
+* Update PowerClass if necessary
