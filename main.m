@@ -81,6 +81,11 @@ for aspectRatioIndex = 1:size(aspectRatios)
                         planes(index) = TakeoffChecker(planes(index), 3, rho);
                         planes(index) = Mission3Score(planes(index));
                         
+                        %Simulate ground mission
+                        totalAssemblyTime = 200; %(s)
+                        timePerPassenger = 5; %(s)
+                        planes(index).performance.scoreGM = totalAssemblyTime + timePerPassenger*plane.performance.numPassengers;
+                        
                         %make sure all the calculated values make sense and meet
                         planes(index) = sanityCheck(planes(index)); 
                         if planes(index).sanityFlag

@@ -28,6 +28,7 @@ classdef PerformanceClass
 
     score2 = -1;
     score3 = -1;
+    scoreGM = -1;
 
     totalDrag = -1; %DEBUG VALUE
     inducedDrag = -1;

@@ -27,6 +27,7 @@ TODO:
 - get weight of wood things
 - debug total weight. last year things needed a weight
 - change max saved planes
+- update times for assemblying plane and putting in passengers
 
 - Have Haris look at GenWingData function, Add lift from fuselage?, GenEmpennage function, TakeoffChecker, GenVelocityTest(specifically landing gear)
 - Have Dylan look at fuselage and landing gear math - switch to carbon fiber
