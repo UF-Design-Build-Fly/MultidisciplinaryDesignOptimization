@@ -1,4 +1,4 @@
-function [plane] = Mission3score(plane, Antenna_Length)
+function [plane] = Mission3Score(plane, Antenna_Length)
 
     %M3 score = 2 + [N_(antenna length / mission time) / Max_(antenna length / mission time)]
     %If mission (3 laps) takes longer than 5 minutes, sanity check will throw

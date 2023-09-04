@@ -1,5 +1,6 @@
-function [plane] = Mission2score(plane)
+function [plane] = Mission2Score(plane)
 
+    acceleration = 10;
     turnRadius = plane.performance.velocity^2/acceleration;
     %Estimates the overall lap distance in ft
     %2 360 turns per lap

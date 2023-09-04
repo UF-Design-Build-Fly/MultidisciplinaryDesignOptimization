@@ -27,6 +27,7 @@ Notes:
 
 * Have Haris look at GenWingData function, Add lift from fuselage?, GenEmpennage function
 * Have Dylan look at fuselage and landing gear math - switch to carbon fiber
+* Haris/Austin get turn acceleration estimate put into mision2score
 
 * spanFailCount may have to be changed to something else or removed
 * Update PowerClass if necessary
