@@ -31,4 +31,4 @@ Notes:
 * spanFailCount may have to be changed to something else or removed
 * Update PowerClass if necessary
 * whats happening with surface area(wheel surface area to be exact)
-* Examine empennageClass, empennage, performanceClass, landingGear, findTotalWeight, GenVelocityTest, TakeoffChecker, mission2score, mission3score
+* Examine GenVelocityTest, TakeoffChecker, mission2score, mission3score
