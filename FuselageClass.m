@@ -14,6 +14,8 @@ classdef FuselageClass
         gearSA = -1;
         gearFrontalSA = -1;
     
+        wheelWidth = -1;
+        wheelRadius = -1;
         wheelWeight = -1;
         wheelSA = -1;
         wheelFrontalSA = -1;
@@ -149,6 +151,9 @@ classdef FuselageClass
             fuselage.wheelWeight = numWheels * 3/16; %3ounces (lb)
             fuselage.wheelSA = numWheels * (2*pi*(wheelRadius)^2 + 2*pi*wheelRadius*wheelWidth);
             fuselage.wheelFrontalSA = numWheels * (2*wheelRadius*wheelWidth);
+
+            fuselage.wheelWidth = wheelWidth;
+            fuselage.wheelRadius = wheelRadius;
             
         end
 

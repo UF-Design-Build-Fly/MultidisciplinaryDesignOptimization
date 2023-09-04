@@ -1,4 +1,4 @@
-function [plane] = GenVelocityTest(plane, missionNumber, rho, Temp, net, stats) %DEBUG: this sometimes finds complex numbers for drag and fails to find velocity. Is this a bug or just when it gets an impractical (underpowered) aircraft?
+function plane = GenVelocityTest(plane, missionNumber, rho, Temp, net, stats) %DEBUG: this sometimes finds complex numbers for drag and fails to find velocity. Is this a bug or just when it gets an impractical (underpowered) aircraft?
 
     %-------------------------------Constants---------------------------------%
     muk=1.612e-4; %kinmatic viscosity (ish) related to mu
@@ -25,9 +25,8 @@ function [plane] = GenVelocityTest(plane, missionNumber, rho, Temp, net, stats) 
     
     Cd_gear=0.05;        % Let Cd = 0.05 for the flatbar
     Cd_wheel = 0.20;     % Let Cd = 0.245 for the wheels
-    areaWheels = plane.fuselage.wheelWidth*plane.fuselage.wheelRadius*2 * 3;    %profile area for 3 wheels
-    dragBar =@(v) (0.5*rho*(v)^2*gearFrontArea*Cd_gear); %bar
-    dragWheels = @(v) (0.5*rho*(v)^2*areaWheels*Cd_wheel);
+    dragBar =@(v) (0.5*rho*(v)^2*plane.fuselage.gearFrontalSA*Cd_gear); %bar
+    dragWheels = @(v) (0.5*rho*(v)^2*plane.fuselage.wheelFrontalSA*Cd_wheel);
     
     gearParaDrag=@(v) dragBar(v)+dragWheels(v); %p for parasitic. %DEBUG -- GenVelocityTest will call this function - but through a really convoluted series of function calls
                                                                                              %Maybe try to just set constants here and have GenVelocityTest compute drag directly?
@@ -103,10 +102,10 @@ function [plane] = GenVelocityTest(plane, missionNumber, rho, Temp, net, stats) 
     %by far the most important factor in determining max dynamic thrust.
     %See https://www.electricrcaircraftguy.com/2014/04/propeller-static-dynamic-thrust-equation-background.html
     
-    % PS= (plane.power.propPitch/12) * (plane.power.rpm/60); %propeller speed
-    % PD=plane.power.propPitch/plane.power.propDiamter;
+    % PS= (plane.powerSystem.propPitch/12) * (plane.powerSystem.rpm/60); %propeller speed
+    % PD=plane.powerSystem.propPitch/plane.powerSystem.propDiamter;
     % 
-    % Ts=plane.power.thrust;
+    % Ts=plane.powerSystem.thrust;
     % s=0;
     % if PD<0.6
     %     T= @(v) Ts*(1 - FS(v)/(PS*(PD+0.2)/PD));
@@ -118,15 +117,15 @@ function [plane] = GenVelocityTest(plane, missionNumber, rho, Temp, net, stats) 
     
     % k1 = 4.39*10^-8; %semi-empirical model coefficients
     % k2 = 4.23*10^-4;
-    % rpm = plane.power.rpm;
-    % d = plane.power.propDiameter;
-    % pitch = plane.power.propPitch;
+    % rpm = plane.powerSystem.rpm;
+    % d = plane.powerSystem.propDiameter;
+    % pitch = plane.powerSystem.propPitch;
     % N_lb = 0.224; %newtons to pounds conversion factor
     
     
     
     
-    %T = @(v) min(plane.power.thrust, ((N_lb*k1)*rpm*((d^3.5)/sqrt(pitch)))*((k2)*rpm*pitch-(v)));
+    %T = @(v) min(plane.powerSystem.thrust, ((N_lb*k1)*rpm*((d^3.5)/sqrt(pitch)))*((k2)*rpm*pitch-(v)));
     
     
     %Empirical Data update: This function, for the cobra 4130/20 with a 20x13
@@ -139,9 +138,9 @@ function [plane] = GenVelocityTest(plane, missionNumber, rho, Temp, net, stats) 
     
     %--------------------------Velocity Solver--------------------------------%
     
-    d = plane.power.propDiameter;
-    p = plane.power.propPitch;
-    rpm = plane.power.rpm;
+    d = plane.powerSystem.propDiameter;
+    p = plane.powerSystem.propPitch;
+    rpm = plane.powerSystem.rpm;
     
     func=@(v) (Drag(v)-dynamicThrust(d,p,rpm,v,net,stats));
     
@@ -184,8 +183,8 @@ function [plane] = GenVelocityTest(plane, missionNumber, rho, Temp, net, stats) 
     
     
     plane.performance.dynamicThrust = dynamicThrust(d,p,rpm,velocity,net,stats); %max thrust available at cruise velocity
-    wattFraction = plane.power.thrust/plane.performance.dynamicThrust; %less power is consumed as motor is no longer able to give as much thrust
-    plane.power.time = plane.power.time*(wattFraction-0.3*wattFraction); % 30% factor of safety in derating power consumption
+    wattFraction = plane.powerSystem.thrust/plane.performance.dynamicThrust; %less power is consumed as motor is no longer able to give as much thrust
+    plane.powerSystem.time = plane.powerSystem.time*(wattFraction-0.3*wattFraction); % 30% factor of safety in derating power consumption
     
     
     plane.performance.drag1 = Drag(velocity); %These values are saved so we can review them for reasonableness later
