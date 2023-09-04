@@ -82,7 +82,7 @@ for aspectRatioIndex = 1:size(aspectRatios)
                         planes(index) = Mission3Score(planes(index));
                         
                         %make sure all the calculated values make sense and meet
-                        planes(index) = sanityCheck(planes(index), wingSpans(spanIndex), m3NumPassengers(m3PassengersIndex)); 
+                        planes(index) = sanityCheck(planes(index)); 
                         if planes(index).sanityFlag
                             index = index + 1;
                         else

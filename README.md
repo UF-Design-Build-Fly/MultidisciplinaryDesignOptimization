@@ -28,10 +28,8 @@ TODO:
 - debug total weight. last year things needed a weight
 - change max saved planes
 
-- Have Haris look at GenWingData function, Add lift from fuselage?, GenEmpennage function
+- Have Haris look at GenWingData function, Add lift from fuselage?, GenEmpennage function, TakeoffChecker, GenVelocityTest(specifically landing gear)
 - Have Dylan look at fuselage and landing gear math - switch to carbon fiber
 - Haris/Austin get turn acceleration estimate put into performanceclass change default to -1
 
 - spanFailCount may have to be changed to something else or removed
-- whats happening with surface area(wheel surface area to be exact)
-- Examine GenVelocityTest, TakeoffChecker
