@@ -28,7 +28,7 @@ classdef PowerClass
     
   end
 
-  methods
+  methods (Static)
 
         function powerSystem = SetPowerSystemData(powerSystem, motorTable, tableIndex)
             

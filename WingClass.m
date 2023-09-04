@@ -17,12 +17,8 @@ classdef WingClass
 		
 	end
 
-	methods
+	methods (Static)
 
-        function ret = wingTestFunc(obj, val)
-            ret = obj.span + val;
-        end
-        
         function wing = SetWingData(wing, wings, airfoilIndex, aspectRatioIndex, spanIndex)
 
             %Set values from wings matrix into plane. See wingClass.m for property descriptions

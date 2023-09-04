@@ -2,27 +2,28 @@ classdef FuselageClass
 
     properties
     
-    frontalSurfaceArea = -1;
-    height = -1;
-    width = -1;
-    length = -1; %feet
-    totalSA = -1;
+        frontalSurfaceArea = -1;
+        height = -1;
+        width = -1;
+        length = -1; %feet
+        totalSA = -1;
+        
+        weight = -1; %weight of carbon fiber to make fuselage + mechanisms
+        
+        gearWeight = -1;
+        gearSA = -1;
+        gearFrontalSA = -1;
     
-    weight = -1; %weight of carbon fiber to make fuselage + mechanisms
-    
-    gearWeight = -1;
-    gearSA = -1;
-    gearFrontalSA = -1;
-
-    wheelWeight = -1;
-    wheelSA = -1;
-    wheelFrontalSA = -1;
-    
+        wheelWeight = -1;
+        wheelSA = -1;
+        wheelFrontalSA = -1;
+        
     end
     
-    methods
+    methods (Static)
     
         function fuselage = CalcFuselageData(plane) 
+            fuselage = plane.fuselage;
             %Inputs: Aspect Ratio, Wing Area
             %Must be run after wing data is set
             
@@ -65,7 +66,7 @@ classdef FuselageClass
             topLength = sqrt((fuselageHeight - motorMountSize)^2 + (noseLength)^2);
             sideLength = sqrt(((fuselageWidth - motorMountSize)/2)^2 + (noseLength)^2);
             surfaceAreaNose = 0.5*(fuselageWidth + motorMountSize)*(topLength + noseLength) + ...
-                              motorMountHeight^2 + ...
+                              motorMountSize^2 + ...
                               (fuselageHeight + motorMountSize)*sideLength; %2 sides cancel the 1/2
             
             %Assume: trapezoidal shape for narrowing A = 1/2 (a+b)*h
@@ -97,8 +98,8 @@ classdef FuselageClass
 
         end
 
-        function plane = GenLandingGear(plane)
-
+        function fuselage = GenLandingGear(plane)
+            fuselage = plane.fuselage;
             %This function computes different parameters for the landing gear
             %Inputs: PropDiam = diameter of propellor (inches)
             %        fuselageHeight = height of the fuselage (inches)
@@ -141,13 +142,13 @@ classdef FuselageClass
 
             L = fuselageWidth + 2*(c + base);
 
-            plane.fuselage.gearSA=L*gearwidth;
-            plane.fuselage.gearFrontalSA=L*thickness;
-            plane.fuselage.gearWeight = rhoCarbon*(plane.fuselage.gearSA*gearThickness);
+            fuselage.gearSA = L * gearwidth;
+            fuselage.gearFrontalSA = L * gearThickness;
+            fuselage.gearWeight = rhoCarbon*(fuselage.gearSA * gearThickness);
 
-            plane.fuselage.wheelWeight = numWheels * 3/16; %3ounces (lb)
-            plane.fuselage.wheelSA = numWheels * (2*pi*(wheelRadius)^2 + 2*pi*wheelRadius*wheelWidth);
-            plane.fuselage.wheelFrontalSA = numWheels * (2*wheelRadius*wheelWidth);
+            fuselage.wheelWeight = numWheels * 3/16; %3ounces (lb)
+            fuselage.wheelSA = numWheels * (2*pi*(wheelRadius)^2 + 2*pi*wheelRadius*wheelWidth);
+            fuselage.wheelFrontalSA = numWheels * (2*wheelRadius*wheelWidth);
             
         end
 

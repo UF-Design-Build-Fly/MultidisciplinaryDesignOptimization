@@ -58,15 +58,15 @@ for aspectRatioIndex = 1:size(aspectRatios)
                         planes(index).performance.numPassengers = m3NumPassengers(m3PassengersIndex);
 
                         %Set values from wings matrix into plane
-                        planes(index).wing = SetWingData(planes(index).wing, wings, airfoilIndex, aspectRatioIndex, spanIndex);
+                        planes(index).wing = WingClass.SetWingData(planes(index).wing, wings, airfoilIndex, aspectRatioIndex, spanIndex);
 
                         %Set values from power system table into plane
-                        planes(index).powerSystem = SetPowerSystemData(planes(index).powerSystem, MotorSpreadsheet, powerSystemIndex);
+                        planes(index).powerSystem = PowerClass.SetPowerSystemData(planes(index).powerSystem, MotorSpreadsheet, powerSystemIndex);
 
                         %Set payload and fuselage configuration
-                        planes(index).fuselage = CalcFuselageData(planes(index));
-                        planes(index).fuselage = GenLandingGear(planes(index));
-                        planes(index).empennage = GenEmpennage(planes(index), horizStabAspectRatio, vertStabAspectRatio);
+                        planes(index).fuselage = FuselageClass.CalcFuselageData(planes(index));
+                        planes(index).fuselage = FuselageClass.GenLandingGear(planes(index));
+                        planes(index).empennage = EmpennageClass.GenEmpennage(planes(index), horizStabAspectRatio, vertStabAspectRatio);
 
                         planes(index) = FindTotalWeight(planes(index));
 

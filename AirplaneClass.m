@@ -11,8 +11,6 @@ classdef AirplaneClass
         takeoffFail = 0;
         momentFail = 0;
         convergeFail = 0;
-        spaceFail = 0;
-        epFail = 0;
 	end
 	
 	methods
