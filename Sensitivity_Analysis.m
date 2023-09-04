@@ -4,7 +4,7 @@ close all; %Closes are figure windows
 
 tic %Starts stopwatch timer
 %Using structs the way we do here generates warnings that slow matlab down. Comment this out (and restart matlab) when debugging.
-%warning('off','all')
+warning('off','all')
 
 %Define constants for aero equations
 rho = 0.00235308; %Density air at Tuscon, Az (slug/ft^3)
@@ -18,7 +18,7 @@ m3NumPassengers = 20:5:30; %Mission 3 Number of Passengers
 wingSpans = 3:1:5; %Wing Spans (feet)
 load("MotorSpreadsheet.mat");
 numPowerSystems = height(MotorSpreadsheet); %Get number of prop/motor/battery configs
-numPowerSystems = 50 %DEBUGGING: Only search first 50 to decrease runtime while redesigning
+numPowerSystems = 50; %DEBUGGING: Only search first 50 to decrease runtime while redesigning
 
 vertStabAspectRatio = 2; %From aero calculations done beforehand
 horizStabAspectRatio = 4.5; %^^^
@@ -35,87 +35,72 @@ index = 1;
 iteration = 1;
 spanFailCount = zeros([length(wingSpans) 6]); %This creates a matrix to check which failure conditions are most prevailent at each span value
 failCountHeader = {'span', 'space', 'ep weight', 'takeoff', 'moment', 'converge'};
-friendlyFailCount = [failCountHeader; num2cell(spanFailCount)]; %May have to move this to after loop
 
-for AR = 1:size(aspectRatios)
-    disp("At Aspect ratio " + AR);
+for aspectRatioIndex = 1:size(aspectRatios)
+    
+    disp("Aspect Ratio: " + aspectRatioIndex + "/" + size(aspectRatios, 2));
     toc;
-    for spanIndex = 1:length(wingSpans) %NOTE: the wings function cant handle this iteration yet, all calls of plane(index) also need updated, waiting on wings update
-        spanFailCount(1 + spanIndex, 1) = wingSpans(spanIndex);
-        disp("At Span " + spanIndex);
-        toc;
-        for airfoil = 1:1:8
-            for powerIndex = 1:numPowerSystems
-                for electronicPackageIndex = 1:length(m2PackageWeight)
-                    %keyboard
-                    for antennaIndex = 1:length(m3NumPassengers) %Changed this for the rerun - use smarter logic otherwise %for every amount of syringes try up to the maximum number of vials
 
-                        planes(index) = struct(airplaneClass); %make sure to start with a clean slate at this index as this code writes over the index of failed airplanes. Without cleanup things like failure flags stay set even when they shouldn't
+    for spanIndex = 1:length(wingSpans)
+
+        spanFailCount(spanIndex, 1) = wingSpans(spanIndex);
+        disp("Span: " + spanIndex + "/" + size(wingSpans, 2));
+        toc;
+
+        for airfoilIndex = 1:1:8
+            for powerSystemIndex = 1:numPowerSystems
+                for m2PackageWeightIndex = 1:length(m2PackageWeight)
+                    for m3PassengersIndex = 1:length(m3NumPassengers)
+                
+                        %Start with a clean slate(overwrite failure flags) in case the previous plane failed
+                        planes(index) = struct(airplaneClass); 
 
                         planes(index).fuselage.wheelSA = wheelSurfaceArea;
 
-                        %load starting values for each plane
+                        %Set starting values for each plane
                         planes(index).wing.span = wingSpans(spanIndex);
-                        planes(index).performance.epWeight = m2PackageWeight(electronicPackageIndex);
-                        planes(index).wing.aspectRatio = aspectRatios(AR); %ratio between length and width of wing.
-                        planes(index).performance.antennaLength = m3NumPassengers(antennaIndex);
+                        planes(index).wing.aspectRatio = aspectRatios(aspectRatioIndex);
+                        planes(index).performance.epWeight = m2PackageWeight(m2PackageWeightIndex);
+                        planes(index).performance.numPassengers = m3NumPassengers(m3PassengersIndex);
 
-                        %read values from wings matrix into aircraft
-                        %properties. See wingClass.m for property descriptions
-                        planes(index).wing.clw = wings(airfoil, 1, AR, spanIndex);
-                        planes(index).wing.clm = wings(airfoil, 2, AR, spanIndex);     %cl max
-                        planes(index).wing.cd = wings(airfoil, 3, AR, spanIndex);     %cd i zero velocity coefficient of drag
-                        planes(index).wing.clFlap = wings(airfoil, 4, AR, spanIndex);  %weight
-                        planes(index).wing.weight = wings(airfoil, 5, AR, spanIndex);    %airfoil name
-                        planes(index).wing.chord = wings(airfoil, 6, AR, spanIndex);    %airfoil name
-                        planes(index).wing.planformArea = wings(airfoil, 7, AR, spanIndex);    %airfoil name
-                        planes(index).wing.surfaceArea = wings(airfoil, 8, AR, spanIndex);    %airfoil name
-                        planes(index).wing.name = wings(airfoil, 9, AR, spanIndex);    %airfoil name
-                        planes(index).wing.thickness=wings(airfoil, 10, AR, spanIndex); %thickness of the wing (ft)
+                        %Set values from wings matrix into plane. See wingClass.m for property descriptions
+                        planes(index).wing.clw = wings(airfoilIndex, 1, aspectRatioIndex, spanIndex);
+                        planes(index).wing.clm = wings(airfoilIndex, 2, aspectRatioIndex, spanIndex);     %cl max
+                        planes(index).wing.cd = wings(airfoilIndex, 3, aspectRatioIndex, spanIndex);     %cd i zero velocity coefficient of drag
+                        planes(index).wing.clFlap = wings(airfoilIndex, 4, aspectRatioIndex, spanIndex);  %weight?
+                        planes(index).wing.weight = wings(airfoilIndex, 5, aspectRatioIndex, spanIndex);
+                        planes(index).wing.chord = wings(airfoilIndex, 6, aspectRatioIndex, spanIndex);
+                        planes(index).wing.planformArea = wings(airfoilIndex, 7, aspectRatioIndex, spanIndex);
+                        planes(index).wing.surfaceArea = wings(airfoilIndex, 8, aspectRatioIndex, spanIndex);
+                        planes(index).wing.name = wings(airfoilIndex, 9, aspectRatioIndex, spanIndex);
+                        planes(index).wing.thickness=wings(airfoilIndex, 10, aspectRatioIndex, spanIndex); %(ft)
 
 
-                        %load values from power system table into aircraft
-                        planes(index) = powerSelections(planes(index), MotorSpreadsheet, powerIndex);
+                        %Set values from power system table into aircraft
+                        planes(index) = powerSelections(planes(index), MotorSpreadsheet, powerSystemIndex);
 
-                        %set payload and fuselage configuration
-                        %plane(index).fuselage.numSyringes = syringes(syringe_index);
-                        %plane(index).fuselage.numVials = num_vials;
-                        planes(index) = fuselage(planes(index)); %calculate fuselage size based on number of vials and syringes
+                        %Set payload and fuselage configuration
+                        planes(index) = fuselage(planes(index)); %TODO: calculate fuselage size based on number of passengers
                         planes(index) = landingGear(planes(index), rho);
                         planes(index) = empennage(planes(index), horizStabAspectRatio, vertStabAspectRatio);
 
-                        planes(index) = findTotalWeight(planes(index), m2PackageWeight(electronicPackageIndex), m3NumPassengers(antennaIndex));
+                        planes(index) = findTotalWeight(planes(index), m2PackageWeight(m2PackageWeightIndex), m3NumPassengers(m3PassengersIndex));
 
-                        %Want to include sanity check here that throws
-                        %planes out which don't meet space/weight requirements
-                        planes(index) = volSanityCheck(planes(index), m2PackageWeight(electronicPackageIndex));
-                        if planes(index).volSanityFlag == 0
-                            %disp("Too Big!");
-                            if planes(index).epFail
-                                spanFailCount(1 + spanIndex, 3) = spanFailCount(1 + spanIndex, 3) + 1;
-                            elseif planes(index).spaceFail
-                                spanFailCount(1 + spanIndex, 2) = spanFailCount(1 + spanIndex, 2) + 1;
-                            end
-                            break;
-                        end
 
-                        %simulate mission 2
+                        %Simulate mission 2
                         planes(index) = GenVelocityTest(planes(index), 2, rho, temp); %2 signifies mission 2 configuration
                         planes(index) = TakeoffChecker(planes(index), 2, rho);
-                        planes(index) = mission2score(planes(index), m2PackageWeight(electronicPackageIndex));
+                        planes(index) = mission2score(planes(index), m2PackageWeight(m2PackageWeightIndex));
 
-                        %simulate mission 3
-                        planes(index) = GenVelocityTest(planes(index), 3, rho, temp); %2 signifies mission 2 configuration
+                        %Simulate mission 3
+                        planes(index) = GenVelocityTest(planes(index), 3, rho, temp); %3 signifies mission 3 configuration
                         planes(index) = TakeoffChecker(planes(index), 3, rho);
-                        planes(index) = mission3score(planes(index), m3NumPassengers(antennaIndex));
-
-                        planes(index) = sanityCheck(planes(index), wingSpans(spanIndex), m3NumPassengers(antennaIndex)); %make sure all the calculated values make sense and meet
-                        %competition requirements. needs to be updated for
-                        %this year's competition
-
+                        planes(index) = mission3score(planes(index), m3NumPassengers(m3PassengersIndex));
+                        
+                        %make sure all the calculated values make sense and meet
+                        planes(index) = sanityCheck(planes(index), wingSpans(spanIndex), m3NumPassengers(m3PassengersIndex)); 
                         if planes(index).sanityFlag
                             index = index + 1;
-                            %disp("Sane!");
                         else
                             if planes(index).takeoffFail
                                 spanFailCount(1 + spanIndex, 4) = spanFailCount(1 + spanIndex, 4) + 1;
@@ -124,12 +109,10 @@ for AR = 1:size(aspectRatios)
                             elseif planes(index).convergeFail
                                 spanFailCount(1 + spanIndex, 6) = spanFailCount(1 + spanIndex, 6) + 1;
                             end
-                            %disp("insane!");
                         end
+
                         iteration = iteration+1;
-                        
                     end
-                    
                 end
             end
         end
@@ -137,6 +120,8 @@ for AR = 1:size(aspectRatios)
 end
 
 toc;
+
+friendlyFailCount = [failCountHeader; num2cell(spanFailCount)]; %Add headers to fail count table
 
 scoresM2 = zeros(1, length(planes)); %Initilize arrays with 0s
 scoresM3 = scoresM2; %Initilize arrays with 0s
