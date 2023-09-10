@@ -7,18 +7,18 @@ tic %Starts stopwatch timer
 warning('off','all')
 
 %Define constants for aero equations
-rho = 0.00235308; %Density air at Tuscon, Az (slug/ft^3)
-%rho = 0.002391; %Density air at Whichita, Ks with average climate data from April 2021
+%rho = 0.00235308; %Density air at Tuscon, Az (slug/ft^3)
+rho = 0.002391; %Density air at Whichita, Ks with average climate data from April 2021
 temp = 293; %Temperature in kelvin at competition site
 
 %Define plane properties to search
 aspectRatios = [6 7 8 9 10]; %Wing aspect ratios
-m2PackageWeight = 4:1:7; %Mission 2 Package Weight (pounds)
-m3NumPassengers = 20:5:30; %Mission 3 Number of Passengers
-wingSpans = 3:1:5; %Wing Spans (feet)
+m2PackageWeight = 4:1:5; %Mission 2 Package Weight (pounds)
+m3NumPassengers = 20:5:25; %Mission 3 Number of Passengers
+wingSpans = 4:1:5; %Wing Spans (feet)
 load("MotorSpreadsheet.mat");
 numPowerSystems = height(MotorSpreadsheet); %Get number of prop/motor/battery configs
-numPowerSystems = 50; %DEBUGGING: Only search first 50 to decrease runtime while redesigning
+numPowerSystems = 20; %DEBUGGING: Only search first 50 to decrease runtime while redesigning
 
 vertStabAspectRatio = 2; %From aero calculations done beforehand
 horizStabAspectRatio = 4.5; %^^^
@@ -32,7 +32,7 @@ iteration = 1;
 spanFailCount = zeros([length(wingSpans) 6]); %This creates a matrix to check which failure conditions are most prevailent at each span value
 failCountHeader = {'span', 'space', 'ep weight', 'takeoff', 'moment', 'converge'};
 
-for aspectRatioIndex = 1:size(aspectRatios)
+for aspectRatioIndex = 1:size(aspectRatios, 2)
     
     disp("Aspect Ratio: " + aspectRatioIndex + "/" + size(aspectRatios, 2));
     toc;
@@ -84,20 +84,20 @@ for aspectRatioIndex = 1:size(aspectRatios)
                         %Simulate ground mission
                         totalAssemblyTime = 200; %(s)
                         timePerPassenger = 5; %(s)
-                        planes(index).performance.scoreGM = totalAssemblyTime + timePerPassenger*plane.performance.numPassengers;
+                        planes(index).performance.scoreGM = totalAssemblyTime + timePerPassenger*planes(index).performance.numPassengers;
                         
                         %make sure all the calculated values make sense and meet
-                        planes(index) = sanityCheck(planes(index)); 
+                        planes(index) = SanityCheck(planes(index)); 
                         if planes(index).sanityFlag
                             index = index + 1;
-                        else
-                            if planes(index).takeoffFail
-                                spanFailCount(1 + spanIndex, 4) = spanFailCount(1 + spanIndex, 4) + 1;
-                            elseif planes(index).momentFail
-                                spanFailCount(1 + spanIndex, 5) = spanFailCount(1 + spanIndex, 5) + 1;
-                            elseif planes(index).convergeFail
-                                spanFailCount(1 + spanIndex, 6) = spanFailCount(1 + spanIndex, 6) + 1;
-                            end
+                        %else
+                        %    if planes(index).takeoffFail
+                        %        spanFailCount(1 + spanIndex, 4) = spanFailCount(1 + spanIndex, 4) + 1;
+                        %    elseif planes(index).momentFail
+                        %        spanFailCount(1 + spanIndex, 5) = spanFailCount(1 + spanIndex, 5) + 1;
+                        %    elseif planes(index).convergeFail
+                        %        spanFailCount(1 + spanIndex, 6) = spanFailCount(1 + spanIndex, 6) + 1;
+                        %    end
                         end
 
                         iteration = iteration+1;

@@ -5,7 +5,7 @@ function plane = SanityCheck(plane)
     %function thinks the plane shouldn't work then the flag should stay
     %false.
     plane.failureReason = "OK"; %plane will stay ok if it passes all the checks below
-    if ((plane.performance.takeoffDist1 > 20) || (plane.performance.takeoffDist2 > 20) || (plane.performance.takeoffDist3 > 20))
+    if ((plane.performance.takeoffDist2 > 20) || (plane.performance.takeoffDist3 > 20))
         plane.sanityFlag = false;
         plane.failureReason = "TakeoffDist";
         plane.takeoffFail = 1;

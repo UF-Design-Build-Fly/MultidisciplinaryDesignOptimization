@@ -115,17 +115,17 @@ function plane = GenVelocityTest(plane, missionNumber, rho, Temp, net, stats) %D
     %     T=@(v) Ts*(1- ((FS(v)*PD/PS)-(PD-0.6))/0.8);
     % end
     
-    % k1 = 4.39*10^-8; %semi-empirical model coefficients
-    % k2 = 4.23*10^-4;
-    % rpm = plane.powerSystem.rpm;
-    % d = plane.powerSystem.propDiameter;
-    % pitch = plane.powerSystem.propPitch;
-    % N_lb = 0.224; %newtons to pounds conversion factor
+     k1 = 4.39*10^-8; %semi-empirical model coefficients
+     k2 = 4.23*10^-4;
+     rpm = plane.powerSystem.rpm;
+     d = plane.powerSystem.propDiameter;
+     pitch = plane.powerSystem.propPitch;
+     N_lb = 0.224; %newtons to pounds conversion factor
     
     
     
     
-    %T = @(v) min(plane.powerSystem.thrust, ((N_lb*k1)*rpm*((d^3.5)/sqrt(pitch)))*((k2)*rpm*pitch-(v)));
+    T = @(v) min(plane.powerSystem.thrust, ((N_lb*k1)*rpm*((d^3.5)/sqrt(pitch)))*((k2)*rpm*pitch-(v)));
     
     
     %Empirical Data update: This function, for the cobra 4130/20 with a 20x13
@@ -142,24 +142,25 @@ function plane = GenVelocityTest(plane, missionNumber, rho, Temp, net, stats) %D
     p = plane.powerSystem.propPitch;
     rpm = plane.powerSystem.rpm;
     
-    func=@(v) (Drag(v)-dynamicThrust(d,p,rpm,v,net,stats));
+    func=@(v) (Drag(v)-T(v));
+    %func=@(v) (Drag(v)-CalcDynamicThrust(d,p,rpm,v,net,stats));
     
-    i = 1; %debug code for visualizing thrust/drag curves
-    for v = 5:0.01:100
-        d(i) = Drag(v);
-        f(i) = func(v);
-        w(i) = dynamicThrust(d,p,rpm,v,net,stats);
-        i = i+1;
-        %I_d(i) = Induced(v);
-        %P_d(i) = Parasitic(v);
-        %S_d(i) = Skin(v);
-    end
-    v = 5:0.01:100;
-    hold on;
-    plot(v,d);
-    plot(v, f);
-    plot(v, w);
-    legend("Drag", "Net Force", "Thrust");
+    %i = 1; %debug code for visualizing thrust/drag curves
+    %for v = 5:0.01:100
+    %    d(i) = Drag(v);
+    %    f(i) = func(v);
+    %    w(i) = CalcDynamicThrust(d,p,rpm,v,net,stats);
+    %    i = i+1;
+    %    %I_d(i) = Induced(v);
+    %    %P_d(i) = Parasitic(v);
+    %    %S_d(i) = Skin(v);
+    %end
+    %v = 5:0.01:100;
+    %hold on;
+    %plot(v,d);
+    %plot(v, f);
+    %plot(v, w);
+    %legend("Drag", "Net Force", "Thrust");
     
     V_upper = 140;
     V_lower = 40;
@@ -174,7 +175,7 @@ function plane = GenVelocityTest(plane, missionNumber, rho, Temp, net, stats) %D
         else
             break;
         end
-        if iter >20
+        if iter > 20
             velocity = -1;
             break;
         end
@@ -182,9 +183,9 @@ function plane = GenVelocityTest(plane, missionNumber, rho, Temp, net, stats) %D
     end
     
     
-    plane.performance.dynamicThrust = dynamicThrust(d,p,rpm,velocity,net,stats); %max thrust available at cruise velocity
-    wattFraction = plane.powerSystem.thrust/plane.performance.dynamicThrust; %less power is consumed as motor is no longer able to give as much thrust
-    plane.powerSystem.time = plane.powerSystem.time*(wattFraction-0.3*wattFraction); % 30% factor of safety in derating power consumption
+    %plane.performance.dynamicThrust = CalcDynamicThrust(d,p,rpm,velocity,net,stats); %max thrust available at cruise velocity
+    %wattFraction = plane.powerSystem.thrust/plane.performance.dynamicThrust; %less power is consumed as motor is no longer able to give as much thrust
+    %plane.powerSystem.time = plane.powerSystem.time*(wattFraction-0.3*wattFraction); % 30% factor of safety in derating power consumption
     
     
     plane.performance.drag1 = Drag(velocity); %These values are saved so we can review them for reasonableness later
