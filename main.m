@@ -13,11 +13,12 @@ temp = 293; %Temperature in kelvin at competition site
 
 %Define plane properties to search
 aspectRatios = [6 7 8 9 10]; %Wing aspect ratios
-m2PackageWeight = 4:1:5; %Mission 2 Package Weight (pounds)
-m3NumPassengers = 20:5:25; %Mission 3 Number of Passengers
-wingSpans = 4:1:5; %Wing Spans (feet)
+m2PackageWeight = 4:1:5; %Mission 2 Package Weight (pounds) 4:1:8 for first run 2.5x
+%m2PackageWeight*0.03108096 %Convert to slugs
+m3NumPassengers = 20:5:25; %Mission 3 Number of Passengers  15:3:30 for first run 2.5x
+wingSpans = 4:1:5; %Wing Spans (feet)                       2.5:1.25:5 for first run 1.33x
 load("MotorSpreadsheet.mat");
-numPowerSystems = height(MotorSpreadsheet); %Get number of prop/motor/battery configs
+numPowerSystems = height(MotorSpreadsheet); %Get number of prop/motor/battery configs 33x
 numPowerSystems = 20; %DEBUGGING: Only search first 50 to decrease runtime while redesigning
 
 vertStabAspectRatio = 2; %From aero calculations done beforehand
@@ -90,14 +91,14 @@ for aspectRatioIndex = 1:size(aspectRatios, 2)
                         planes(index) = SanityCheck(planes(index)); 
                         if planes(index).sanityFlag
                             index = index + 1;
-                        %else
-                        %    if planes(index).takeoffFail
-                        %        spanFailCount(1 + spanIndex, 4) = spanFailCount(1 + spanIndex, 4) + 1;
-                        %    elseif planes(index).momentFail
-                        %        spanFailCount(1 + spanIndex, 5) = spanFailCount(1 + spanIndex, 5) + 1;
-                        %    elseif planes(index).convergeFail
-                        %        spanFailCount(1 + spanIndex, 6) = spanFailCount(1 + spanIndex, 6) + 1;
-                        %    end
+                        else
+                            if planes(index).takeoffFail
+                                spanFailCount(spanIndex, 4) = spanFailCount(spanIndex, 4) + 1;
+                            %elseif planes(index).momentFail
+                            %    spanFailCount(spanIndex, 5) = spanFailCount(spanIndex, 5) + 1;
+                            elseif planes(index).convergeFail
+                                spanFailCount(spanIndex, 6) = spanFailCount(spanIndex, 6) + 1;
+                            end
                         end
 
                         iteration = iteration+1;
@@ -131,7 +132,7 @@ score = scoresM2 + scoresM3 + scoresGM;
 [winners, indices] = maxk(score, 100); %Find the top planes
 scores = score(indices);
 
-save("winners.mat", "winners"); %Save top results
-save("winners_scores.mat", "scores");
+%save("winners.mat", "winners"); %Save top results
+%save("winners_scores.mat", "scores");
 
 clear; %Clear variables to free RAM. RAM usage is the limiting factor in enabling the analysis to run and avoid crashing.
