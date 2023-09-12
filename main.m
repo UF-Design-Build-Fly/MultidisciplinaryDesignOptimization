@@ -46,20 +46,26 @@ iteration = 1;
 spanFailCount = zeros([length(wingSpans) 6]); %This creates a matrix to check which failure conditions are most prevailent at each span value
 failCountHeader = {'span', 'space', 'ep weight', 'takeoff', 'moment', 'converge'};
 
-for aspectRatioIndex = 1:size(aspectRatios, 2)
+totalPlanesSearched = length(aspectRatios)*length(wingSpans)*8*numPowerSystems*length(m2PackageWeight)*length(m3NumPassengers);
+progressBar = waitbar(0, "Searching, Calculating, Failing");
+
+for aspectRatioIndex = 1:length(aspectRatios)
     
-    disp("Aspect Ratio: " + aspectRatioIndex + "/" + size(aspectRatios, 2));
+    disp("Aspect Ratio: " + aspectRatioIndex + "/" + length(aspectRatios));
     toc;
 
     for spanIndex = 1:length(wingSpans)
 
         spanFailCount(spanIndex, 1) = wingSpans(spanIndex);
-        disp("Span: " + spanIndex + "/" + size(wingSpans, 2));
+        disp("Span: " + spanIndex + "/" + length(wingSpans));
         toc;
 
         for airfoilIndex = 1:1:8
             for powerSystemIndex = 1:numPowerSystems
                 for m2PackageWeightIndex = 1:length(m2PackageWeight)
+    
+                    waitbar(iteration/totalPlanesSearched, progressBar);
+                    
                     for m3PassengersIndex = 1:length(m3NumPassengers)
                 
                         %Start with a clean slate(overwrite failure flags) in case the previous plane failed
