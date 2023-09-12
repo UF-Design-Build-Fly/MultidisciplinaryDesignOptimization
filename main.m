@@ -11,6 +11,18 @@ warning('off','all')
 rho = 0.002391; %Density air at Whichita, Ks with average climate data from April 2021
 temp = 293; %Temperature in kelvin at competition site
 
+%Dynamic thrust Neural Network setup
+dThrustNeuralNet = importKerasNetwork("Fitting_3_model.h5");
+vmean = 49.708;
+vstd = 45.637;
+dmean = 10.523;
+dstd = 4.487;
+pmean = 7.308001;
+pstd = 3.348207;
+rpmmean = 12508.699;
+rpmstd = 9050.014;
+dThrustStats = [vmean, vstd, dmean, dstd, pmean, pstd, rpmmean, rpmstd];
+
 %Define plane properties to search
 aspectRatios = [6 7 8 9 10]; %Wing aspect ratios
 m2PackageWeight = 4:1:5; %Mission 2 Package Weight (pounds) 4:1:8 for first run 2.5x
@@ -73,12 +85,12 @@ for aspectRatioIndex = 1:size(aspectRatios, 2)
 
 
                         %Simulate mission 2
-                        planes(index) = GenVelocityTest(planes(index), 2, rho, temp); %2 signifies mission 2 configuration
+                        planes(index) = GenVelocityTest(planes(index), 2, rho, temp, dThrustNeuralNet, dThrustStats); %2 signifies mission 2 configuration
                         planes(index) = TakeoffChecker(planes(index), 2, rho);
                         planes(index) = Mission2Score(planes(index));
 
                         %Simulate mission 3
-                        planes(index) = GenVelocityTest(planes(index), 3, rho, temp); %3 signifies mission 3 configuration
+                        planes(index) = GenVelocityTest(planes(index), 3, rho, temp, dThrustNeuralNet, dThrustStats); %3 signifies mission 3 configuration
                         planes(index) = TakeoffChecker(planes(index), 3, rho);
                         planes(index) = Mission3Score(planes(index));
                         
