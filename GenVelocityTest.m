@@ -6,15 +6,15 @@ function plane = GenVelocityTest(plane, missionNumber, rho, temp, dThrustNeuralN
     
     %--------------------------------Weight-----------------------------------%
     if missionNumber == 2
-        weightT = plane.performance.totalWeight2;
+        weightTotal = plane.performance.totalWeight2;
     elseif missionNumber == 3
-        weightT = plane.performance.totalWeight3;
+        weightTotal = plane.performance.totalWeight3;
     end
     
     %-----------------------------Induced Drag--------------------------------%
     wingEfficency = 0.8; %e is efficiency rating for the wing (rectangular)
     K = 1/(pi*wingEfficency*plane.wing.aspectRatio); %K is an aero value WHICH ONE?
-    InducedDrag = @(v)(2*K*weightT^2)/(rho*plane.wing.planformArea*v^2); %Doesn't account for lift from tail
+    InducedDrag = @(v)(2*K*weightTotal^2)/(rho*plane.wing.planformArea*v^2); %Doesn't account for lift from tail
     
     %---------------------------Parasitic Drag--------------------------------%
     CDf = 0.75; %good round estimate
@@ -137,7 +137,10 @@ function plane = GenVelocityTest(plane, missionNumber, rho, temp, dThrustNeuralN
     %--------------------------Velocity Solver--------------------------------%
     
     %func = @(v) (Drag(v)-T(v));
-    NetForce = @(v) (TotalDrag(v) - CalcDynamicThrust(plane.powerSystem.propDiameter, plane.powerSystem.propPitch, plane.powerSystem.rpm, v, dThrustNeuralNet, dThrustStats));
+    propDiameter = plane.powerSystem.propDiameter;
+    propPitch = plane.powerSystem.propPitch;
+    motorRPM = plane.powerSystem.rpm;
+    CalcNetForce = @(v) (TotalDrag(v) - CalcDynamicThrust(propDiameter, propPitch, motorRPM, v, dThrustNeuralNet, dThrustStats));
     
     %i = 1; %debug code for visualizing thrust/drag curves
     %for v = 5:0.01:100
@@ -156,33 +159,37 @@ function plane = GenVelocityTest(plane, missionNumber, rho, temp, dThrustNeuralN
     %plot(v, w);
     %legend("Drag", "Net Force", "Thrust");
     
-    V_upper = 140;
-    V_lower = 40;
-    iter = 0;
-    while func(velocity) >= 0.05 || func(velocity) <= -0.05
-        velocity = 0.5*(V_lower+V_upper);
-        if NetForce(velocity) > 0
-            V_upper = velocity;
-        elseif NetForce(velocity) < 0
-            V_lower = velocity;
-        else
-            break;
+    velHigh = 140;
+    velLow = 40;
+    velocity = 0.5*(velLow+velHigh);
+    netForce = CalcNetForce(velocity);
+    iterations = 0;
+    while (netForce >= 0.05 || netForce <= -0.05)
+
+        velocity = 0.5*(velLow+velHigh);
+        netForce = CalcNetForce(velocity);
+        if netForce > 0
+            velHigh = velocity;
+        elseif netForce < 0
+            velLow = velocity;
         end
-        if iter > 20
+
+        iterations = iterations+1;
+        if iterations > 20
             velocity = -1;
             break;
         end
-        iter = iter+1;
+
     end
     
     
-    %plane.performance.dynamicThrust = CalcDynamicThrust(d,p,rpm,velocity,net,stats); %max thrust available at cruise velocity
-    %wattFraction = plane.powerSystem.thrust/plane.performance.dynamicThrust; %less power is consumed as motor is no longer able to give as much thrust
-    %plane.powerSystem.time = plane.powerSystem.time*(wattFraction-0.3*wattFraction); % 30% factor of safety in derating power consumption
+    plane.performance.dynamicThrust = CalcDynamicThrust(propDiameter, propPitch, motorRPM, velocity, dThrustNeuralNet, dThrustStats); %max thrust available at cruise velocity
+    wattFraction = plane.powerSystem.thrust/plane.performance.dynamicThrust; %less power is consumed as motor is no longer able to give as much thrust
+    plane.powerSystem.time = plane.powerSystem.time*(0.7*wattFraction); % 30% factor of safety in derating power consumption
     
     
-    plane.performance.drag1 = Drag(velocity); %These values are saved so we can review them for reasonableness later
-    plane.performance.inducedDrag = Induced(velocity);
+    plane.performance.drag1 = TotalDrag(velocity); %These values are saved so we can review them for reasonableness later
+    plane.performance.inducedDrag = InducedDrag(velocity);
     plane.performance.parasiticDrag = Parasitic(velocity);
     plane.performance.skinDrag = Skin(velocity);
     plane.performance.wingPara = wingParasitic(velocity);
@@ -202,18 +209,15 @@ function plane = GenVelocityTest(plane, missionNumber, rho, temp, dThrustNeuralN
         velocity = -1;
     end
     
-    D = Drag(velocity); %function handle that sums all drag
-    Vstall = sqrt(2*WeightT/(rho*plane.wing.planformArea*plane.wing.clFlap));
+    Vstall = sqrt(2*weightTotal/(rho*plane.wing.planformArea*plane.wing.clFlap));
     landingV = 1.3*Vstall; %From raymer textbook
     
     if missionNumber == 2
         plane.performance.velocity2 = velocity;
         plane.performance.landingSpeed2 = landingV;
-        plane.performance.drag2 = D;
     elseif missionNumber == 3
         plane.performance.velocity3 = velocity;
         plane.performance.landingSpeed3 = landingV;
-        plane.performance.drag3 = D;
     end
 end
 %-------------------Reference for old variable names from 2020---------------%

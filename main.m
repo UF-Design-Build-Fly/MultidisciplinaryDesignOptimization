@@ -3,8 +3,9 @@ clear; %Clears all variables
 close all; %Closes are figure windows
 
 tic %Starts stopwatch timer
+
 %Using structs the way we do here generates warnings that slow matlab down. Comment this out (and restart matlab) when debugging.
-warning('off','all')
+warning('off','all');
 
 %Define constants for aero equations
 %rho = 0.00235308; %Density air at Tuscon, Az (slug/ft^3)
