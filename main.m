@@ -28,10 +28,10 @@ dynamicThrustStats = [vMean, vStd, dMean, dStd, pMean, pStd, rpmMean, rpmStd];
 
 
 %Define plane properties to search
-aspectRatios = [6 7 8 9 10];                                % more spans??? 4, 5
-m2PackageWeight = (4:1:5)*0.03108096; %(lbs -> slugs)       % 4:1:8 for first run 2.5x
-m3NumPassengers = 20:5:25;                                  % 15:3:30 for first run 2.5x
-wingSpans = 4:1:5;                                          % 2.5:1.25:5 for first run 1.33x
+aspectRatios = [6 7 8 9 10];                    % more spans??? 4, 5
+m2PackageWeight = (4:1:5); %(lbs                % 4:1:8 for first run 2.5x
+m3NumPassengers = 20:5:25;                      % 15:3:30 for first run 2.5x
+wingSpans = 4:1:5;                              % 2.5:1.25:5 for first run 1.33x
 load("MotorSpreadsheet.mat");
 %numPowerSystems = height(MotorSpreadsheet);
 numPowerSystems = 20; %DEBUGGING: Only search first 20 to decrease runtime while redesigning
