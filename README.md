@@ -23,16 +23,16 @@ TODO:
 - Update Motorspreadsheet (Rerun script, recreate spreadsheet, convert to .mat file)
   - update estimated weight to be in pounds time to be in seconds
 - remove reassignment of numPowerSystems
-- add wheel weight
+- change max saved planes
 - get weight of wood things
 - debug total weight. last year things needed a weight
-- change max saved planes
+    - add wheel weight
 - update times for assemblying plane and putting in passengers
+- what do dynamicThrustStats do?
+- add SanityChecker
 
 
 Ask HARIS
+- Get updated rho value for Whitchita
 - Is the frontalSurfaceArea suppose to include all the tapering surface area of the nose?
-
-- Have Haris look at GenWingData function, Add lift from fuselage?, GenEmpennage function, TakeoffChecker, GenVelocityTest(specifically landing gear)
-- Have Dylan look at fuselage and landing gear math - switch to carbon fiber
 - Haris/Austin get turn acceleration estimate put into performanceclass change default to -1

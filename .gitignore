@@ -1,2 +1,4 @@
 *.asv
 ~$Motor Spreadsheet.xlsm
+
+*.code-workspace

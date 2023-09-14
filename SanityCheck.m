@@ -1,4 +1,4 @@
-function plane = SanityCheck(plane)
+function isSane = SanityCheck(plane)
     %returns true if the aircraft makes sense and meets requirements
     %key point for this function is that it starts out true but functions
     %can only set it false. No function should set it back to true - if one
@@ -22,6 +22,8 @@ function plane = SanityCheck(plane)
         plane.sanityFlag = false;
         plane.convergeFail = 1;
     end
+
+    isSane = true;
     
     %TODO: this should eventually check for -1 values in properties to make
     %sure everything was initialized correctly
