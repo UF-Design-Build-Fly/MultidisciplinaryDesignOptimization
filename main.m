@@ -29,7 +29,7 @@ dynamicThrustStats = [vMean, vStd, dMean, dStd, pMean, pStd, rpmMean, rpmStd];
 
 %Define plane properties to search
 aspectRatios = [6 7 8 9 10];                    % more spans??? 4, 5
-m2PackageWeight = (4:1:5); %(lbs                % 4:1:8 for first run 2.5x
+m2PackageWeight = (4:1:5); %(lbs)                % 4:1:8 for first run 2.5x
 m3NumPassengers = 20:5:25;                      % 15:3:30 for first run 2.5x
 wingSpans = 4:1:5;                              % 2.5:1.25:5 for first run 1.33x
 load("MotorSpreadsheet.mat");
@@ -127,7 +127,7 @@ for aspectRatioIndex = 1:length(aspectRatios)
                         
                         %Make sure all values are calculated
                         %if (SanityCheck(planes(index)))
-                        %    index = index + 1;
+                            index = index + 1;
                         %end
 
                     end %End m3Passengers Loop
@@ -145,7 +145,7 @@ scoresM2 = zeros(1, length(planes)); %Initilize arrays with 0s
 scoresM3 = scoresM2; %Initilize arrays with 0s
 scoresGM = scoresM2; %Initilize arrays with 0s
 
-for i = 1:index %Load data into arrays that are easier to work with
+for (i = 1:index-1) %Load data into arrays that are easier to work with
     scoresM2(i) = planes(i).performance.score2;
     scoresM3(i) = planes(i).performance.score3;
     scoresGM(i) = planes(i).performance.scoreGM;
@@ -162,5 +162,6 @@ scores = score(indices);
 
 %save("winners.mat", "winners"); %Save top results
 %save("winners_scores.mat", "scores");
+%save("planes.mat", "planes");
 
 clear; %Clear variables to free RAM. RAM usage is the limiting factor in enabling the analysis to run and avoid crashing.
