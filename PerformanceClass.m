@@ -30,7 +30,7 @@ classdef PerformanceClass
     score3 = -1;
     scoreGM = -1;
 
-    totalDrag = -1; %DEBUG VALUE
+    %totalDrag = -1; %DEBUG VALUE
     inducedDrag = -1;
     parasiticDrag = -1;
     skinDrag = -1;

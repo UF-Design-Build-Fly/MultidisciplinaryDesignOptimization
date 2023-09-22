@@ -187,8 +187,12 @@ function plane = GenVelocityTest(plane, missionNumber, rho, temp, dThrustNeuralN
     wattFraction = plane.powerSystem.thrust/plane.performance.dynamicThrust; %less power is consumed as motor is no longer able to give as much thrust
     plane.powerSystem.time = plane.powerSystem.time*(0.7*wattFraction); % 30% factor of safety in derating power consumption
     
-    
-    plane.performance.drag1 = TotalDrag(velocity); %These values are saved so we can review them for reasonableness later
+    if missionNumber == 2
+        plane.performance.drag2 = TotalDrag(velocity);
+    elseif missionNumber == 3
+        plane.performance.drag3 = TotalDrag(velocity);
+    end
+    %These values are saved so we can review them for reasonableness later
     plane.performance.inducedDrag = InducedDrag(velocity);
     plane.performance.parasiticDrag = Parasitic(velocity);
     plane.performance.skinDrag = Skin(velocity);

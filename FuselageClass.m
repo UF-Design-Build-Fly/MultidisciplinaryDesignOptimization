@@ -87,7 +87,7 @@ classdef FuselageClass
             %The volume in ft^3, 1/16 is the thickness of the carbon fiber in inches so this will help us find the weight of the fuselage
             carbonFiberVolume = totalSurfaceArea*(1/16/12);
             
-            rhoCarbon = 120.486;	%lb/ft^3
+            rhoCarbon = 80;	%lb/ft^3 88 found in research, but previous plane was around 80
             fuselageWeight = carbonFiberVolume*rhoCarbon; %Weight of fuselage in lb
             
             %Set the objects values
@@ -148,7 +148,7 @@ classdef FuselageClass
             fuselage.gearFrontalSA = L * gearThickness;
             fuselage.gearWeight = rhoCarbon*(fuselage.gearSA * gearThickness);
 
-            fuselage.wheelWeight = numWheels * 3/16; %3ounces (lb)
+            fuselage.wheelWeight = numWheels * 3.53/16; %3.53ounces (lb)
             fuselage.wheelSA = numWheels * (2*pi*(wheelRadius)^2 + 2*pi*wheelRadius*wheelWidth);
             fuselage.wheelFrontalSA = numWheels * (2*wheelRadius*wheelWidth);
 

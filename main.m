@@ -28,13 +28,13 @@ dynamicThrustStats = [vMean, vStd, dMean, dStd, pMean, pStd, rpmMean, rpmStd];
 
 
 %Define plane properties to search
-aspectRatios = [6 7 8 9 10];                    % more spans??? 4, 5
-m2PackageWeight = (4:1:5); %(lbs)                % 4:1:8 for first run 2.5x
-m3NumPassengers = 20:5:25;                      % 15:3:30 for first run 2.5x
-wingSpans = 4:1:5;                              % 2.5:1.25:5 for first run 1.33x
+aspectRatios = [5 7.5 10];                      % more spans??? 4, 5
+m2PackageWeight = (1:2:3); %(lbs)               % 1:1:4 for first run 2x
+m3NumPassengers = 8:4:20;                      % 15:3:30 for first run 2.5x
+wingSpans = 5:1:5;                              % 2.5:1.25:5 for first run 1.33x
 load("MotorSpreadsheet.mat");
 %numPowerSystems = height(MotorSpreadsheet);
-numPowerSystems = 20; %DEBUGGING: Only search first 20 to decrease runtime while redesigning
+numPowerSystems = 18; %DEBUGGING: Only search first 20 to decrease runtime while redesigning
 numAirfoils = 8; %Airfoils define in GenWingData()
 numSavedPlanes = 100; %About 98% of aircraft will fail and be overwritten so maxSavedPlanes does not have to equal max iterations
 
@@ -98,11 +98,11 @@ for aspectRatioIndex = 1:length(aspectRatios)
 
                         %Simulate mission takeoffs
                         planes(index) = TakeoffChecker(planes(index), 2, rho);
-                        if (planes(index).performance.takeoffDist2 >= 20)
+                        if (planes(index).performance.takeoffDist2 >= 35)
                             continue;
                         end
                         planes(index) = TakeoffChecker(planes(index), 3, rho);
-                        if (planes(index).performance.takeoffDist3 >= 20)
+                        if (planes(index).performance.takeoffDist3 >= 35)
                             continue;
                         end
 
