@@ -1,29 +1,15 @@
 clc; %Clears the Command Window
 clear; %Clears all variables
 close all; %Closes are figure windows
-
 %Using structs the way we do here generates warnings that slow matlab down. Comment this out (and restart matlab) when debugging.
 warning('off','all');
 
+%===========================================================================================
 
 %Define constants for aero equations
 %rho = 0.00235308; %Density air at Tuscon, Az (slug/ft^3)
 rho = 0.002391; %Density air at Whichita, Ks with average climate data from April 2021
 temp = 293; %Temperature in kelvin at competition site
-
-
-%Dynamic thrust Neural Network setup
-dynamicThrustNet = importKerasNetwork("Fitting_3_model.h5");
-vMean = 49.708;
-vStd = 45.637;
-dMean = 10.523;
-dStd = 4.487;
-pMean = 7.308001;
-pStd = 3.348207;
-rpmMean = 12508.699;
-rpmStd = 9050.014;
-dynamicThrustStats = [vMean, vStd, dMean, dStd, pMean, pStd, rpmMean, rpmStd];
-
 
 %Define plane properties to search
 aspectRatios = 4:1:10;                           % 5:1:10
@@ -40,8 +26,21 @@ numSavedPlanes = 100; %About 98% of aircraft will fail and be overwritten so max
 vertStabAspectRatio = 2; %From aero calculations done beforehand
 horizStabAspectRatio = 4.5; %^^^
 
+%===========================================================================================
 
 wingLookupTable = GenWingData(aspectRatios, wingSpans); %Creates airfoil data lookup table
+
+%Dynamic thrust Neural Network setup
+dynamicThrustNet = importKerasNetwork("Fitting_3_model.h5");
+vMean = 49.708;
+vStd = 45.637;
+dMean = 10.523;
+dStd = 4.487;
+pMean = 7.308001;
+pStd = 3.348207;
+rpmMean = 12508.699;
+rpmStd = 9050.014;
+dynamicThrustStats = [vMean, vStd, dMean, dStd, pMean, pStd, rpmMean, rpmStd];
 
 %Setup Fail Table - 2022-2023
 %spanFailCount = zeros([length(wingSpans) 6]); %This creates a matrix to check which failure conditions are most prevailent at each span value
@@ -49,12 +48,12 @@ wingLookupTable = GenWingData(aspectRatios, wingSpans); %Creates airfoil data lo
 
 %Progress Bar Setup
 totalPlanesSearched = length(aspectRatios)*length(wingSpans)*numAirfoils*numPowerSystems*length(m2PackageWeight)*length(m3NumPassengers);
-progressBar = waitbar(0, "Searching, Calculating, Failing");
-
+progressBar = waitbar(0, "Starting, Calculating, Failing");
 
 planes(1:numSavedPlanes) = struct(AirplaneClass); %Create a matrix to hold all the computed planes
 
-tic %Starts stopwatch timerindex = 1;
+tic %Starts stopwatch
+index = 1;
 iteration = 1;
 for aspectRatioIndex = 1:length(aspectRatios)
     for spanIndex = 1:length(wingSpans)
@@ -116,11 +115,7 @@ for aspectRatioIndex = 1:length(aspectRatios)
                         %Calculate scores
                         planes(index) = Mission2Score(planes(index));
                         planes(index) = Mission3Score(planes(index));
-                        
-                        %Calculate ground mission score
-                        totalAssemblyTime = 200; %(s)
-                        timePerPassenger = 5; %(s)
-                        planes(index).performance.scoreGM = totalAssemblyTime + timePerPassenger*planes(index).performance.numPassengers;
+                        planes(index) = MissionGMScore(planes(index));
                         
                         %Make sure all values are calculated
                         %if (SanityCheck(planes(index)))
