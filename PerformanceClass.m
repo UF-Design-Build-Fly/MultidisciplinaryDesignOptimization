@@ -43,8 +43,6 @@ classdef PerformanceClass
     %drag at cruise velocity as calculated by gen velocity solver  
     drag2 = -1;
     drag3 = -1;
-    
-    turnAcceleration = 10;
 
   end
 

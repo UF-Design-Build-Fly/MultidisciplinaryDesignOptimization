@@ -20,16 +20,12 @@ Notes:
 TODO:
 
 - move landinggear into seperate class
-- Update Motorspreadsheet (Rerun script, recreate spreadsheet, convert to .mat file)
-  - update estimated weight to be in pounds time to be in seconds
 - remove reassignment of numPowerSystems
 - change max saved planes
 - get weight of wood things
 - debug total weight. last year things needed a weight
     - add wheel weight
 - update times for assemblying plane and putting in passengers
-- what do dynamicThrustStats do?
-- add SanityChecker
 
 
 Ask HARIS
