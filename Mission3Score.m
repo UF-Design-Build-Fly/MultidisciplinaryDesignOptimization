@@ -9,6 +9,6 @@ function plane = Mission3Score(plane)
 
     plane.performance.time3 = lapTime;
     plane.performance.numLaps3 = min(plane.powerSystem.time, 300)/lapTime;
-    plane.performance.score3 = plane.performance.numLaps3 * plane.performance.numPassengers * plane.powerSystem.efficency / plane.performance.drag3;
+    plane.performance.score3 = plane.performance.numLaps3 * plane.performance.numPassengers * plane.powerSystem.efficiency / plane.performance.drag3;
 
 end
