@@ -2,8 +2,6 @@ clc; %Clears the Command Window
 clear; %Clears all variables
 close all; %Closes are figure windows
 
-tic %Starts stopwatch timer
-
 %Using structs the way we do here generates warnings that slow matlab down. Comment this out (and restart matlab) when debugging.
 warning('off','all');
 
@@ -28,13 +26,14 @@ dynamicThrustStats = [vMean, vStd, dMean, dStd, pMean, pStd, rpmMean, rpmStd];
 
 
 %Define plane properties to search
-aspectRatios = [5 7.5 10];                      % more spans??? 4, 5
-m2PackageWeight = (1:2:3); %(lbs)               % 1:1:4 for first run 2x
-m3NumPassengers = 8:4:20;                      % 15:3:30 for first run 2.5x
-wingSpans = 5:1:5;                              % 2.5:1.25:5 for first run 1.33x
+aspectRatios = 4:1:10;                           % 5:1:10
+m2PackageWeight = 1:1:3; %(lbs)                  % 1:1:6
+m3NumPassengers = 10:4:30;                       % 10:2:30
+wingSpans = 5:2.5:5;                             % 2.5:2.5:10
 load("MotorSpreadsheet.mat");
+MotorSpreadsheet = sortrows(MotorSpreadsheet, 'thrust', 'descend');
 %numPowerSystems = height(MotorSpreadsheet);
-numPowerSystems = 18; %DEBUGGING: Only search first 20 to decrease runtime while redesigning
+numPowerSystems = 20; %DEBUGGING: Only search first 20 to decrease runtime while redesigning
 numAirfoils = 8; %Airfoils define in GenWingData()
 numSavedPlanes = 100; %About 98% of aircraft will fail and be overwritten so maxSavedPlanes does not have to equal max iterations
 
@@ -54,24 +53,22 @@ progressBar = waitbar(0, "Searching, Calculating, Failing");
 
 
 planes(1:numSavedPlanes) = struct(AirplaneClass); %Create a matrix to hold all the computed planes
-index = 1;
+
+tic %Starts stopwatch timerindex = 1;
 iteration = 1;
 for aspectRatioIndex = 1:length(aspectRatios)
     for spanIndex = 1:length(wingSpans)
-
-        %spanFailCount(spanIndex, 1) = wingSpans(spanIndex);
-
-        %disp("Aspect Ratio: " + aspectRatioIndex + "/" + length(aspectRatios) + " - Span: " + spanIndex + "/" + length(wingSpans));
-        %toc;
-
         for airfoilIndex = 1:1:numAirfoils
             for powerSystemIndex = 1:numPowerSystems
+
+                percentComplete = iteration/totalPlanesSearched;
+                timeRemaining = toc * (1/percentComplete - 1);
+                waitbar(percentComplete, progressBar,  round(timeRemaining)+ "s Remaing - " + 100*round(percentComplete, 4) + "%");
+
                 for m2PackageWeightIndex = 1:length(m2PackageWeight)
                     for m3PassengersIndex = 1:length(m3NumPassengers)
-    
+                        
                         iteration = iteration+1;
-                        waitbar(iteration/totalPlanesSearched, progressBar);
-                
 
                         %Start with a clean slate(overwrite failure flags) in case the previous plane failed
                         planes(index) = struct(AirplaneClass);
@@ -98,11 +95,11 @@ for aspectRatioIndex = 1:length(aspectRatios)
 
                         %Simulate mission takeoffs
                         planes(index) = TakeoffChecker(planes(index), 2, rho);
-                        if (planes(index).performance.takeoffDist2 >= 35)
+                        if (planes(index).performance.takeoffDist2 >= 27)
                             continue;
                         end
                         planes(index) = TakeoffChecker(planes(index), 3, rho);
-                        if (planes(index).performance.takeoffDist3 >= 35)
+                        if (planes(index).performance.takeoffDist3 >= 27)
                             continue;
                         end
 
@@ -141,7 +138,7 @@ toc;
 
 %friendlyFailCount = [failCountHeader; num2cell(spanFailCount)]; %Add headers to fail count table
 
-scoresM2 = zeros(1, length(planes)); %Initilize arrays with 0s
+scoresM2 = zeros(1, index-1); %Initilize arrays with 0s
 scoresM3 = scoresM2; %Initilize arrays with 0s
 scoresGM = scoresM2; %Initilize arrays with 0s
 
@@ -153,13 +150,13 @@ end
 
 scoresM2 = scoresM2/max(scoresM2); %Normalize scores against best performers
 scoresM3 = scoresM3/max(scoresM3);
-scoresGM = scoresGM/max(scoresGM);
+scoresGM = min(scoresGM)./scoresGM;
 
 score = scoresM2 + scoresM3 + scoresGM;
 
 [winners, indices] = maxk(score, 100); %Find the top planes
 scores = score(indices);
-
+topPlanes = planes(indices);
 %save("winners.mat", "winners"); %Save top results
 %save("winners_scores.mat", "scores");
 %save("planes.mat", "planes");

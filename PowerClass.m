@@ -58,7 +58,7 @@ classdef PowerClass
             powerSystem.rpm = motorTable(tableIndex,:).rpm;
             powerSystem.amps = motorTable(tableIndex,:).current;
             powerSystem.watts = motorTable(tableIndex,:).watts;
-            powerSystem.time = motorTable(tableIndex,:).time;
+            powerSystem.time = motorTable(tableIndex,:).time*60;
             powerSystem.thrust = motorTable(tableIndex,:).thrust;
             powerSystem.propSpeed = motorTable(tableIndex,:).propSpeed;
             powerSystem.efficiency = motorTable(tableIndex,:).efficiency;
