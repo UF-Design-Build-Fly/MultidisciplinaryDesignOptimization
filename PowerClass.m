@@ -49,21 +49,21 @@ classdef PowerClass
             %            (ft/s), Efficiency (thrust/watt)*100, battery available watt
             %            hours, estimated system weight (pounds).
             
-            powerSystem.motorName = motorTable(tableIndex,:).motorName;
-            powerSystem.cells = motorTable(tableIndex,:).cells;
-            powerSystem.kv = motorTable(tableIndex,:).kv;
-            powerSystem.propDiameter = motorTable(tableIndex,:).propDiameter;
-            powerSystem.propPitch = motorTable(tableIndex,:).propPitch;
-            powerSystem.voltage = motorTable(tableIndex,:).voltage;
-            powerSystem.rpm = motorTable(tableIndex,:).rpm;
-            powerSystem.amps = motorTable(tableIndex,:).current;
-            powerSystem.watts = motorTable(tableIndex,:).watts;
-            powerSystem.time = motorTable(tableIndex,:).time*60;
-            powerSystem.thrust = motorTable(tableIndex,:).thrust;
-            powerSystem.propSpeed = motorTable(tableIndex,:).propSpeed;
-            powerSystem.efficiency = motorTable(tableIndex,:).efficiency;
-            powerSystem.batteryCapacity = motorTable(tableIndex,:).batteryCapacity;
-            powerSystem.weight = motorTable(tableIndex,:).estimatedWeight/16;
+            powerSystem.motorName = motorTable(tableIndex,:).Motor;
+            powerSystem.cells = motorTable(tableIndex,:).Cells;
+            powerSystem.kv = motorTable(tableIndex,:).kV;
+            powerSystem.propDiameter = motorTable(tableIndex,:).PropellerDiameterinches;
+            powerSystem.propPitch = motorTable(tableIndex,:).PropellerPitchinches;
+            powerSystem.voltage = motorTable(tableIndex,:).VoltageV;
+            powerSystem.rpm = motorTable(tableIndex,:).RPMs;
+            powerSystem.amps = motorTable(tableIndex,:).CurrentA;
+            powerSystem.watts = motorTable(tableIndex,:).PowerConsumptionW;
+            powerSystem.time = motorTable(tableIndex,:).WhFlightTimeSeconds;
+            powerSystem.thrust = motorTable(tableIndex,:).Thrustlbs;
+            powerSystem.propSpeed = motorTable(tableIndex,:).PitchSpeedfts;
+            powerSystem.efficiency = motorTable(tableIndex,:).Efficiencythrustwatt100;
+            %powerSystem.batteryCapacity = motorTable(tableIndex,:).batteryCapacity;
+            powerSystem.weight = motorTable(tableIndex,:).EstimatedSystemWeightlbs;
 
         end
 
