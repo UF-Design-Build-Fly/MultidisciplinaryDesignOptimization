@@ -12,21 +12,21 @@ rho = 0.002391; %Density air at Whichita, Ks with average climate data from Apri
 temp = 293; %Temperature in kelvin at competition site
 
 %Define plane properties to search
-aspectRatios = 4:1:10;                           % 5:1:10
-m2PackageWeight = 1:1:3; %(lbs)                  % 1:1:6
-m3NumPassengers = 10:4:30;                       % 10:2:30
-wingSpans = 5:2.5:5;                             % 2.5:2.5:10
+aspectRatios = 5:1:7;                            % 5:1:10
+m2PackageWeight = 3.5:0.5:5; %(lbs)                  % 1:1:6
+m3NumPassengers = 16:4:28;                       % 10:2:30
+wingSpans = 5:2.5:5;                          % 2.5:2.5:10
 load("MotorSpreadsheet.mat");
-MotorSpreadsheet = sortrows(MotorSpreadsheet, 'thrust', 'descend');
+MotorSpreadsheet = sortrows(MotorSpreadsheet, 'Efficiencythrustwatt100', 'descend');
 %numPowerSystems = height(MotorSpreadsheet);
-numPowerSystems = 20; %DEBUGGING: Only search first 20 to decrease runtime while redesigning
+numPowerSystems = 50; %DEBUGGING: Only search first 20 to decrease runtime while redesigning
 numAirfoils = 8; %Airfoils define in GenWingData()
-numSavedPlanes = 100; %About 98% of aircraft will fail and be overwritten so maxSavedPlanes does not have to equal max iterations
+numSavedPlanes = 1000; %About 98% of aircraft will fail and be overwritten so maxSavedPlanes does not have to equal max iterations
 
 vertStabAspectRatio = 2; %From aero calculations done beforehand
 horizStabAspectRatio = 4.5; %^^^
 
-%===========================================================================================
+%======================================================c=====================================
 
 wingLookupTable = GenWingData(aspectRatios, wingSpans); %Creates airfoil data lookup table
 
@@ -62,7 +62,7 @@ for aspectRatioIndex = 1:length(aspectRatios)
 
                 percentComplete = iteration/totalPlanesSearched;
                 timeRemaining = toc * (1/percentComplete - 1);
-                waitbar(percentComplete, progressBar,  round(timeRemaining)+ "s Remaing - " + 100*round(percentComplete, 4) + "%");
+                waitbar(percentComplete, progressBar,  round(timeRemaining)+ "s Remaing - " + 100*round(percentComplete, 3) + "%");
 
                 for m2PackageWeightIndex = 1:length(m2PackageWeight)
                     for m3PassengersIndex = 1:length(m3NumPassengers)
@@ -94,17 +94,17 @@ for aspectRatioIndex = 1:length(aspectRatios)
 
                         %Simulate mission takeoffs
                         planes(index) = TakeoffChecker(planes(index), 2, rho);
-                        if (planes(index).performance.takeoffDist2 >= 27)
+                        if (planes(index).performance.takeoffDist2 >= 25)
                             continue;
                         end
                         planes(index) = TakeoffChecker(planes(index), 3, rho);
-                        if (planes(index).performance.takeoffDist3 >= 27)
+                        if (planes(index).performance.takeoffDist3 >= 25)
                             continue;
                         end
 
                         %Simulate mission velocities
                         planes(index) = GenVelocityTest(planes(index), 2, rho, temp, dynamicThrustNet, dynamicThrustStats); %2 signifies mission 2 configuration
-                        if (planes(index).performance.velocity2 == -1)
+                        if (planes(index).performance.velocity2 == -1 || planes(index).performance.time2 > 290) %290s leaves 10s extra
                             continue;
                         end
                         planes(index) = GenVelocityTest(planes(index), 3, rho, temp, dynamicThrustNet, dynamicThrustStats); %3 signifies mission 3 configuration
@@ -143,6 +143,12 @@ for (i = 1:index-1) %Load data into arrays that are easier to work with
     scoresGM(i) = planes(i).performance.scoreGM;
 end
 
+for (i = 1:index-1) %Normalizes scores in plane performance object
+    planes(i).performance.score2 = planes(i).performance.score2/max(scoresM2);
+    planes(i).performance.score3 = planes(i).performance.score3/max(scoresM3);
+    planes(i).performance.scoreGM = min(scoresGM)/planes(i).performance.scoreGM;
+end
+
 scoresM2 = scoresM2/max(scoresM2); %Normalize scores against best performers
 scoresM3 = scoresM3/max(scoresM3);
 scoresGM = min(scoresGM)./scoresGM;
@@ -156,4 +162,4 @@ topPlanes = planes(indices);
 %save("winners_scores.mat", "scores");
 %save("planes.mat", "planes");
 
-clear; %Clear variables to free RAM. RAM usage is the limiting factor in enabling the analysis to run and avoid crashing.
+%clear; %Clear variables to free RAM. RAM usage is the limiting factor in enabling the analysis to run and avoid crashing.
