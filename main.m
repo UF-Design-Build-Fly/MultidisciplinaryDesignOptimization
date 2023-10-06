@@ -12,15 +12,15 @@ rho = 0.002391; %Density air at Whichita, Ks with average climate data from Apri
 temp = 293; %Temperature in kelvin at competition site
 
 %Define plane properties to search
-aspectRatios = 5:1:7;                            % 5:1:10
-m2PackageWeight = 3.5:0.5:5; %(lbs)                  % 1:1:6
-m3NumPassengers = 16:4:28;                       % 10:2:30
+aspectRatios = 5:0.5:7;                            % 5:1:10
+m2PackageWeight = 3:1:8; %(lbs)                  % 1:1:6
+m3NumPassengers = 16:6:42;                       % 10:2:30
 wingSpans = 5:2.5:5;                          % 2.5:2.5:10
 load("MotorSpreadsheet.mat");
 MotorSpreadsheet = sortrows(MotorSpreadsheet, 'Efficiencythrustwatt100', 'descend');
 %numPowerSystems = height(MotorSpreadsheet);
-numPowerSystems = 50; %DEBUGGING: Only search first 20 to decrease runtime while redesigning
-numAirfoils = 8; %Airfoils define in GenWingData()
+numPowerSystems = 500; %DEBUGGING: Only search first 20 to decrease runtime while redesigning
+numAirfoils = 1; %Airfoils define in GenWingData()
 numSavedPlanes = 1000; %About 98% of aircraft will fail and be overwritten so maxSavedPlanes does not have to equal max iterations
 
 vertStabAspectRatio = 2; %From aero calculations done beforehand
@@ -94,11 +94,11 @@ for aspectRatioIndex = 1:length(aspectRatios)
 
                         %Simulate mission takeoffs
                         planes(index) = TakeoffChecker(planes(index), 2, rho);
-                        if (planes(index).performance.takeoffDist2 >= 25)
+                        if (planes(index).performance.takeoffDist2 > 20)
                             continue;
                         end
                         planes(index) = TakeoffChecker(planes(index), 3, rho);
-                        if (planes(index).performance.takeoffDist3 >= 25)
+                        if (planes(index).performance.takeoffDist3 > 20)
                             continue;
                         end
 

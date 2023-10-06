@@ -33,7 +33,7 @@ function plane = TakeoffChecker(plane,mission,rho)
     
     %Ap was not used in anything so idk why it was calculated - Christian
     %Ap = (pi*0.25*dp^2)/144; %Prop area(ft^2)
-    Vr = 1.2*sqrt(2*weight/(rho*plane.wing.clm*WingS)); %Rotation speed; with 1.2 factor of safety
+    Vr = 1.2*sqrt(2*weight/(rho*(plane.wing.clm+0.9)*WingS)); %Rotation speed; with 1.2 factor of safety
     
     % We decided dynamic thrust was not necessary- Christian
     % %dynamic thrust equation
