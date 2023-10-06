@@ -12,15 +12,15 @@ rho = 0.002391; %Density air at Whichita, Ks with average climate data from Apri
 temp = 293; %Temperature in kelvin at competition site
 
 %Define plane properties to search
-aspectRatios = 5:0.5:7;                            % 5:1:10
-m2PackageWeight = 3:1:8; %(lbs)                  % 1:1:6
-m3NumPassengers = 16:6:42;                       % 10:2:30
+aspectRatios = 4.6:0.2:6.4;                            % 5:1:10
+m2PackageWeight = 3:0.2:6.6; %(lbs)                  % 1:1:6
+m3NumPassengers = 14:2:38;                       % 10:2:30
 wingSpans = 5:2.5:5;                          % 2.5:2.5:10
 load("MotorSpreadsheet.mat");
 MotorSpreadsheet = sortrows(MotorSpreadsheet, 'Efficiencythrustwatt100', 'descend');
 %numPowerSystems = height(MotorSpreadsheet);
 numPowerSystems = 500; %DEBUGGING: Only search first 20 to decrease runtime while redesigning
-numAirfoils = 1; %Airfoils define in GenWingData()
+numAirfoils = 8; %Airfoils define in GenWingData()
 numSavedPlanes = 1000; %About 98% of aircraft will fail and be overwritten so maxSavedPlanes does not have to equal max iterations
 
 vertStabAspectRatio = 2; %From aero calculations done beforehand
@@ -104,11 +104,11 @@ for aspectRatioIndex = 1:length(aspectRatios)
 
                         %Simulate mission velocities
                         planes(index) = GenVelocityTest(planes(index), 2, rho, temp, dynamicThrustNet, dynamicThrustStats); %2 signifies mission 2 configuration
-                        if (planes(index).performance.velocity2 == -1 || planes(index).performance.time2 > 290) %290s leaves 10s extra
+                        if (planes(index).performance.velocity2 < planes(index).performance.landingSpeed2 || planes(index).performance.time2 > 290) %290s leaves 10s extra
                             continue;
                         end
                         planes(index) = GenVelocityTest(planes(index), 3, rho, temp, dynamicThrustNet, dynamicThrustStats); %3 signifies mission 3 configuration
-                        if (planes(index).performance.velocity3 == -1)
+                        if (planes(index).performance.velocity3 < planes(index).performance.landingSpeed3)
                             continue;
                         end
 

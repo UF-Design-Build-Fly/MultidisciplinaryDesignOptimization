@@ -181,10 +181,14 @@ function plane = GenVelocityTest(plane, missionNumber, rho, temp, dThrustNeuralN
         end
 
     end
+
+    if (velocity > plane.powerSystem.propSpeed)
+        velocity = plane.powerSystem.propSpeed;
+    end
     
     
-    plane.performance.dynamicThrust = CalcDynamicThrust(propDiameter, propPitch, motorRPM, velocity, dThrustNeuralNet, dThrustStats); %max thrust available at cruise velocity
-    wattFraction = plane.powerSystem.thrust/plane.performance.dynamicThrust; %less power is consumed as motor is no longer able to give as much thrust
+    %plane.performance.dynamicThrust = CalcDynamicThrust(propDiameter, propPitch, motorRPM, velocity, dThrustNeuralNet, dThrustStats); %max thrust available at cruise velocity
+    wattFraction = plane.powerSystem.thrust/TotalDrag(velocity); %less power is consumed as motor is no longer able to give as much thrust
     plane.powerSystem.time = plane.powerSystem.time*(0.7*wattFraction); % 30% factor of safety in derating power consumption
     
     if missionNumber == 2
