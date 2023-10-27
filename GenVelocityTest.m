@@ -132,7 +132,9 @@ function plane = GenVelocityTest(plane, missionNumber, rho, temp, dThrustNeuralN
     %thrust needed to maintain the measured maximum forward airspeed of ~55 mph
     %Motor zero thrust should be at 120 feet per second.
     %-------------------------------------------------------------------------%
-    
+    %Nathaniel's Very crude but somewhat accurate static thrust
+
+    CrudeDynamicThrust = @(v) (plane.powerSystem.thrust*(1 - v/plane.powerSystem.propSpeed));
     
     %--------------------------Velocity Solver--------------------------------%
     
@@ -140,7 +142,8 @@ function plane = GenVelocityTest(plane, missionNumber, rho, temp, dThrustNeuralN
     propDiameter = plane.powerSystem.propDiameter;
     propPitch = plane.powerSystem.propPitch;
     motorRPM = plane.powerSystem.rpm;
-    CalcNetForce = @(v) (TotalDrag(v) - CalcDynamicThrust(propDiameter, propPitch, motorRPM, v, dThrustNeuralNet, dThrustStats));
+    %CalcNetForce = @(v) (TotalDrag(v) - CalcDynamicThrust(propDiameter, propPitch, motorRPM, v, dThrustNeuralNet, dThrustStats));
+    CalcNetForce = @(v) (TotalDrag(v) - CrudeDynamicThrust(v));
     
     %i = 1; %debug code for visualizing thrust/drag curves
     %for v = 5:0.01:100
@@ -159,9 +162,9 @@ function plane = GenVelocityTest(plane, missionNumber, rho, temp, dThrustNeuralN
     %plot(v, w);
     %legend("Drag", "Net Force", "Thrust");
     
-    velHigh = 140;
-    velLow = 40;
-    velocity = 0.5*(velLow+velHigh);
+    velHigh = plane.powerSystem.propSpeed;
+    velLow = 20;
+    velocity = 0.85*velHigh;
     netForce = CalcNetForce(velocity);
     iterations = 0;
     while (netForce >= 0.05 || netForce <= -0.05)

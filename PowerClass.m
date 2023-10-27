@@ -2,7 +2,7 @@ classdef PowerClass
 
   properties
 
-    motorName = -1; 
+    motorName = ""; 
     cells = -1;
     kv = -1;
     propDiameter = -1;
@@ -49,7 +49,7 @@ classdef PowerClass
             %            (ft/s), Efficiency (thrust/watt)*100, battery available watt
             %            hours, estimated system weight (pounds).
             
-            powerSystem.motorName = motorTable(tableIndex,:).Motor;
+            powerSystem.motorName = char(motorTable(tableIndex,:).Motor);
             powerSystem.cells = motorTable(tableIndex,:).Cells;
             powerSystem.kv = motorTable(tableIndex,:).kV;
             powerSystem.propDiameter = motorTable(tableIndex,:).PropellerDiameterinches;

@@ -12,15 +12,15 @@ rho = 0.002391; %Density air at Whichita, Ks with average climate data from Apri
 temp = 293; %Temperature in kelvin at competition site
 
 %Define plane properties to search
-aspectRatios = 4.6:0.2:6.4;                            % 5:1:10
-m2PackageWeight = 3:0.2:6.6; %(lbs)                  % 1:1:6
-m3NumPassengers = 14:2:38;                       % 10:2:30
-wingSpans = 5:2.5:5;                          % 2.5:2.5:10
-load("MotorSpreadsheet.mat");
+aspectRatios = 5.75:0.25:6.25;
+m2PackageWeight = 3:0.25:8; %lbs
+m3NumPassengers = 12:3:42;
+wingSpans = 5:0.5:5;
+load("MotorSpreadsheet2024.mat");
 MotorSpreadsheet = sortrows(MotorSpreadsheet, 'Efficiencythrustwatt100', 'descend');
-%numPowerSystems = height(MotorSpreadsheet);
-numPowerSystems = 500; %DEBUGGING: Only search first 20 to decrease runtime while redesigning
-numAirfoils = 8; %Airfoils define in GenWingData()
+numPowerSystems = height(MotorSpreadsheet);
+numPowerSystems = 79; %DEBUGGING: Only search first 20 to decrease runtime while redesigning
+numAirfoils = 1; %Airfoils define in GenWingData()
 numSavedPlanes = 1000; %About 98% of aircraft will fail and be overwritten so maxSavedPlanes does not have to equal max iterations
 
 vertStabAspectRatio = 2; %From aero calculations done beforehand
