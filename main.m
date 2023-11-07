@@ -21,7 +21,7 @@ MotorSpreadsheet = sortrows(MotorSpreadsheet, 'Efficiencythrustwatt100', 'descen
 numPowerSystems = height(MotorSpreadsheet);
 numPowerSystems = 79; %DEBUGGING: Only search first 20 to decrease runtime while redesigning
 numAirfoils = 1; %Airfoils define in GenWingData()
-numSavedPlanes = 1000; %About 98% of aircraft will fail and be overwritten so maxSavedPlanes does not have to equal max iterations
+numSavedPlanes = 10000; %About 98% of aircraft will fail and be overwritten so maxSavedPlanes does not have to equal max iterations
 
 vertStabAspectRatio = 2; %From aero calculations done beforehand
 horizStabAspectRatio = 4.5; %^^^
@@ -99,7 +99,7 @@ for aspectRatioIndex = 1:length(aspectRatios)
                         end
                         planes(index) = TakeoffChecker(planes(index), 3, rho);
                         if (planes(index).performance.takeoffDist3 > 20)
-                            continue;
+                            break;
                         end
 
                         %Simulate mission velocities
@@ -109,7 +109,7 @@ for aspectRatioIndex = 1:length(aspectRatios)
                         end
                         planes(index) = GenVelocityTest(planes(index), 3, rho, temp, dynamicThrustNet, dynamicThrustStats); %3 signifies mission 3 configuration
                         if (planes(index).performance.velocity3 < planes(index).performance.landingSpeed3)
-                            continue;
+                            break;
                         end
 
                         %Calculate scores
