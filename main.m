@@ -12,14 +12,14 @@ rho = 0.002391; %Density air at Whichita, Ks with average climate data from Apri
 temp = 293; %Temperature in kelvin at competition site
 
 %Define plane properties to search
-aspectRatios = 5.75:0.25:6.25;
-m2PackageWeight = 3:0.25:8; %lbs
+aspectRatios = 5.6:0.2:6.4;
+m2PackageWeight = 3:0.1:8; %lbs
 m3NumPassengers = 12:3:42;
 wingSpans = 5:0.5:5;
 load("MotorSpreadsheet2024.mat");
 MotorSpreadsheet = sortrows(MotorSpreadsheet, 'Efficiencythrustwatt100', 'descend');
 numPowerSystems = height(MotorSpreadsheet);
-numPowerSystems = 79; %DEBUGGING: Only search first 20 to decrease runtime while redesigning
+%numPowerSystems = 79; %DEBUGGING: Only search first 20 to decrease runtime while redesigning
 numAirfoils = 1; %Airfoils define in GenWingData()
 numSavedPlanes = 10000; %About 98% of aircraft will fail and be overwritten so maxSavedPlanes does not have to equal max iterations
 
@@ -54,21 +54,21 @@ planes(1:numSavedPlanes) = struct(AirplaneClass); %Create a matrix to hold all t
 
 tic %Starts stopwatch
 index = 1;
-iteration = 1;
+superIteration = 1;
 for aspectRatioIndex = 1:length(aspectRatios)
     for spanIndex = 1:length(wingSpans)
         for airfoilIndex = 1:1:numAirfoils
             for powerSystemIndex = 1:numPowerSystems
 
-                percentComplete = iteration/totalPlanesSearched;
+                superIteration = superIteration + 1;
+                percentComplete = superIteration*length(m2PackageWeight)*length(m3NumPassengers)/totalPlanesSearched;
                 timeRemaining = toc * (1/percentComplete - 1);
                 waitbar(percentComplete, progressBar,  round(timeRemaining)+ "s Remaing - " + 100*round(percentComplete, 3) + "%");
 
                 for m2PackageWeightIndex = 1:length(m2PackageWeight)
+                    quit = 0;
                     for m3PassengersIndex = 1:length(m3NumPassengers)
                         
-                        iteration = iteration+1;
-
                         %Start with a clean slate(overwrite failure flags) in case the previous plane failed
                         planes(index) = struct(AirplaneClass);
 
@@ -95,7 +95,8 @@ for aspectRatioIndex = 1:length(aspectRatios)
                         %Simulate mission takeoffs
                         planes(index) = TakeoffChecker(planes(index), 2, rho);
                         if (planes(index).performance.takeoffDist2 > 20)
-                            continue;
+                            quit = 1; %M2 Weight Takeoff/Flight Failed
+                            break;
                         end
                         planes(index) = TakeoffChecker(planes(index), 3, rho);
                         if (planes(index).performance.takeoffDist3 > 20)
@@ -105,7 +106,8 @@ for aspectRatioIndex = 1:length(aspectRatios)
                         %Simulate mission velocities
                         planes(index) = GenVelocityTest(planes(index), 2, rho, temp, dynamicThrustNet, dynamicThrustStats); %2 signifies mission 2 configuration
                         if (planes(index).performance.velocity2 < planes(index).performance.landingSpeed2 || planes(index).performance.time2 > 290) %290s leaves 10s extra
-                            continue;
+                            quit = 1; %M2 Weight Takeoff/Flight Failed
+                            break;
                         end
                         planes(index) = GenVelocityTest(planes(index), 3, rho, temp, dynamicThrustNet, dynamicThrustStats); %3 signifies mission 3 configuration
                         if (planes(index).performance.velocity3 < planes(index).performance.landingSpeed3)
@@ -123,6 +125,9 @@ for aspectRatioIndex = 1:length(aspectRatios)
                         %end
 
                     end %End m3Passengers Loop
+                    if (quit)
+                        break; %M2 Weight Takeoff/Flight Failed
+                    end
                 end %End m2PackageWeight Loop
             end %End powerSystem Loop
         end %End airfoil Loop
