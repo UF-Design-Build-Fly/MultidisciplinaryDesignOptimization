@@ -1,12 +1,9 @@
-x = zeros(1, index-1); %Initilize arrays with 0s
-y = scoresM2; %Initilize arrays with 0s
-
-for (i = 1:index-1) %Load data into arrays that are easier to work with
-    x(i) = planes(i).performance.numPassengers;
-    y(i) = planes(i).wing.span;
+for (i = 1:length(planes)) %Load data into arrays that are easier to work with
+    x(i) = i;
+    y(i) = planes(i).performance.score2 + planes(i).performance.score3 + planes(i).performance.scoreGM;
 end
 
-plot(x, score, '.')
+plot(x, y, '.')
 xlabel('Number of Passengers')
 ylabel('Score')
 %zlabel('Total Score')

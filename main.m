@@ -11,36 +11,41 @@ warning('off','all');
 rho = 0.002391; %Density air at Whichita, Ks with average climate data from April 2021
 temp = 293; %Temperature in kelvin at competition site
 
+%Define environmental/plane properties
+windVel = 16.86; % From historical data Wichita (ft/s)
+avgTurnG = 5; % From empircal flight data. 11.5 peak g, assume roughly triangular.
+turnVelMultiplier = 0.7;
+
 %Define plane properties to search
-aspectRatios = 5.6:0.2:6.4;
-m2PackageWeight = 3:0.1:8; %lbs
-m3NumPassengers = 12:3:42;
-wingSpans = 5:0.5:5;
+aspectRatios = 4:1:6;
+m2PackageWeight = 2.5:0.5:8.5; %lbs
+m3NumPassengers = 6:6:36;
+wingSpans = 2.5:2.5:5;
 load("MotorSpreadsheet2024.mat");
-MotorSpreadsheet = sortrows(MotorSpreadsheet, 'Efficiencythrustwatt100', 'descend');
+MotorSpreadsheet = sortrows(MotorSpreadsheet, 'Thrustlbs', 'descend');
 numPowerSystems = height(MotorSpreadsheet);
-%numPowerSystems = 79; %DEBUGGING: Only search first 20 to decrease runtime while redesigning
+numPowerSystems = 100; %DEBUGGING: Only search first 20 to decrease runtime while redesigning
 numAirfoils = 1; %Airfoils define in GenWingData()
 numSavedPlanes = 10000; %About 98% of aircraft will fail and be overwritten so maxSavedPlanes does not have to equal max iterations
 
 vertStabAspectRatio = 2; %From aero calculations done beforehand
 horizStabAspectRatio = 4.5; %^^^
 
-%======================================================c=====================================
+%===========================================================================================
 
 wingLookupTable = GenWingData(aspectRatios, wingSpans); %Creates airfoil data lookup table
 
 %Dynamic thrust Neural Network setup
-dynamicThrustNet = importKerasNetwork("Fitting_3_model.h5");
-vMean = 49.708;
-vStd = 45.637;
-dMean = 10.523;
-dStd = 4.487;
-pMean = 7.308001;
-pStd = 3.348207;
-rpmMean = 12508.699;
-rpmStd = 9050.014;
-dynamicThrustStats = [vMean, vStd, dMean, dStd, pMean, pStd, rpmMean, rpmStd];
+%dynamicThrustNet = importKerasNetwork("Fitting_3_model.h5");
+%vMean = 49.708;
+%vStd = 45.637;
+%dMean = 10.523;
+%dStd = 4.487;
+%pMean = 7.308001;
+%pStd = 3.348207;
+%rpmMean = 12508.699;
+%rpmStd = 9050.014;
+%dynamicThrustStats = [vMean, vStd, dMean, dStd, pMean, pStd, rpmMean, rpmStd];
 
 %Setup Fail Table - 2022-2023
 %spanFailCount = zeros([length(wingSpans) 6]); %This creates a matrix to check which failure conditions are most prevailent at each span value
@@ -121,7 +126,7 @@ for aspectRatioIndex = 1:length(aspectRatios)
                         
                         %Make sure all values are calculated
                         %if (SanityCheck(planes(index)))
-                            index = index + 1;
+                        index = index + 1;
                         %end
 
                     end %End m3Passengers Loop
