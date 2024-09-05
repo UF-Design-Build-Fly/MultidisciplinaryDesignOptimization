@@ -3,7 +3,6 @@ classdef PerformanceClass
   properties
         
     m2Weight = -1;
-    numPassengers = -1;
 
     totalEmptyWeight = -1;
     totalWeight2 = -1;
@@ -29,6 +28,10 @@ classdef PerformanceClass
     score2 = -1;
     score3 = -1;
     scoreGM = -1;
+    score2Normalized = -1;
+    score3Normalized = -1;
+    scoreGMNormalized = -1;
+    scoreTotal = -1;
 
     %totalDrag = -1; %DEBUG VALUE
     inducedDrag = -1;

@@ -7,26 +7,28 @@ warning('off','all');
 %===========================================================================================
 
 %Define constants for aero equations
-%rho = 0.00235308; %Density air at Tuscon, Az (slug/ft^3)
-rho = 0.002391; %Density air at Whichita, Ks with average climate data from April 2021
-temp = 293; %Temperature in kelvin at competition site
+rho = 0.00235308; %Density air at Tuscon, Az (slug/ft^3)
+%rho = 0.002391; %Density air at Whichita, Ks with average climate data from April 2021
+temp = 303; %Temperature in kelvin at competition site
 
 %Define environmental/plane properties
-windVel = 16.86; % From historical data Wichita (ft/s)
+global windVel;
+windVel = 13.2; % From historical data Tucson (ft/s)
+global avgTurnG;
 avgTurnG = 5; % From empircal flight data. 11.5 peak g, assume roughly triangular.
-turnVelMultiplier = 0.7;
+global turnVelMultiplier
+turnVelMultiplier = 0.8;
 
 %Define plane properties to search
-aspectRatios = 4:1:6;
-m2PackageWeight = 2.5:0.5:8.5; %lbs
-m3NumPassengers = 6:6:36;
-wingSpans = 2.5:2.5:5;
+aspectRatios = 4:1:8;
+m2PackageWeight = 4.5:1:11.5; %lbs
+wingSpans = 3:1:6;
 load("MotorSpreadsheet2024.mat");
 MotorSpreadsheet = sortrows(MotorSpreadsheet, 'Thrustlbs', 'descend');
 numPowerSystems = height(MotorSpreadsheet);
-numPowerSystems = 100; %DEBUGGING: Only search first 20 to decrease runtime while redesigning
+numPowerSystems = 100; %DEBUGGING: Only search subset to decrease runtime while redesigning
 numAirfoils = 1; %Airfoils define in GenWingData()
-numSavedPlanes = 10000; %About 98% of aircraft will fail and be overwritten so maxSavedPlanes does not have to equal max iterations
+%numSavedPlanes = 10000; %About 98% of aircraft will fail and be overwritten so maxSavedPlanes does not have to equal max iterations
 
 vertStabAspectRatio = 2; %From aero calculations done beforehand
 horizStabAspectRatio = 4.5; %^^^
@@ -52,10 +54,10 @@ wingLookupTable = GenWingData(aspectRatios, wingSpans); %Creates airfoil data lo
 %failCountHeader = {'span', 'space', 'ep weight', 'takeoff', 'moment', 'converge'};
 
 %Progress Bar Setup
-totalPlanesSearched = length(aspectRatios)*length(wingSpans)*numAirfoils*numPowerSystems*length(m2PackageWeight)*length(m3NumPassengers);
+totalPlanesSearched = length(aspectRatios)*length(wingSpans)*numAirfoils*numPowerSystems*length(m2PackageWeight);
 progressBar = waitbar(0, "Starting, Calculating, Failing");
 
-planes(1:numSavedPlanes) = struct(AirplaneClass); %Create a matrix to hold all the computed planes
+planes(1:totalPlanesSearched) = struct(AirplaneClass); %Create a matrix to hold all the computed planes
 
 tic %Starts stopwatch
 index = 1;
@@ -66,73 +68,72 @@ for aspectRatioIndex = 1:length(aspectRatios)
             for powerSystemIndex = 1:numPowerSystems
 
                 superIteration = superIteration + 1;
-                percentComplete = superIteration*length(m2PackageWeight)*length(m3NumPassengers)/totalPlanesSearched;
+                percentComplete = superIteration*length(m2PackageWeight)/totalPlanesSearched;
                 timeRemaining = toc * (1/percentComplete - 1);
                 waitbar(percentComplete, progressBar,  round(timeRemaining)+ "s Remaing - " + 100*round(percentComplete, 3) + "%");
 
                 for m2PackageWeightIndex = 1:length(m2PackageWeight)
-                    quit = 0;
-                    for m3PassengersIndex = 1:length(m3NumPassengers)
+                    %quit = 0;
+                    %for m3PassengersIndex = 1:length(m3NumPassengers)
                         
-                        %Start with a clean slate(overwrite failure flags) in case the previous plane failed
-                        planes(index) = struct(AirplaneClass);
+                    %Start with a clean slate(overwrite failure flags) in case the previous plane failed
+                    planes(index) = struct(AirplaneClass);
 
-                        %Set starting values for each plane
-                        planes(index).wing.span = wingSpans(spanIndex);
-                        planes(index).wing.aspectRatio = aspectRatios(aspectRatioIndex);
-                        planes(index).performance.m2Weight = m2PackageWeight(m2PackageWeightIndex);
-                        planes(index).performance.numPassengers = m3NumPassengers(m3PassengersIndex);
+                    %Set starting values for each plane
+                    planes(index).wing.span = wingSpans(spanIndex);
+                    planes(index).wing.aspectRatio = aspectRatios(aspectRatioIndex);
+                    planes(index).performance.m2Weight = m2PackageWeight(m2PackageWeightIndex);
 
-                        %Set values from wings matrix into plane
-                        planes(index).wing = WingClass.SetWingData(planes(index).wing, wingLookupTable, airfoilIndex, aspectRatioIndex, spanIndex);
+                    %Set values from wings matrix into plane
+                    planes(index).wing = WingClass.SetWingData(planes(index).wing, wingLookupTable, airfoilIndex, aspectRatioIndex, spanIndex);
 
-                        %Set values from power system table into plane
-                        planes(index).powerSystem = PowerClass.SetPowerSystemData(planes(index).powerSystem, MotorSpreadsheet, powerSystemIndex);
+                    %Set values from power system table into plane
+                    planes(index).powerSystem = PowerClass.SetPowerSystemData(planes(index).powerSystem, MotorSpreadsheet, powerSystemIndex);
 
-                        %Set payload and fuselage configuration
-                        planes(index).fuselage = FuselageClass.CalcFuselageData(planes(index));
-                        planes(index).fuselage = FuselageClass.GenLandingGear(planes(index));
-                        planes(index).empennage = EmpennageClass.GenEmpennage(planes(index), horizStabAspectRatio, vertStabAspectRatio);
+                    %Set payload and fuselage configuration
+                    planes(index).fuselage = FuselageClass.CalcFuselageData(planes(index));
+                    planes(index).fuselage = FuselageClass.GenLandingGear(planes(index));
+                    planes(index).empennage = EmpennageClass.GenEmpennage(planes(index), horizStabAspectRatio, vertStabAspectRatio);
 
-                        planes(index) = FindTotalWeight(planes(index));
+                    planes(index) = FindTotalWeight(planes(index));
 
 
-                        %Simulate mission takeoffs
-                        planes(index) = TakeoffChecker(planes(index), 2, rho);
-                        if (planes(index).performance.takeoffDist2 > 20)
-                            quit = 1; %M2 Weight Takeoff/Flight Failed
-                            break;
-                        end
-                        planes(index) = TakeoffChecker(planes(index), 3, rho);
-                        if (planes(index).performance.takeoffDist3 > 20)
-                            break;
-                        end
+                    %Simulate mission takeoffs
+                    %planes(index) = TakeoffChecker(planes(index), 2, rho);
+                    %if (planes(index).performance.takeoffDist2 > 20)
+                    %    quit = 1; %M2 Weight Takeoff/Flight Failed
+                    %    break;
+                    %end
+                    %planes(index) = TakeoffChecker(planes(index), 3, rho);
+                    %if (planes(index).performance.takeoffDist3 > 20)
+                    %    break;
+                    %end
 
-                        %Simulate mission velocities
-                        planes(index) = GenVelocityTest(planes(index), 2, rho, temp, dynamicThrustNet, dynamicThrustStats); %2 signifies mission 2 configuration
-                        if (planes(index).performance.velocity2 < planes(index).performance.landingSpeed2 || planes(index).performance.time2 > 290) %290s leaves 10s extra
-                            quit = 1; %M2 Weight Takeoff/Flight Failed
-                            break;
-                        end
-                        planes(index) = GenVelocityTest(planes(index), 3, rho, temp, dynamicThrustNet, dynamicThrustStats); %3 signifies mission 3 configuration
-                        if (planes(index).performance.velocity3 < planes(index).performance.landingSpeed3)
-                            break;
-                        end
-
-                        %Calculate scores
-                        planes(index) = Mission2Score(planes(index));
-                        planes(index) = Mission3Score(planes(index));
-                        planes(index) = MissionGMScore(planes(index));
-                        
-                        %Make sure all values are calculated
-                        %if (SanityCheck(planes(index)))
-                        index = index + 1;
-                        %end
-
-                    end %End m3Passengers Loop
-                    if (quit)
-                        break; %M2 Weight Takeoff/Flight Failed
+                    %Simulate mission velocities
+                    planes(index) = GenVelocityTest(planes(index), 2, rho, temp);%, dynamicThrustNet, dynamicThrustStats); %2 signifies mission 2 configuration
+                    if (planes(index).performance.velocity2 < planes(index).performance.landingSpeed2 || planes(index).performance.time2 > 300)
+                        %quit = 1; %M2 Weight Takeoff/Flight Failed
+                        break;
                     end
+                    planes(index) = GenVelocityTest(planes(index), 3, rho, temp);%, dynamicThrustNet, dynamicThrustStats); %3 signifies mission 3 configuration
+                    if (planes(index).performance.velocity3 < planes(index).performance.landingSpeed3)
+                        break;
+                    end
+
+                    %Calculate scores
+                    planes(index) = Mission2Score(planes(index));
+                    planes(index) = Mission3Score(planes(index));
+                    planes(index) = MissionGMScore(planes(index));
+                    
+                    %Make sure all values are calculated
+                    %if (SanityCheck(planes(index)))
+                    index = index + 1;
+                    %end
+
+                    %end %End m3Passengers Loop
+                    %if (quit)
+                    %    break; %M2 Weight Takeoff/Flight Failed
+                    %end
                 end %End m2PackageWeight Loop
             end %End powerSystem Loop
         end %End airfoil Loop
@@ -154,22 +155,22 @@ for (i = 1:index-1) %Load data into arrays that are easier to work with
 end
 
 for (i = 1:index-1) %Normalizes scores in plane performance object
-    planes(i).performance.score2 = planes(i).performance.score2/max(scoresM2);
-    planes(i).performance.score3 = planes(i).performance.score3/max(scoresM3);
-    planes(i).performance.scoreGM = min(scoresGM)/planes(i).performance.scoreGM;
+    planes(i).performance.score2Normalized = planes(i).performance.score2/max(scoresM2);
+    planes(i).performance.score3Normalized = planes(i).performance.score3/max(scoresM3);
+    planes(i).performance.scoreGMNormalized = min(scoresGM)/planes(i).performance.scoreGM;
+    planes(i).performance.scoreTotal = 1 + planes(i).performance.score2Normalized + planes(i).performance.score3Normalized + planes(i).performance.scoreGMNormalized;
 end
 
 scoresM2 = scoresM2/max(scoresM2); %Normalize scores against best performers
 scoresM3 = scoresM3/max(scoresM3);
 scoresGM = min(scoresGM)./scoresGM;
 
-score = scoresM2 + scoresM3 + scoresGM;
+score = 1 + scoresM2 + scoresM3 + scoresGM;
 
 [winners, indices] = maxk(score, 100); %Find the top planes
-scores = score(indices);
 topPlanes = planes(indices);
 %save("winners.mat", "winners"); %Save top results
 %save("winners_scores.mat", "scores");
-%save("planes.mat", "planes");
+save("topPlanes.mat", "topPlanes");
 
 %clear; %Clear variables to free RAM. RAM usage is the limiting factor in enabling the analysis to run and avoid crashing.

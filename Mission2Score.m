@@ -1,6 +1,9 @@
 function plane = Mission2Score(plane)
 
     %avgTurnG, turnVelMultiplier, windVel are defined in main
+    global avgTurnG;
+    global turnVelMultiplier;
+    global windVel;
 
     turnAcceleration = 32*avgTurnG;
     turnRadius = (plane.performance.velocity2*turnVelMultiplier)^2/turnAcceleration;

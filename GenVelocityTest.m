@@ -1,4 +1,4 @@
-function plane = GenVelocityTest(plane, missionNumber, rho, temp, dThrustNeuralNet, dThrustStats)
+function plane = GenVelocityTest(plane, missionNumber, rho, temp)%, dThrustNeuralNet, dThrustStats)
 %DEBUG: this sometimes finds complex numbers for drag and fails to find velocity. Is this a bug or just when it gets an impractical (underpowered) aircraft?
 
     %-------------------------------Constants---------------------------------%

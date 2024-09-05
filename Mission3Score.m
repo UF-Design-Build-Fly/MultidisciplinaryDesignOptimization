@@ -1,6 +1,9 @@
 function plane = Mission3Score(plane)
 
     %avgTurnG, turnVelMultiplier, windVel are defined in main
+    global avgTurnG;
+    global turnVelMultiplier;
+    global windVel;
 
     turnAcceleration = 32*avgTurnG;
     turnRadius = (plane.performance.velocity3*turnVelMultiplier)^2/turnAcceleration;
@@ -16,7 +19,7 @@ function plane = Mission3Score(plane)
     lapTime = turnTime + downWindTime + upWindTime;
     
     plane.performance.time3 = lapTime;
-    plane.performance.numLaps3 = plane.powerSystem.time/lapTime;
-    plane.performance.score3 = plane.performance.numLaps3 * plane.performance.numPassengers;
+    plane.performance.numLaps3 = min(plane.powerSystem.time, 300)/lapTime;
+    plane.performance.score3 = plane.performance.numLaps3 + 2.5;
 
 end
