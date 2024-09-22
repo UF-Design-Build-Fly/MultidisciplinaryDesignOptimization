@@ -14,7 +14,7 @@ turnSpeedMultiplier = 0.8;
 
 % Search Parameters
 aspectRatios = 4:1:8;
-m2PackageWeight = 4.5:1:21.5;	% (lbs)
+m2PackageWeight = 4:1:16;	% (lbs)
 wingSpans = 3:1:6;				% (ft)
 
 % Tail Configuration
@@ -22,7 +22,7 @@ vertStabAspectRatio = 2;		%From aero calculations done beforehand
 horizStabAspectRatio = 4;		% ^^^
 
 %% ============================== Import Motor & Wing Data ===================================
-load("MotorSpreadsheet2024.mat");
+load("MotorSpreadsheet2025.mat");
 MotorSpreadsheet = sortrows(MotorSpreadsheet, 'PitchSpeedfts', 'descend');
 numPowerSystems = height(MotorSpreadsheet);
 numPowerSystems = 100;			% DEBUGGING: Search subset to decrease runtime
