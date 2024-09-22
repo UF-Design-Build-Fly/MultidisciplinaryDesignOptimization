@@ -167,16 +167,16 @@ end
 
 % Normalize scores in plane performance object
 for (i = 1:index-1)
-	planes(i).performance.score2Normalized = planes(i).performance.score2/max(scoresM2);
-	planes(i).performance.score3Normalized = planes(i).performance.score3/max(scoresM3);
+	planes(i).performance.score2Normalized = 1 + planes(i).performance.score2/max(scoresM2);
+	planes(i).performance.score3Normalized = 2 + planes(i).performance.score3/max(scoresM3);
 	planes(i).performance.scoreGMNormalized = min(scoresGM)/planes(i).performance.scoreGM;
 
 	planes(i).performance.scoreTotal = 1 + planes(i).performance.score2Normalized + planes(i).performance.score3Normalized + planes(i).performance.scoreGMNormalized;
 end
 
 % Normalize scores against best performers
-scoresM2 = scoresM2/max(scoresM2);
-scoresM3 = scoresM3/max(scoresM3);
+scoresM2 = 1 + scoresM2/max(scoresM2);
+scoresM3 = 2 + scoresM3/max(scoresM3);
 scoresGM = min(scoresGM)./scoresGM;
 
 score = 1 + scoresM2 + scoresM3 + scoresGM;
