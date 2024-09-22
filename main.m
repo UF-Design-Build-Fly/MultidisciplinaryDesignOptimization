@@ -5,17 +5,19 @@ close all;				% Closes are figure windows
 warning('off','all');	% Using structs the way we do here generates warnings that slow matlab down. Comment this out (and restart matlab) when debugging.
 
 %% ======================== Constants and Search Parameters ==================================
-% Aero Equations
-%rho = 0.002391;				% Air Density in Whichita, Ks (slug/ft^3)
-rho = 0.00235308;				% Air Density in Tuscon, Az (slug/ft^3)
+% All units are metric: kg, m, s, K
+%rho = 1.2323;					% Air Density in Whichita, Ks (kg/m^3)
+rho = 1.2127;					% Air Density in Tuscon, Az (kg/m^3)
 temp = 303;						% Temperature in Tuscon, Az (Kelvin)
-windSpeed = 13.2;				% Average Wind Speed in Tucson, Az (ft/s)
+windSpeed = 4.02336;			% Average Wind Speed in Tucson, Az (m/s)
 turnSpeedMultiplier = 0.8;
 
 % Search Parameters
-aspectRatios = 4:2:8;
-m2PackageWeight = 4:4:16;	% (lbs)
-wingSpans = 3:1:6;				% (ft)
+aspectRatios = 4:1:8;
+m2PackageWeight = 0:1:14;		% (lb) convert to kg below
+m2PackageWeight = m2PackageWeight*0.4535924;
+wingSpans = 3:1:6;				% (ft) convert to m below
+wingSpans = wingSpans*0.3048;
 
 % Tail Configuration
 vertStabAspectRatio = 2;		%From aero calculations done beforehand
@@ -23,9 +25,9 @@ horizStabAspectRatio = 4;		% ^^^
 
 %% ============================== Import Motor & Wing Data ===================================
 load("MotorSpreadsheet2025.mat");
-MotorSpreadsheet = sortrows(MotorSpreadsheet, 'PitchSpeedfts', 'descend');
+MotorSpreadsheet = sortrows(MotorSpreadsheet, 'PitchSpeedms', 'descend');
 numPowerSystems = height(MotorSpreadsheet);
-numPowerSystems = 100;			% DEBUGGING: Search subset to decrease runtime
+numPowerSystems = 500;			% DEBUGGING: Search subset to decrease runtime
 
 % Creates airfoil data lookup table
 wingLookupTable = GenWingData(aspectRatios, wingSpans);
@@ -123,11 +125,11 @@ for aspectRatioIndex = 1:length(aspectRatios)
 					end
 
 					% Calculate scores
-					planes(index) = Mission2Score(planes(index), windSpeed, turnSpeedMultiplier);
+					planes(index) = Mission2Score(planes(index), windSpeed, turnSpeedMultiplier, rho);
 					if (planes(index).performance.time2 > 300)
 						break;
 					end
-					planes(index) = Mission3Score(planes(index), windSpeed, turnSpeedMultiplier);
+					planes(index) = Mission3Score(planes(index), windSpeed, turnSpeedMultiplier, rho);
 					planes(index) = MissionGMScore(planes(index));
 					
 					% Make sure all values are calculated

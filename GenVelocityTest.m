@@ -17,10 +17,10 @@ function plane = GenVelocityTest(plane, missionNumber, rho, temp)%, dThrustNeura
     InducedDrag = @(v) (((2*weightTotal)/(rho*plane.wing.planformArea*(v.^2))).^2)/(pi*wingEfficiency*plane.wing.aspectRatio); %Doesn't account for lift from tail
     
     %---------------------------Parasitic Drag--------------------------------%
-    CDf = 0.75; %good fuselage estimate
-    wingParasitic = @(v) (0.5*rho*(v^2)*plane.wing.planformArea*plane.wing.cd);
-    hStabParasitic = @(v) (0.5*rho*(v^2)*plane.empennage.HSarea*plane.empennage.HScd);
-    vStabParasitic = @(v) (0.5*rho*(v^2)*plane.empennage.VSarea*plane.empennage.VScd);
+    CDf = 0.05; %good fuselage estimate
+    wingParasitic = @(v) (0.5*rho*(v^2)*(plane.wing.span*plane.wing.thickness)*plane.wing.cd);
+    hStabParasitic = @(v) (0.5*rho*(v^2)*(plane.empennage.HSarea*0.10)*plane.empennage.HScd); % Assume NACA0010 for thickness calc
+    vStabParasitic = @(v) (0.5*rho*(v^2)*(plane.empennage.VSarea*0.10)*plane.empennage.VScd); % Assume NACA0010 for thickness calc
     fuselageParasitic = @(v) (0.5*rho*(v^2)*plane.fuselage.frontalSurfaceArea*CDf);
     
     Cd_gear = 1;        % Let Cd = 0.05 for the flatbar  %no justification? Depending on aspect ratio Cd can be between 0.6 and 1. Source: https://apps.dtic.mil/sti/pdfs/ADA395503.pdf
@@ -45,19 +45,18 @@ function plane = GenVelocityTest(plane, missionNumber, rho, temp)%, dThrustNeura
     %length from laminar to tubulent flow
     %-Bryce
     
-    R = 287; %gas consant - no need to change year to year
-    gamma = 1.4; %air constant - no change year-to-year
-    a = 3.28*sqrt(gamma*R*temp);%with metric to imperial conversion. a is speed of sound. 3.28 is conversion factor to feet
+	% Speed of sound in air (m/s)
+    a = 331*sqrt(temp/273);
     
     Cfl = @(v,L) 1.328/sqrt(v*L/muk);%coeff friction laminar
     Cft = @(v,L) (0.455)/((log10(v*L/muk)^2.58)*(1+0.144*(v/a)^2)^0.65); %coeff friction turbulent %I'm not familiar with this equation. There are a dozen others to pick from. Source: https://www.cfd-online.com/Wiki/Skin_friction_coefficient 
     Cf = @(v,L,k) k*Cfl(v,L)+(1-k)*Cft(v,L); %trueish - some ratio of laminar and turbulent
-    skinFrictionWing = @(v) 2*(0.5*rho*(v^2)*Cf(v,plane.wing.cd,1)*plane.wing.planformArea);
-    skinFrictionHStab = @(v) 2*(0.5*rho*(v^2)*Cf(v,plane.empennage.HSchord,1)*plane.empennage.HSarea);
-    skinFrictionVStab = @(v) 2*(0.5*rho*(v^2)*Cf(v,plane.empennage.VSchord,1)*plane.empennage.VSarea);
-    skinFrictionFuselage = @(v) (0.5*rho*(v^2)*Cf(v,plane.fuselage.length,0.9)*plane.fuselage.totalSA);
-    skinFrictionGear = @(v) 2*(0.5*rho*(v^2)*Cf(v,(2/12) ,0)*plane.fuselage.gearSA);
-    skinFrictionWheels = @(v) 3*(0.5*rho*(v^2)*Cf(v,2*plane.fuselage.wheelRadius/12,0)*plane.fuselage.wheelSA);
+    skinFrictionWing = @(v) (0.5*rho*(v^2)*Cf(v,plane.wing.chord,1)*(plane.wing.span*plane.wing.thickness));
+    skinFrictionHStab = @(v) (0.5*rho*(v^2)*Cf(v,plane.empennage.HSchord,1)*(plane.empennage.HSarea*0.10)); % Assume NACA0010 for thickness calc
+    skinFrictionVStab = @(v) (0.5*rho*(v^2)*Cf(v,plane.empennage.VSchord,1)*(plane.empennage.VSarea*0.10)); % Assume NACA0010 for thickness calc
+    skinFrictionFuselage = @(v) (0.5*rho*(v^2)*Cf(v,plane.fuselage.length,0.9)*plane.fuselage.frontalSurfaceArea);
+    skinFrictionGear = @(v) (0.5*rho*(v^2)*Cf(v,(1.5*0.0254), 0)*plane.fuselage.gearFrontalSA);
+    skinFrictionWheels = @(v) (0.5*rho*(v^2)*Cf(v,2*plane.fuselage.wheelRadius,0)*plane.fuselage.wheelFrontalSA);
     Skin = @(v) skinFrictionWing(v) + skinFrictionHStab(v) + skinFrictionVStab(v) + skinFrictionFuselage(v) + skinFrictionGear(v) + skinFrictionWheels(v);
     %-------------------------------------------------------------------------%
     
@@ -139,9 +138,9 @@ function plane = GenVelocityTest(plane, missionNumber, rho, temp)%, dThrustNeura
     %--------------------------Velocity Solver--------------------------------%
     
     %func = @(v) (Drag(v)-T(v));
-    propDiameter = plane.powerSystem.propDiameter;
-    propPitch = plane.powerSystem.propPitch;
-    motorRPM = plane.powerSystem.rpm;
+    %propDiameter = plane.powerSystem.propDiameter;
+    %propPitch = plane.powerSystem.propPitch;
+    %motorRPM = plane.powerSystem.rpm;
     %CalcNetForce = @(v) (TotalDrag(v) - CalcDynamicThrust(propDiameter, propPitch, motorRPM, v, dThrustNeuralNet, dThrustStats));
     CalcNetForce = @(v) (TotalDrag(v) - CrudeDynamicThrust(v));
     
@@ -163,7 +162,7 @@ function plane = GenVelocityTest(plane, missionNumber, rho, temp)%, dThrustNeura
     %legend("Drag", "Net Force", "Thrust");
     
     velHigh = plane.powerSystem.propSpeed;
-    velLow = 20;
+    velLow = 15;
     velocity = 0.85*velHigh;
     netForce = CalcNetForce(velocity);
     iterations = 0;
@@ -208,7 +207,7 @@ function plane = GenVelocityTest(plane, missionNumber, rho, temp)%, dThrustNeura
     
     if velocity<0
         velocity = -1; %DEBUG - make an error flag - functions look for exactly this value for now
-    elseif velocity>500 %no way we ever get this fast.
+    elseif velocity>100 %no way we ever get this fast.
         velocity = -1;
     elseif ((isnan(velocity)) || (velocity == inf)) %if solver doesn't converge
         disp("Found NAN or inf!") %DEBUG - can remove when debugging is finished.

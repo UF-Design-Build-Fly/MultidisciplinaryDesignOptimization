@@ -59,10 +59,10 @@ classdef PowerClass
 			powerSystem.amps = motorTable(tableIndex,:).CurrentA;
 			powerSystem.watts = motorTable(tableIndex,:).PowerConsumptionW;
 			powerSystem.time = motorTable(tableIndex,:).WhFlightTimeSeconds;
-			powerSystem.thrust = motorTable(tableIndex,:).Thrustlbs;
-			powerSystem.propSpeed = motorTable(tableIndex,:).PitchSpeedfts*1.467; %Tabel values are in mph not ft/s
+			powerSystem.thrust = motorTable(tableIndex,:).ThrustKg;
+			powerSystem.propSpeed = motorTable(tableIndex,:).PitchSpeedms;
 			powerSystem.efficiency = motorTable(tableIndex,:).Efficiencythrustwatt100;
-			powerSystem.weight = motorTable(tableIndex,:).EstimatedSystemWeightlbs;
+			powerSystem.weight = motorTable(tableIndex,:).EstimatedSystemWeightKg;
 
 		end
 

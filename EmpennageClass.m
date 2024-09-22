@@ -18,8 +18,8 @@ classdef EmpennageClass
         %solve via the monoplane equation. probably should change to monoplane
         %for higher accuracy even if it's a bit computationally slower
         %Define constants 
-        rho_XPS = 2.3;      %density of foam (lb/ft^3)
-        w_cf = 0.0450596;   %weight of carbon fiber sheets (lb/ft^2)
+        rho_XPS = 36.842465760108;      %density of foam (kg/m^3)
+        w_cf = 0.0018988165050619601;   %weight of carbon fiber sheets (kg/m^2)
         e = 0.7;            %efficiency factor
         alpha = 3.*pi/180;  %assume 3 degrees
         Cd0 = 1.328*2.25/(sqrt(150000));  %zero-lift drag estimation (2.25 is estimate for Swet/Sref ratio)
@@ -32,9 +32,9 @@ classdef EmpennageClass
         airfoil = @(x) 2.5*0.10*(0.2969.*sqrt(x)-0.1260.*x-0.3516.*x.^2+0.2843.*x.^3-0.1015.*x.^4);  %NACA0012 airfoil is just assumed
         %arcL = @(x) sqrt(1+ (2.5*0.10*(-0.5*0.2969.*x.^(-1.5)-0.1260-2*0.3516.*x+3*0.2843.*x.^2-4*0.1015.*x.^3)).^2); 
         CSH_area = 2*integral(airfoil, 0, HS_chord);      %cross sectional area of airfoil horizontal stab
-        HS_wfoam = CSH_area*HS_span*rho_XPS;              %lb
+        HS_wfoam = CSH_area*HS_span*rho_XPS;
         %HS_ArcL = 2*integral(arcL,0,HS_chord);            %arc length
-        HS_weight = (2.25*HS_area*w_cf*2)+HS_wfoam;    %total weight of the carbon fiber sheets, (arc length*weight/ft*2 layers);
+        HS_weight = (2.25*HS_area*w_cf*2)+HS_wfoam;    %total weight of the carbon fiber sheets, (arc length*weight/m*2 layers);
         
         HS_Cdi = 4.*pi.*alpha.^2/(HSAR.*e);          %induced drag equation (NASA)
         HS_Cd = Cd0+HS_Cdi;
@@ -47,7 +47,7 @@ classdef EmpennageClass
         CSV_area = 2*integral(airfoil,0,VS_chord);        % cross sectional area of airfoil vertical stab
         VS_wfoam = CSH_area*VS_span*rho_XPS;              %lb
         %VS_ArcL = 2*integral(arcL,0, VS_chord);       %arc length
-        VS_weight = (2.25*VS_area*w_cf*2)+VS_wfoam;    %total weight of the carbon fiber sheets, (arc length*weight/ft*2 layers);
+        VS_weight = (2.25*VS_area*w_cf*2)+VS_wfoam;    %total weight of the carbon fiber sheets, (arc length*weight/m*2 layers);
         VS_Cd = Cd0;       % no alpha, no Cdi
         
         %Determine Cdi using using Lifting Line theory

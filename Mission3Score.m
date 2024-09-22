@@ -1,14 +1,15 @@
-function plane = Mission3Score(plane, windSpeed, turnSpeedMultiplier)
+function plane = Mission3Score(plane, windSpeed, turnSpeedMultiplier, rho)
 
-	maxLift = WingClass.FindMaxLift(plane.wing, plane.performance.velocity3*turnSpeedMultiplier);
-	turnAcceleration = 32*maxLift/plane.performance.totalWeight2;
+	maxLift = WingClass.FindMaxLift(plane.wing, plane.performance.velocity3*turnSpeedMultiplier, rho);
+	turnAcceleration = maxLift/plane.performance.totalWeight2;
 	turnRadius = plane.performance.velocity2^2/turnAcceleration;
 	
 	%2 360 turns per lap
 	turnTime = 2*2*pi*turnRadius/(plane.performance.velocity2*turnSpeedMultiplier);
 	
-	downWindTime = 1000/(plane.performance.velocity2+windSpeed);
-	upWindTime = 1000/(plane.performance.velocity2-windSpeed);
+	%1000 ft is 304.8m
+	downWindTime = 304.8/(plane.performance.velocity2+windSpeed);
+	upWindTime = 304.8/(plane.performance.velocity2-windSpeed);
 
 	lapTime = turnTime + downWindTime + upWindTime;
 	

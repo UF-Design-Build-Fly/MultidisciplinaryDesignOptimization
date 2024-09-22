@@ -31,13 +31,13 @@ classdef WingClass
 			wing.planformArea = wings(airfoilIndex, 7, aspectRatioIndex, spanIndex);
 			wing.surfaceArea = wings(airfoilIndex, 8, aspectRatioIndex, spanIndex);
 			wing.name = wings(airfoilIndex, 9, aspectRatioIndex, spanIndex);
-			wing.thickness=wings(airfoilIndex, 10, aspectRatioIndex, spanIndex); %(ft)
+			wing.thickness=wings(airfoilIndex, 10, aspectRatioIndex, spanIndex);
 
 		end
 
-		function maxLift = FindMaxLift(wingObj, airSpeed)
+		function maxLift = FindMaxLift(wingObj, airSpeed, rho)
 
-			maxLift = 100 + 0.1*airSpeed; % (lbs)
+			maxLift = 0.5 * rho * wingObj.clm * wingObj.planformArea * airSpeed^2;
 
 		end
 

@@ -1,5 +1,4 @@
 function plane = FindTotalWeight(plane)
-	%weight in pounds (verify this with other functions)
 	
 	%DEBUG - Previous runs of analysis seemed to 
 	%underestimate fuselage weight so just add a constant multiple here. 
@@ -10,7 +9,7 @@ function plane = FindTotalWeight(plane)
 		plane.fuselage.wheelWeight + plane.powerSystem.weight + plane.wing.weight;
 	
 	plane.performance.totalWeight2 = plane.performance.totalEmptyWeight + ...
-		plane.performance.m2Weight + 0.5; % 0.5lb for X1 Test Vehicle
+		plane.performance.m2Weight + 0.249; % 0.55lb for X1 Test Vehicle
 	
-	plane.performance.totalWeight3 = plane.performance.totalEmptyWeight;
+	plane.performance.totalWeight3 = plane.performance.totalEmptyWeight + 0.249; % 0.55lb for X1 Test Vehicle
 end

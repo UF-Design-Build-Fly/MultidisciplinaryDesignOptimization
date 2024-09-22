@@ -5,7 +5,7 @@ classdef FuselageClass
 		frontalSurfaceArea = -1;
 		height = -1;
 		width = -1;
-		length = -1; % (ft)
+		length = -1;
 		totalSA = -1;
 		
 		weight = -1; % weight of carbon fiber to make fuselage + mechanisms
@@ -29,14 +29,16 @@ classdef FuselageClass
 			% Inputs: Aspect Ratio, Wing Area
 			% Must be run after wing data is set
 			
-			% Nose section up to bulkhead
-			noseLength = (7+4)/12; %Space systems needs for their stuff (battery + motor)
+			in2m = 0.0254; % in to meters
 			
-			fuselageHeight = 4/12;
-			fuselageWidth = 4/12;
+			% Nose section up to bulkhead
+			noseLength = (7+4)*in2m; %Space systems needs for their stuff (battery + motor)
+			
+			fuselageHeight = 4*in2m;
+			fuselageWidth = 4*in2m;
 			
 			% Rectangularish middle section
-			planeBayLength = 6/12;
+			planeBayLength = 6*in2m;
 
 			%totalFuselageLength = plane.wing.span*0.75;	%Using 75% rule for fuselage length
 			totalFuselageLength = plane.wing.span*0.9;
@@ -54,9 +56,9 @@ classdef FuselageClass
 			% Assume: cylinder shape A = 1/2 (a+b)*h
 			% Vertical Narrowing is offset
 			% Calculate the slant height
-			l = sqrt(noseLength^2 + (1.5 - 2)^2);
+			l = sqrt(noseLength^2 + (1.5*in2m - 2*in2m)^2);
 			% Calculate the lateral surface area
-			surfaceAreaNose =  pi * (1.5/12 + 2/12) * l;
+			surfaceAreaNose =  pi * (1.5*in2m + 2*in2m) * l;
 			
 			% Assume wedge shape		
 			% Calculate the areas of the faces
@@ -67,17 +69,17 @@ classdef FuselageClass
 			surfaceAreaPlaneBay = top + sideTriangle + diagFace;
 
 			% Assume: boom shape for
-			boomDiameter = 1/12;
+			boomDiameter = 1*in2m;
 			surfaceAreaTail = pi*boomDiameter*tailLength;
 
 			% Combine surface areas
 			totalSurfaceArea = surfaceAreaNose+surfaceAreaPlaneBay+surfaceAreaTail;
 			
-			% The volume in ft^3, 1/16 is the thickness of the carbon fiber in inches so this will help us find the weight of the fuselage
-			carbonFiberVolume = totalSurfaceArea*(1/16/12);
+			% The volume in m^3, 1/16in is the thickness of the carbon fiber so this will help us find the weight of the fuselage
+			carbonFiberVolume = totalSurfaceArea*(1/16*in2m);
 			
-			rhoCarbon = 80;	% lb/ft^3 88 found in research, but previous plane was around 80
-			fuselageWeight = carbonFiberVolume*rhoCarbon; % Weight of fuselage in lb
+			rhoCarbon = 1281;	% kg/m^3 1410 found in research, but previous plane was around 1281
+			fuselageWeight = carbonFiberVolume*rhoCarbon; % Weight of fuselage in kg
 			
 			% Set the objects values
 			fuselage.frontalSurfaceArea = fuselageWidth*fuselageHeight;
@@ -113,18 +115,20 @@ classdef FuselageClass
 			%				  <------------width------------->
 			
 			%----------------------------Defined Constants----------------------------%
+			in2m = 0.0254; % in to meters
+			
 			numWheels = 2;
-			wheelWidth = 0.9063/12;		%(division by 12 to convert to ft)
-			wheelRadius = 1.5/12;		%^^^
-			gearwidth = 1.5/12;			%(ft)
-			gearThickness = 1/8/12;		%(ft)
-			base = 1.5/12;				%Height of vertical portion (ft)
+			wheelWidth = 0.9063*in2m;
+			wheelRadius = 1.5*in2m;
+			gearwidth = 1.5*in2m;
+			gearThickness = 1/8*in2m;
+			base = 1.5*in2m;				%Height of vertical portion
 			%rhoAluminum = 0.001122368;	%Density for landing gear material (Al) (slug/in^3)
-			rhoCarbon = 120.486;		%lb/ft^3
+			rhoCarbon = 1281;	% kg/m^3 1410 found in research, but previous plane was around 1281
 
 			%----------------------Calculation of Gear Weight, SA---------------------%
 			width = 0.25*plane.wing.span;
-			height = plane.powerSystem.propDiameter/12/2 - 2/12 + 3/12; %2" from fuselageHeight + 3" clearence 
+			height = plane.powerSystem.propDiameter*in2m/2 - 2*in2m + 3*in2m; %2" from fuselageHeight + 3" clearence 
 			fuselageWidth = plane.fuselage.width;
 
 			a = 0.5*(width-fuselageWidth);
@@ -137,7 +141,7 @@ classdef FuselageClass
 			fuselage.gearFrontalSA = L * gearThickness;
 			fuselage.gearWeight = rhoCarbon*(fuselage.gearSA * gearThickness);
 
-			fuselage.wheelWeight = numWheels * 0.85/16; %0.85ounces (lb)
+			fuselage.wheelWeight = numWheels * 0.0241; % (kg) = 0.85ounces 
 			fuselage.wheelSA = numWheels * (2*pi*(wheelRadius)^2 + 2*pi*wheelRadius*wheelWidth);
 			fuselage.wheelFrontalSA = numWheels * (2*wheelRadius*wheelWidth);
 
