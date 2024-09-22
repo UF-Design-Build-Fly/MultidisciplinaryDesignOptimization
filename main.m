@@ -13,8 +13,8 @@ windSpeed = 13.2;				% Average Wind Speed in Tucson, Az (ft/s)
 turnSpeedMultiplier = 0.8;
 
 % Search Parameters
-aspectRatios = 4:1:8;
-m2PackageWeight = 4:1:16;	% (lbs)
+aspectRatios = 4:2:8;
+m2PackageWeight = 4:4:16;	% (lbs)
 wingSpans = 3:1:6;				% (ft)
 
 % Tail Configuration
