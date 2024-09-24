@@ -2,7 +2,7 @@ function plane = GenVelocityTest(plane, missionNumber, rho, temp)%, dThrustNeura
 %DEBUG: this sometimes finds complex numbers for drag and fails to find velocity. Is this a bug or just when it gets an impractical (underpowered) aircraft?
 
     %-------------------------------Constants---------------------------------%
-    muk = 1.612e-4; %kinmatic viscosity (ish) related to mu
+    muk = 15.97e-6; %kinmatic viscosity (ish) related to mu (m2/s) @303K
     
     %--------------------------------Weight-----------------------------------%
     if missionNumber == 2
@@ -17,13 +17,13 @@ function plane = GenVelocityTest(plane, missionNumber, rho, temp)%, dThrustNeura
     InducedDrag = @(v) (((2*weightTotal)/(rho*plane.wing.planformArea*(v.^2))).^2)/(pi*wingEfficiency*plane.wing.aspectRatio); %Doesn't account for lift from tail
     
     %---------------------------Parasitic Drag--------------------------------%
-    CDf = 0.05; %good fuselage estimate
-    wingParasitic = @(v) (0.5*rho*(v^2)*(plane.wing.span*plane.wing.thickness)*plane.wing.cd);
-    hStabParasitic = @(v) (0.5*rho*(v^2)*(plane.empennage.HSarea*0.10)*plane.empennage.HScd); % Assume NACA0010 for thickness calc
-    vStabParasitic = @(v) (0.5*rho*(v^2)*(plane.empennage.VSarea*0.10)*plane.empennage.VScd); % Assume NACA0010 for thickness calc
+    CDf = 0.75; %good fuselage estimate
+    wingParasitic = @(v) (0.5*rho*(v^2)*plane.wing.planformArea*plane.wing.cd);
+    hStabParasitic = @(v) (0.5*rho*(v^2)*plane.empennage.HSarea*plane.empennage.HScd);
+    vStabParasitic = @(v) (0.5*rho*(v^2)*plane.empennage.VSarea*plane.empennage.VScd);
     fuselageParasitic = @(v) (0.5*rho*(v^2)*plane.fuselage.frontalSurfaceArea*CDf);
     
-    Cd_gear = 1;        % Let Cd = 0.05 for the flatbar  %no justification? Depending on aspect ratio Cd can be between 0.6 and 1. Source: https://apps.dtic.mil/sti/pdfs/ADA395503.pdf
+    Cd_gear = 0.05;        % Let Cd = 0.05 for the flatbar (front part of tricycle)
     Cd_wheel = 0.245;     % Let Cd = 0.245 for the wheels
     dragBar = @(v) (0.5*rho*(v)^2*plane.fuselage.gearFrontalSA*Cd_gear); %bar
     dragWheels = @(v) (0.5*rho*(v)^2*plane.fuselage.wheelFrontalSA*Cd_wheel); %before Kevin's edits, v=40?, not sure why
@@ -46,17 +46,21 @@ function plane = GenVelocityTest(plane, missionNumber, rho, temp)%, dThrustNeura
     %-Bryce
     
 	% Speed of sound in air (m/s)
-    a = 331*sqrt(temp/273);
+    R = 287; %gas consant - no need to change year to year
+    gamma = 1.4; %air constant - no change year-to-year
+    a = sqrt(gamma*R*temp);%with metric to imperial conversion. a is speed of sound. 3.28 is conversion factor to feet
+    %a = 331*sqrt(temp/273);
     
     Cfl = @(v,L) 1.328/sqrt(v*L/muk);%coeff friction laminar
     Cft = @(v,L) (0.455)/((log10(v*L/muk)^2.58)*(1+0.144*(v/a)^2)^0.65); %coeff friction turbulent %I'm not familiar with this equation. There are a dozen others to pick from. Source: https://www.cfd-online.com/Wiki/Skin_friction_coefficient 
     Cf = @(v,L,k) k*Cfl(v,L)+(1-k)*Cft(v,L); %trueish - some ratio of laminar and turbulent
-    skinFrictionWing = @(v) (0.5*rho*(v^2)*Cf(v,plane.wing.chord,1)*(plane.wing.span*plane.wing.thickness));
-    skinFrictionHStab = @(v) (0.5*rho*(v^2)*Cf(v,plane.empennage.HSchord,1)*(plane.empennage.HSarea*0.10)); % Assume NACA0010 for thickness calc
-    skinFrictionVStab = @(v) (0.5*rho*(v^2)*Cf(v,plane.empennage.VSchord,1)*(plane.empennage.VSarea*0.10)); % Assume NACA0010 for thickness calc
-    skinFrictionFuselage = @(v) (0.5*rho*(v^2)*Cf(v,plane.fuselage.length,0.9)*plane.fuselage.frontalSurfaceArea);
-    skinFrictionGear = @(v) (0.5*rho*(v^2)*Cf(v,(1.5*0.0254), 0)*plane.fuselage.gearFrontalSA);
-    skinFrictionWheels = @(v) (0.5*rho*(v^2)*Cf(v,2*plane.fuselage.wheelRadius,0)*plane.fuselage.wheelFrontalSA);
+    skinFrictionWing = @(v) 2*(0.5*rho*(v^2)*Cf(v,plane.wing.chord,1)*plane.wing.planformArea);
+    skinFrictionHStab = @(v) 2*(0.5*rho*(v^2)*Cf(v,plane.empennage.HSchord,1)*plane.empennage.HSarea);
+    skinFrictionVStab = @(v) 2*(0.5*rho*(v^2)*Cf(v,plane.empennage.VSchord,1)*plane.empennage.VSarea);
+    skinFrictionFuselage = @(v) (0.5*rho*(v^2)*Cf(v,plane.fuselage.length,0.9)*plane.fuselage.totalSA);
+    skinFrictionGear = @(v) (0.5*rho*(v^2)*Cf(v,(1.5*0.0254) ,0)*plane.fuselage.gearSA);
+    skinFrictionWheels = @(v) (0.5*rho*(v^2)*Cf(v,2*plane.fuselage.wheelRadius,0)*plane.fuselage.wheelSA);
+
     Skin = @(v) skinFrictionWing(v) + skinFrictionHStab(v) + skinFrictionVStab(v) + skinFrictionFuselage(v) + skinFrictionGear(v) + skinFrictionWheels(v);
     %-------------------------------------------------------------------------%
     
@@ -133,7 +137,7 @@ function plane = GenVelocityTest(plane, missionNumber, rho, temp)%, dThrustNeura
     %-------------------------------------------------------------------------%
     %Nathaniel's Very crude but somewhat accurate static thrust
 
-    CrudeDynamicThrust = @(v) (plane.powerSystem.thrust*(1 - v/plane.powerSystem.propSpeed));
+    CrudeDynamicThrust = @(v) (9.80665*plane.powerSystem.thrust*(1 - v/plane.powerSystem.propSpeed));
     
     %--------------------------Velocity Solver--------------------------------%
     
@@ -186,7 +190,7 @@ function plane = GenVelocityTest(plane, missionNumber, rho, temp)%, dThrustNeura
     
     %plane.performance.dynamicThrust = CalcDynamicThrust(propDiameter, propPitch, motorRPM, velocity, dThrustNeuralNet, dThrustStats); %max thrust available at cruise velocity
     wattFraction = plane.powerSystem.thrust/TotalDrag(velocity); %less power is consumed as motor is no longer able to give as much thrust
-    plane.powerSystem.time = plane.powerSystem.time*(0.7*wattFraction); % 30% factor of safety in derating power consumption
+    plane.powerSystem.time = plane.powerSystem.time*(0.7/wattFraction); % 30% factor of safety in derating power consumption
     
     if missionNumber == 2
         plane.performance.drag2 = TotalDrag(velocity);

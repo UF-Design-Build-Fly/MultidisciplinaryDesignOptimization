@@ -14,7 +14,7 @@ turnSpeedMultiplier = 0.8;
 
 % Search Parameters
 aspectRatios = 4:1:8;
-m2PackageWeight = 0:1:14;		% (lb) convert to kg below
+m2PackageWeight = 5:2.5:15;		% (lb) convert to kg below
 m2PackageWeight = m2PackageWeight*0.4535924;
 wingSpans = 3:1:6;				% (ft) convert to m below
 wingSpans = wingSpans*0.3048;
@@ -25,9 +25,9 @@ horizStabAspectRatio = 4;		% ^^^
 
 %% ============================== Import Motor & Wing Data ===================================
 load("MotorSpreadsheet2025.mat");
-MotorSpreadsheet = sortrows(MotorSpreadsheet, 'PitchSpeedms', 'descend');
+MotorSpreadsheet = sortrows(MotorSpreadsheet, 'SortScore', 'descend');
 numPowerSystems = height(MotorSpreadsheet);
-numPowerSystems = 500;			% DEBUGGING: Search subset to decrease runtime
+numPowerSystems = 30;			% DEBUGGING: Search subset to decrease runtime
 
 % Creates airfoil data lookup table
 wingLookupTable = GenWingData(aspectRatios, wingSpans);
@@ -113,14 +113,14 @@ for aspectRatioIndex = 1:length(aspectRatios)
 					% Mission 2
 					%planes(index) = GenVelocityTest(planes(index), 2, rho, temp, dynamicThrustNet, dynamicThrustStats);
 					planes(index) = GenVelocityTest(planes(index), 2, rho, temp);
-					if (planes(index).performance.velocity2 < planes(index).performance.landingSpeed2 || planes(index).performance.velocity2 == -1)
+					if (planes(index).performance.velocity2/1.5 < planes(index).performance.landingSpeed2 || planes(index).performance.velocity2 == -1)
 						%quit = 1; % M2 Weight Takeoff/Flight Failed
 						break;
 					end
 					% Mission 3
 					%planes(index) = GenVelocityTest(planes(index), 3, rho, temp, dynamicThrustNet, dynamicThrustStats);
 					planes(index) = GenVelocityTest(planes(index), 3, rho, temp);
-					if (planes(index).performance.velocity3 < planes(index).performance.landingSpeed3 || planes(index).performance.velocity2 == -1)
+					if (planes(index).performance.velocity3/1.5 < planes(index).performance.landingSpeed3 || planes(index).performance.velocity2 == -1)
 						break;
 					end
 
@@ -148,6 +148,7 @@ for aspectRatioIndex = 1:length(aspectRatios)
 end % End aspectRatio Loop
 
 toc;
+waitbar(1.0, progressBar,  "Complete - " + round(toc/60, 2) + "min");
 
 %% ================================== Unused Features ========================================
 %friendlyFailCount = [failCountHeader; num2cell(spanFailCount)]; % Add headers to fail count table
