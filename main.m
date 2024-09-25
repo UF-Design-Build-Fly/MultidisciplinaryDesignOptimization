@@ -13,10 +13,10 @@ windSpeed = 4.02336;			% Average Wind Speed in Tucson, Az (m/s)
 turnSpeedMultiplier = 0.8;
 
 % Search Parameters
-aspectRatios = 4:1:8;
-m2PackageWeight = 5:2.5:15;		% (lb) convert to kg below
+aspectRatios = 4:0.5:8;
+m2PackageWeight = 2:2:16;		% (lb) convert to kg below
 m2PackageWeight = m2PackageWeight*0.4535924;
-wingSpans = 3:1:6;				% (ft) convert to m below
+wingSpans = 3:0.25:6;			% (ft) convert to m below
 wingSpans = wingSpans*0.3048;
 
 % Tail Configuration
@@ -27,7 +27,7 @@ horizStabAspectRatio = 4;		% ^^^
 load("MotorSpreadsheet2025.mat");
 MotorSpreadsheet = sortrows(MotorSpreadsheet, 'SortScore', 'descend');
 numPowerSystems = height(MotorSpreadsheet);
-numPowerSystems = 30;			% DEBUGGING: Search subset to decrease runtime
+numPowerSystems = 50;			% DEBUGGING: Search subset to decrease runtime
 
 % Creates airfoil data lookup table
 wingLookupTable = GenWingData(aspectRatios, wingSpans);
@@ -132,11 +132,8 @@ for aspectRatioIndex = 1:length(aspectRatios)
 					planes(index) = Mission3Score(planes(index), windSpeed, turnSpeedMultiplier, rho);
 					planes(index) = MissionGMScore(planes(index));
 					
-					% Make sure all values are calculated
-					%if (SanityCheck(planes(index)))
 					index = index + 1;
-					%end
-
+                    
 					%end %End m3Passengers Loop
 					%if (quit)
 					%	break; % M2 Weight Takeoff/Flight Failed

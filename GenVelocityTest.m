@@ -137,7 +137,11 @@ function plane = GenVelocityTest(plane, missionNumber, rho, temp)%, dThrustNeura
     %-------------------------------------------------------------------------%
     %Nathaniel's Very crude but somewhat accurate static thrust
 
-    CrudeDynamicThrust = @(v) (9.80665*plane.powerSystem.thrust*(1 - v/plane.powerSystem.propSpeed));
+    % Prop speed from static thrust is lower than at max speed
+    % 3.7V assumed under load
+    % propPitch in inches(to meters 0.0254)
+    flightPropSpeed = 3.7 * plane.powerSystem.cells * plane.powerSystem.kv/60 * plane.powerSystem.propPitch * 0.0254;
+    CrudeDynamicThrust = @(v) (9.80665*plane.powerSystem.thrust*(1 - v/flightPropSpeed));
     
     %--------------------------Velocity Solver--------------------------------%
     
