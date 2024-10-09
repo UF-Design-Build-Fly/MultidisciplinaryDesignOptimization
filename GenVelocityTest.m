@@ -14,7 +14,8 @@ function plane = GenVelocityTest(plane, missionNumber, rho, temp)%, dThrustNeura
     %-----------------------------Induced Drag--------------------------------%
     % wingEfficiency = 0.8; %e is efficiency rating for the wing (rectangular)
     wingEfficiency = 1.78*(1-0.045*plane.wing.aspectRatio.^0.68)-0.64; % assuming rectangular wing
-    InducedDrag = @(v) (((2*weightTotal)/(rho*plane.wing.planformArea*(v.^2))).^2)/(pi*wingEfficiency*plane.wing.aspectRatio); %Doesn't account for lift from tail
+    %InducedDrag = @(v) (((2*weightTotal)/(rho*plane.wing.planformArea*(v.^2))).^2)/(pi*wingEfficiency*plane.wing.aspectRatio); %Doesn't account for lift from tail
+    InducedDrag = @(v) (2*weightTotal^2)/(rho*(v.^2)*pi*plane.wing.span^2*wingEfficiency); %Doesn't account for lift from tail
     
     %---------------------------Parasitic Drag--------------------------------%
     CDf = 0.75; %good fuselage estimate
